@@ -1,0 +1,50 @@
+## user-defined ignores (avoid committing large files)
+
+
+tmp
+*.bak
+*~
+
+## Core latex/pdflatex auxiliary files:
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+
+## Intermediate documents:
+*.dvi
+*-converted-to.*
+*.ps
+
+# following rules might exclude image files for figures etc.
+# *.eps
+# *.pdf
+
+## Bibliography auxiliary files (bibtex/biblatex/biber):
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.brf
+*.run.xml
+
+## Build tool auxiliary files:
+*.fdb_latexmk
+*.synctex
+*.synctex.gz
+*.synctex.gz(busy)
+*.pdfsync
+
+
+# glossaries
+*.acn
+*.acr
+*.glg
+*.glo
+*.gls
+
+
