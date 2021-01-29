@@ -1,0 +1,60 @@
+Hallo Fabian, hallo Ostap,
+
+Ich habe mir das von dir, Fabian, gesuchte Paper angeschaut.
+
+Da haben wir genuegend eigene Uniqure Selling Points. Als Reviewer haette ich diesem Paper auch das Urteil "major revisions" gegeben ;-) Bei den technischen Aspekten des RL-Ansatzes (Sects. 2.4 und 3.1)  bin ich allerdings nicht so der Experte.
+
+
+Zunaechst zu deinen Bemerkungen/Fragen, Ostap:
+
+2./3. Energy journal/lectric Vehicle: Optimiert man nach Fahrkomfort, sollte die Zielfunktion/das Ergebnis identisch zu denen fuer Verbrenner sein, ggf mit anderen physikalischen Grenzen als constraints. Diese fallen fuer E-Fz aber eher grosszuegiger aus, da E-Motoren immer sattes Drehmoment haben. Die wesentliche Beschraenkung, die der Batteriekapazitaet und bei sehr hohen Tempos auch die Begrenzung der Dauerleistung (anders als bei Verbrennern ist die Dauerleistung deutlich geringer als die Max-Leistung) werden bei Fahrkomfort- und auch Energieoptimierung nicht beruehrt. Also wie du sagst: Elektrisch, da EV Journal (und Hype; wir koennten auch einen EV-Satz einbringen)
+
+4. Was ist deren Training? Ich finde nur AR für reward function.
+
+4a. Reward-Funktion: Was bedeutet AR? Die Reward-Funktion ist im Absatz oberhalb (1). Sie ist ein Integral des diskontierten Reward-Rate gamma(i-t) r(s_i,a_i) der Zukunftszeit i ueber den Vorhersagehorizont T-t, diskretisiert natuerlich eine Summe R_t=\sum_{i=t}^T ... Hier ist s_i der zuk\"unftige state und a_i die zuk\"unftige action.
+
+Die Reward-Rate ist sehr einfach (Abb. 4) und betrachtet nur die Zeitluecke \tau_i und die Geschwindigkeit v_i des zukuenftigen State-Vektors dieses Fahrzeugs (die "action" und auch die "relative speed" zum Leader kommt nur indirekt ueber das Zeitintegral ins Spiel):
+
+r(s_i,a_i)=r_1+r_2
+
+r_1(s_i,a_i)=v_i/v_0 falls v_i \le v_0 und =-1 sonst mit v_0=110 km/h
+
+r_2(s_i,a_i)=-1, falls tau_i<0.6 s und =0 sonst
+
+Kritikpunkte: (1) Rewardfunktion unstetig
+
+(2) Diese Rewardfunktion belohnt schnelles (nicht zu schnelles) Fahren und wird im letzten Absatz von 3.3 begruendet: ".., there is no doubt ...". Das ist einfach grottenfalsch, wie jedem E-Fahrzeugbesitzer beim Anblick der schnell fallenden Reichweitenanzeige bei Autobahnfahrt bewusst werden wird, und sei es nur 110 km/h. E-Fahrzeuge sind einfach bei etwa 50 km/h am sparsamsten und fuer Autobahnverkehr voellig ungeeignet. Das kommt uebrigens auch bei der Formel (18) dieses Papers raus, wenn man die dort vergessene Standbyleistung ("HVAC") von etwa 2-3 kW (Nebenaggregate, Klima, Heizung auch fuer Batterie) beruecksichtigt; ohne diese konvergiert die verbrauchsoptimale Geschwindigkeit gegen null (wohlgemerkt: Verbrauch pro Strecke, nicht pro Zeiteinheit!)
+
+(3) Diese Rewardfunktion ignoriert Sicherheitsaspekte: 0.5 s (eher unkritisch)  wird genauso negativ bewertet wie 0.1 s b (sehr kritisch). Die auf den ersten Blick fehlende Geschwindigkeitsdifferenz hingegen wird indirekt ueber das Zeitintegral beruecksichtigt. Dennoch wuerde eine explizite Beruecksichtigung in der Reward-Rate das Ganze sicherer machen
+
+(4) und natuerlich werden Komfortaspekte ignoriert (keine Abhaengigkeit von den State-Variablen Beschleunigung=action und Jerk)
+
+
+4b. Was ist deren Training?
+
+Immer (in jeder der 2000 Episoden und zu jeder Zeit) ein mit konstant 100 km/h fahrender Leader. In jeder Episode werden die Folgefahrzeuge mit zufaelligen Abstaenden und Geschwindigkeiten ins System gesetzt. Dass es ein Ring ist, spielt aufgrund des festen Fahrprofils des Leaders keine Rolle (ausser, er ueberrollt den letzten Follower)
+
+Fabian: Keine schlechte Idee: Damit kommt die Kolonnenstabilitaet schon beim Lernen ins Spiel. Andererseits versachenken wir uns da die ueberzeugene Validierung
+
+5. Die untersuchen einfachere Szenarien, und ein paar für den Leader. Obwohl die Kolonnen sehen meines Verständnis recht gut aus.
+
+Die Validierung sieht gut aus, was wohl durch den expliziten Zeitintegral-Ansatz zustande kommt (Zeitintegrale hatte ich ja auch bei den Besprechungen erwaehnt). Dieser ist auch bei einfachsten Rewardfunktionen unerwartet maechtig! Fabian: Ist in deiner Reward-Funktion auch ein Zeitintegral ueber die Zukunft enthalten oder nutzt du einen anderen RL-Ansatz?
+
+Allerdings cheaten sie mit dem IDM. Es wird ein eher instabilies IDM (sehr niedriger Beschleunigungs- und Responseparameter a < 1 m/s^2) verwendet. Dies ist aus einem meiner Papers, aber da wurde das IDM an *realen* Verkehr angepasst, nicht etwa optimiert. Wuerden sie mein ACC-Modell (wurde im Paper auch zitiert) mit realistischem a=2 m/s^2 verwenden, steckt dieses ACC-Modell ihr RL-Modell wohl in allen Szenarien in die Tasche.
+
+6. Deren literature review müssen wir nicht stark aktualisieren, da wichtigste papers von RL in Verkehr haben die schon gelistet :-)
+
+Genau ;-)
+
+
+Fazit:
+
+Genuegend Neues bei uns, v.A.
+
+* die Zielfunktion
+
+* haertere Validierung, u.A. Kolonnenstabilitaet
+
+* echte Daten
+
+* ggf andere Art von RL-Modellen (kann ich nicht ueberblicken) 
