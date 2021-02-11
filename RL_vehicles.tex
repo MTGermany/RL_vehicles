@@ -7,6 +7,7 @@
 
 \usepackage{hyperref}
 \usepackage{lineno,hyperref} \modulolinenumbers[5]
+\usepackage{graphicx}
 
 \journal{Transportation Research Part C}
 
@@ -118,6 +119,30 @@ speed, maximum acceleration, and comfortable deceleration.
 \section{Model specification}
 
 \subsection{RL artitecure}
+Deep Deterministic Policy Agent
+
+NoiseOptions:    
+
+
+MeanAttractionConstant: 0.1500
+
+VarianceDecayRate: 1.0000e-05
+
+Variance: 0.2000
+
+TargetSmoothFactor: 1.0000e-03
+
+TargetUpdateFrequency: 1
+
+MiniBatchSize: 32
+
+NumStepsToLookAhead: 5
+
+ExperienceBufferLength: 100000
+
+SampleTime: 1
+
+DiscountFactor: 0.9500
 
 \subsection{Reward function}
 
@@ -137,6 +162,13 @@ parameters and statistical properties (expectation, variance, auto-correlation
 function, typical accelerations
 
 figure of realisation
+
+\begin{figure}
+	\centering
+	\includegraphics[width=12cm]{images/Training}
+	\caption{Training process}
+	\label{fig:training}
+\end{figure}
 
 \subsection{Evaluation of the reward function}
 
@@ -166,12 +198,24 @@ effecetive, and comfortable. Reference for this is the reward function
 
 many trained RL vehicles behind the AR(1) realisation
 
+\begin{figure}
+	\centering
+	\includegraphics[width=12cm]{images/AR1Kolonne}
+	\caption{}
+	\label{fig:AR1Kolonne}
+\end{figure}
+
 \subsection{Response to an external leading vehicle speed profile}
 
 [decribe profile with episodes of free driving, dynamic approaching,
   car-following, stopping, accelerating, and traffic waves]
 
-[figure with leader and several trained RL followers]
+\begin{figure}
+	\centering
+	\includegraphics[width=12cm]{images/manipulatedLeader}
+	\caption{}
+	\label{fig:manipulatedLeader}
+\end{figure}
 
 [discussion: free: desired speed; following: desired time gap; dynamic
   situations: accelerations, desired and maximum  decelerations, jerk;
@@ -185,9 +229,25 @@ comfort: maximum accelerations, decelerations, jerk;
 
 [figure with several followers]
 
+\begin{figure}
+	\centering
+	\includegraphics[width=12cm]{images/PunzoKolonne}
+	\caption{}
+	\label{fig:PunzoKolonne}
+\end{figure}
+
 [cross comparison with IDM calibrated to this set]
 2x2 table; rows: RL model and IDM;
 columns: reward function and calibration GoF (goodness-of-fit) function
+
+\subsection{Repsonse of different driver characteristics to experimental leaders }
+
+\begin{figure}
+	\centering
+	\includegraphics[width=12cm]{images/differentT}
+	\caption{}
+	\label{fig:differentT}
+\end{figure}
 
 
 \subsection{Simulation of collective phenomena}
