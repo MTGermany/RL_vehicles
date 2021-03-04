@@ -102,7 +102,7 @@ A disadvantage coming along with these approaches is, that for scenarios, which 
 
 Another issue of car-following models is string-stability. There are several studies focusing on dampening traffic oscillations by using a sequence of trained vehicles, such as \cite{qu2020jointly}, \cite{DissipatingStopAndGoWaves} and \cite{DampenStopAndGoTraffic}.
 
-All the mentioned DRL car-following models have three disadvantages in common: At first the acceleration range is limited in a way, that full-brakes are not considered. This results in models that are just designed for non-safety-critical scenarios. Second these models just consider car-following scenarios, while free driving or the transition between both is not reflected in the reward function. Third the trained models have just been validated on data that is similar to the training data set, so that the generalization capabilities cannot be proved. 
+All the mentioned DRL car-following models have three disadvantages in common: At first the acceleration range is limited in a way, that full-brakes are not considered. This results in models that are just designed for non-safety-critical scenarios. Second these models just consider car-following scenarios, while free driving or the transition between both is not reflected in the Reward Function. Third the trained models have just been validated on data that is similar to the training data set, so that the generalization capabilities cannot be proved. 
 
 This motivated us to design a model, which overcomes these issues.
 To our knowledge, no RL based car-following model has been proposed which has the following features combined:
@@ -112,7 +112,7 @@ To our knowledge, no RL based car-following model has been proposed which has th
 	\item  The proposed model considers free driving, car-following, as well as the transition between both in a way, that approaching of the leading vehicle is smooth and comfortable.
 	\item The proposed model has a wider range of possible accelerations, which leads to a collision-free behavior also in safety-critical situations such as full-braking of the Leader Vehicle.
 	\item The proposed model is trained on leading trajectories, based on an AR(1)-process, e. g. \cite{HonerkampEngl}, the parameters reflecting kinematics of real drivers. This leads to high generalization capabilities and a model usage in a broader variety of traffic scenarios. 
-	\item Different driver characteristics can be modeled by adjusting the parameters of the reward function.
+	\item Different driver characteristics can be modeled by adjusting the parameters of the Reward Function.
 	\item The proposed model shows string-stability.
 	
 \end{itemize}
@@ -131,7 +131,7 @@ in detail as follows:
 
 \subsection{Action space}
 \label{actionSpace}
-In this study, the acceleration of the Follower Vehicle is considered as the action of the RL agent. To maintain  comfortable driving and to allow full-brake in safety-critical situations the acceleration is a continuous variable between $a_{min} = -9m/s^2$ and $a_{max} = 2m/s^2$.
+In this study, the acceleration of the Follower Vehicle is considered as the action of the RL agent. To maintain  comfortable driving and to allow full-brake in safety-critical situations the acceleration is by default a continuous variable between $a_{min} = -9m/s^2$ and $a_{max} = 2m/s^2$.
 
 
 \subsection{State space}
@@ -140,13 +140,13 @@ The state space defines the observations, the Follower Vehicle can receive from 
 
 \subsection{Reward Function}
 \label{rewardFunction}
-The goal of the RL strategy is to reduce the crash risk, while maintaining comfortable driving in non-safety-critical situations. The Reward function is based on a set of parameters, that can be adjusted to realize different driver styles. $v_{des}$ is the desired velocity, that should not be exceeded. $a_{min}$ and $a_{max}$ are the minimum and maximum possible accelerations, as described in Section \ref{actionSpace}. All parameters are described in Table \ref{tab:agentParameters}.
+The goal of the RL strategy is to reduce the crash risk, while maintaining comfortable driving in non-safety-critical situations. The Reward Function is based on a set of parameters, that can be adjusted to realize different driver styles. $v_{des}$ is the desired velocity, that should not be exceeded. $a_{min}$ and $a_{max}$ are the minimum and maximum possible accelerations, as described in Section \ref{actionSpace}. All parameters are described in Table \ref{tab:agentParameters}.
 
 \begin{table}
-\caption{RL agent parameters} 
+\caption{RL agent parameters and default values} 
 \label{tab:agentParameters} 
 \begin{center}
-\begin{tabular}{ p{0.12\textwidth} p{0.65\textwidth} p{0.1\textwidth}}
+\begin{tabular}{ p{0.12\textwidth}| p{0.65\textwidth}| p{0.1\textwidth}}
 	Parameter & Description & Value \\ \hline
 	$a_{min}$ & Minimum acceleration & $-9m/s^2$ \\  
 	$a_{max}$ & Maximum acceleration & $2m/s^2$ \\  
@@ -161,7 +161,7 @@ The goal of the RL strategy is to reduce the crash risk, while maintaining comfo
 \end{table}
 
 
-The reward function consists of four parts, described as follows:
+The Reward Function consists of four parts, described as follows:
 
 
 \begin{equation}
@@ -191,12 +191,12 @@ s_{lim} = vT_{lim} + 2s_{min},
 
 and $normpdf(x,\mu,\sigma^2)$ describing a normal probability density function.
 
-The first part of the reward function aims to maintain a reasonable distance to the Leader Vehicle. Figure \ref{fig:RewardFunc1} illustrates the reward function for $r_1$, containing the parameter $s_{opt}$, $s^*$ and $s_{lim}$. The reward function is designed in a way, that for high velocities $v$ of the Follower Vehicle the time gap between Follower and Leader Vehicle tends to $T_{gap}$, while for low velocities the distance between both tends to $s_{min}$. Different values of $T_{opt}$ result in different driving styles in a way, that for higher values of $T_{opt}$ the Follower drives up closer, resulting in a more aggressive driving style. The results for different values of $T_{opt}$ can be found in Section \ref{sec:differentT}. Different functions for $ s > s^*$ has been applied, but the best results regarding a smooth and comfortable approaching of the Follower Vehicle has been reached with a linear function. Also, a high value of $T_{lim}$ results in an early deceleration and comfortable approaching. 
+The first part of the Reward Function aims to maintain a reasonable distance to the Leader Vehicle. Figure \ref{fig:RewardFunc1} illustrates the Reward Function for $r_1$, containing the parameter $s_{opt}$, $s^*$ and $s_{lim}$. The Reward Function is designed in a way, that for high velocities $v$ of the Follower Vehicle the time gap between Follower and Leader Vehicle tends to $T_{gap}$, while for low velocities the distance between both tends to $s_{min}$. Different values of $T_{opt}$ result in different driving styles in a way, that for higher values of $T_{opt}$ the Follower drives up closer, resulting in a more aggressive driving style. The results for different values of $T_{opt}$ can be found in Section \ref{sec:differentT}. Different functions for $ s > s^*$ has been applied, but the best results regarding a smooth and comfortable approaching of the Follower Vehicle has been reached with a linear function. Also, a high value of $T_{lim}$ results in an early deceleration and comfortable approaching. 
 
 \begin{figure}
 	\centering
 	\includegraphics[width=12cm]{images/RewardFunc1}
-	\caption{Reward function part 1 maximizes the reward for car following with time gap $T_{gap}$.}
+	\caption{Reward Function part 1 maximizes the reward for car following with time gap $T_{gap}$}
 	\label{fig:RewardFunc1}
 \end{figure}
 
@@ -213,14 +213,14 @@ with
 \begin{equation}
 b_{kin} = \frac{\Delta v^2}{s}
 \end{equation}
-The second part of the reward function addresses the vehicle behavior in safety-critical situations.
+The second part of the Reward Function addresses the vehicle behavior in safety-critical situations.
 For a deceleration with the delay $b_{kin}$ the braking distance is equal to the current distance $s$. Thus, the kinematic deceleration $b_{kin}$ represents the minimum deceleration necessary to avoid a collision. A situation is considered as "safety-critical", if the kinematic deceleration $b_{kin}$ is greater than the comfortable deceleration $b_{comf}$. Thus, just in safety-critical situations the RL agent is getting penalized, illustrated in figure xy.
 
 \begin{equation}
 r_3 = -\left(\dfrac{da}{dt}\right)^2
 \end{equation}
 
-The third part of the reward function aims to reduce the jerk in order to achieve a comfortable driving. 
+The third part of the Reward Function aims to reduce the jerk in order to achieve comfortable driving. 
 
 \begin{equation}
 r_4 =  
@@ -230,7 +230,7 @@ r_4 =
 \end{cases}             
 \end{equation}
 
-The fourth part of the reward function penalizes the RL agent, if the current velocity $v$ is above the desired velocity $v_{des}$. 
+The fourth part of the Reward Function penalizes the RL agent, if the current velocity $v$ is above the desired velocity $v_{des}$. 
 
 \begin{equation}
 r = 0.6r_1 + 1.1r_2 + 0.001 r_3 + r_4
@@ -239,7 +239,7 @@ r = 0.6r_1 + 1.1r_2 + 0.001 r_3 + r_4
 The weights of each reward part has been found experimentally and can further be optimized in future studies.
 
 \subsection{RL algorithm}
-In various similar control problems, the Deep Deterministic Policy Gradient (DDPG) Algorithm has been used and proven to perform well on tasks with a continuous action and state space (see xyz). In order to reduce the variance of policy gradients and increase learning speed, DDPG is an actor-critic method. The actor determines the action, while the critic judges about the quality of the action and how the policy should be adjusted. ([-> original paper DDPG])Both, actor and critic, are implemented as neural networks. In this study, both networks are feed-forward neural networks with two layers of hidden neurons and 32 neurons each hidden layer. All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
+In various similar control problems, the Deep Deterministic Policy Gradient (DDPG) Algorithm has been used and proven to perform well on tasks with a continuous action and state space, such as in \cite{SafeEfficientAndComfortable}, \cite{ComparisonRLvsMPC} or \cite{HumanLikeAutonomouCF}. The original work can be found in \cite{DDPG}. In order to reduce the variance of policy gradients and increase learning speed, DDPG is an actor-critic method. The actor determines the action, while the critic judges about the quality of the action and how the policy should be adjusted. In this study, both networks are feed-forward neural networks with two layers of hidden neurons and 32 neurons each hidden layer. All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
 
 \begin{table}
 	\caption{DDPG parameter values} 
@@ -263,7 +263,7 @@ In various similar control problems, the Deep Deterministic Policy Gradient (DDP
 \end{table}
 
 
-\subsection{Reward function}
+\subsection{Reward Function}
 
 learning input (leader speed time series)
 
@@ -418,7 +418,7 @@ In a further scenario, the abilities of the RL strategy are evaluated with a rea
 \subsection{Response of different driver characteristics}
 \label{sec:differentT}
 
-As mentioned in Section \ref{rewardFunction}, different driving styles can be achieved by adjusting the parameters of the reward function. Three RL agents has been trained on a reward function, that differs in the desired time gap $T_{gap}$ between Follower and Leader Vehicle ($T_{gap,1} = 1.0s$, $T_{gap,2} = 1.5s$, $T_{gap,3} = 2.0s$). Figure \ref{fig:differentT} shows the result of these agents, following the real leader trajectory from Napoli. It can be observed, that a lower value for $T_{gap}$ results in closer driving to the Leader, higher accelerations and decelerations and thus in a more aggressive driving behavior. 
+As mentioned in Section \ref{rewardFunction}, different driving styles can be achieved by adjusting the parameters of the Reward Function. Three RL agents has been trained on a Reward Function, that differs in the desired time gap $T_{gap}$ between Follower and Leader Vehicle ($T_{gap,1} = 1.0s$, $T_{gap,2} = 1.5s$, $T_{gap,3} = 2.0s$). Figure \ref{fig:differentT} shows the result of these agents, following the real leader trajectory from Napoli. It can be observed, that a lower value for $T_{gap}$ results in closer driving to the Leader, higher accelerations and decelerations and thus in a more aggressive driving behavior. 
 
 \begin{figure}
 	\centering
@@ -428,7 +428,7 @@ As mentioned in Section \ref{rewardFunction}, different driving styles can be ac
 \end{figure}
 
 
-\subsection{Comparison with the Intelligent Driver Model}
+\subsection{Cross validation with the Intelligent Driver Model}
 To compare the performance of the trained RL agent with a classical car-following model, the RL agent and an IDM are calibrated on the same set of parameters. These parameters are obtained from one and the same follower from the Napoli data set (reference) and can be found in Table \ref{tab:IDMparameters}. The IDM is formulated as 
 
 \begin{equation}
@@ -441,7 +441,6 @@ s^{*}\left(v, \Delta v\right)=s_{min}+vT_{gap}+\frac{v \Delta v}{2 \sqrt{a_{max}
 \begin{equation}
 \Delta v = v-v_l
 \end{equation}
-
 
 \begin{table}
 	\caption{Parameters obtained from experimental data and used to calibrate the RL agent and the IDM} 
@@ -459,20 +458,32 @@ s^{*}\left(v, \Delta v\right)=s_{min}+vT_{gap}+\frac{v \Delta v}{2 \sqrt{a_{max}
 	\end{center}
 \end{table}
 
+Figure \ref{fig:IDMvsRL} shows the results for: First, the RL agent, calibrated on the real follower data. Second, the IDM, calibrated on the follower data. And third, the real follower of the Napoli experiment. To evaluate the performance, for both approaches the respective objective function has been computed. The objective function of the RL agent correspondences to the Reward Function, while the Goodness-of-Fit Function $SSE(s)$ defines the objective function of the IDM. A comparison between RL agent and IDM for both, the Reward Function and the Goodness-of-Fit Function, is shown in Table \ref{tab:objectiveFunc}. For both objectives the RL agent shows a better performance.
 
 \begin{figure}
+	
 	\centering
 	\includegraphics[width=0.95\textwidth]{images/IDMvsRL_dist}
 	\caption{Comparison between IDM and RL agent, calibrated on the same set of parameters}
 	\label{fig:IDMvsRL}
 \end{figure}
 
+\begin{table}
+	\caption{Comparison between calibrated RL agent and IDM for accumulated Reward and Goodness-of-Fit Function $SSE(log(s))$} 
+	\label{tab:objectiveFunc} 
+	\begin{center}
+		\begin{tabular}{p{0.3\textwidth} | p{0.2\textwidth} p{0.2\textwidth}  } 
+			& RL agent & IDM   \\ \hline
+			$SSE(log(s))$ & $389.10$ &  $418.05$	\\
+			Accumulated Reward &  $8.23 \times 10^3$   & $8.08\times 10^3$
+			
+		\end{tabular}
+	\end{center}
+\end{table}
 
 
 \section{Conclusion/Discussion}
 evaluation of safety and comfort, comparison to IDM
-
-discussion: adjusting parameters of the reward function to achieve different driving styles
 
 
 
