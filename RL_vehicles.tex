@@ -150,7 +150,7 @@ The goal of the RL strategy is to reduce the crash risk, while maintaining comfo
 	Parameter & Description & Value \\ \hline
 	$a_{min}$ & Minimum acceleration & $-9m/s^2$ \\  
 	$a_{max}$ & Maximum acceleration & $2m/s^2$ \\  
-	$b_{comf}$ & Comfortable deceleration & $-2m/s^2$ \\  
+	$b_{comf}$ & Comfortable deceleration & $2m/s^2$ \\  
 	$v_{des}$ & Desired velocity & $16.6 m/s$ \\  		
 	$T_{gap}$ & Desired time gap to Leader & $1.5s$ \\
 	$s_{min}$ & Desired minimum distance to Leader & $2m$ \\
@@ -211,7 +211,10 @@ r_2 =
 
 with
 \begin{equation}
-b_{kin} = \frac{\Delta v^2}{s}
+b_{kin}=
+\begin{cases} \frac{\Delta v^2}{s},& \text{if } \Delta v >0\\
+0,              & \text{otherwise}
+\end{cases}
 \end{equation}
 The second part of the Reward Function addresses the vehicle behavior in safety-critical situations.
 For a deceleration with the delay $b_{kin}$ the braking distance is equal to the current distance $s$. Thus, the kinematic deceleration $b_{kin}$ represents the minimum deceleration necessary to avoid a collision. A situation is considered as "safety-critical", if the kinematic deceleration $b_{kin}$ is greater than the comfortable deceleration $b_{comf}$. Thus, just in safety-critical situations the RL agent is getting penalized, illustrated in figure xy.
@@ -366,7 +369,7 @@ effective, and comfortable. The RL strategy is evaluated with respect to these m
 
 \subsection{Response to an external leading vehicle speed profile}
 The first scenario is designed in order to evaluate the transition between free driving and car-following as well as the Follower behavior in safety-critical situations. 
-Figure \ref{fig:manipulatedLeader} shows a driving scenario with an external Leading Vehicle speed profile. The initial gap between Follower and Leader is 200 meters, which refers to a free driving scenario. The Follower accelerates with $a_{max} = 2m/s^2$ until the desired speed $v_{des} = 16.6m/s$ is reached and approaches the standing Leader Vehicle. When the gap between both drops below 90 meters, the Follower starts to decelerate with a approximately $b_{comf} = -2m/s^2$ (transition between free driving and car-following) and comes to a standstill with a final gap of approximately $s_{min} = 2m$. In the following the Leader Vehicle makes some random acceleration and deceleration. At the time $t = 40s$ the Leading Vehicle makes a full brake, resulting in a comfortable and safe braking of the Follower Vehicle. The transition between different accelerations happens in a comfortable way, reducing the resulting jerk. 
+Figure \ref{fig:manipulatedLeader} shows a driving scenario with an external Leading Vehicle speed profile. The initial gap between Follower and Leader is 200 meters, which refers to a free driving scenario. The Follower accelerates with $a_{max} = 2m/s^2$ until the desired speed $v_{des} = 16.6m/s$ is reached and approaches the standing Leader Vehicle. When the gap between both drops below 90 meters, the Follower starts to decelerate with a approximately $b_{comf} = 2m/s^2$ (transition between free driving and car-following) and comes to a standstill with a final gap of approximately $s_{min} = 2m$. In the following the Leader Vehicle makes some random acceleration and deceleration. At the time $t = 40s$ the Leading Vehicle makes a full brake, resulting in a comfortable and safe braking of the Follower Vehicle. The transition between different accelerations happens in a comfortable way, reducing the resulting jerk. 
 
 
 
