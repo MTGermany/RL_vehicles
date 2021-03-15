@@ -9,6 +9,16 @@
 \usepackage{lineno,hyperref} \modulolinenumbers[5]
 \usepackage{graphicx}
 \usepackage{mathtools}
+\usepackage{units}
+
+\providecommand{\red}[1]{\textcolor{red}{#1}}
+\providecommand{\blue}[1]{\textcolor{blue}{#1}}
+\providecommand{\green}[1]{\textcolor{green}{#1}}
+
+\usepackage{color}
+\providecommand{\martin}[1]{\red{#1}} %Preprint
+%\providecommand{\martin}[1]{}                  %fuer Veroeffentlichung
+
 
 \journal{Transportation Research Part C}
 
@@ -102,7 +112,7 @@ A disadvantage coming along with these approaches is, that for scenarios, which 
 
 Another issue of car-following models is string-stability. There are several studies focusing on dampening traffic oscillations by using a sequence of trained vehicles, such as \cite{qu2020jointly}, \cite{DissipatingStopAndGoWaves} and \cite{DampenStopAndGoTraffic}.
 
-All the mentioned DRL car-following models have three disadvantages in common: At first the acceleration range is limited in a way, that full-brakes are not considered. This results in models that are just designed for non-safety-critical scenarios. Second these models just consider car-following scenarios, while free driving or the transition between both is not reflected in the Reward Function. Third the trained models have just been validated on data that is similar to the training data set, so that the generalization capabilities cannot be proved. 
+All the mentioned DRL car-following models have three disadvantages in common: At first the acceleration range is limited in a way, that full-brakes are not considered. This results in models that are just designed for non-safety-critical scenarios. Second these models just consider car-following scenarios, while free driving or the transition between both is not reflected in the reward function. Third the trained models have just been validated on data that is similar to the training data set, so that the generalization capabilities cannot be proved. 
 
 This motivated us to design a model, which overcomes these issues.
 To our knowledge, no RL based car-following model has been proposed which has the following features combined:
@@ -112,7 +122,7 @@ To our knowledge, no RL based car-following model has been proposed which has th
 	\item  The proposed model considers free driving, car-following, as well as the transition between both in a way, that approaching of the leading vehicle is smooth and comfortable.
 	\item The proposed model has a wider range of possible accelerations, which leads to a collision-free behavior also in safety-critical situations such as full-braking of the Leader Vehicle.
 	\item The proposed model is trained on leading trajectories, based on an AR(1)-process, e. g. \cite{HonerkampEngl}, the parameters reflecting kinematics of real drivers. This leads to high generalization capabilities and a model usage in a broader variety of traffic scenarios. 
-	\item Different driver characteristics can be modeled by adjusting the parameters of the Reward Function.
+	\item Different driver characteristics can be modeled by adjusting the parameters of the reward function.
 	\item The proposed model shows string-stability.
 	
 \end{itemize}
@@ -125,22 +135,57 @@ In a further experiment the proposed model is compared to an Intelligent Driver 
 [short textual enumeration of the sections to come]
 
 \section{Model specification}
-The Follower Vehicle is designed to be controlled by a Reinforcement Learning (RL) agent. By interaction with an environment, the RL agent optimizes a sequential decision making problem. At each time step $t$ the agent observes an environment state $s_t$ , and based on that state selects an action $a_t$. After conducting action $a_t$, the RL agent receives a reward $r(a_t,s_t)$. The agent aims to learn an optimal state-action mapping policy $\pi$ that maximizes the expected accumulated discounted reward $r_{t}=\sum_{k=0}^{\infty} \gamma^{k} r_{t+k}$, with $\gamma = (0,1]$ describing the discount factor. The crucial elements
-of the Reinforcement Learning based control strategy are described
+The \martin{following vehicle} \martin{[only named things are written
+    in uppercase; special concepts/definitions such as Reinforcement Learning
+    can be written both upper and lowercase; abbreviation always
+    uppercase (RL); the
+    ``reward function'' is generic, hence lowercase]} is controlled by a Reinforcement
+Learning (RL) agent. By interaction with an environment, the RL agent
+optimizes a sequential decision making problem. At each time step
+$t$\martin{, [always comma before the main clause starts]} the agent observes an environment state $s_t$ and, based on that state, selects an action $a_t$. After conducting action $a_t$, the RL agent receives a reward $r(a_t,s_t)$. The agent aims to learn an optimal state-action mapping policy $\pi$ that maximizes the expected accumulated discounted reward $r_{t}=\sum_{k=0}^{\infty} \gamma^{k} r_{t+k}$, with $\gamma = (0,1]$ describing the discount factor. The crucial elements
+of the RL-based \martin{[use your abbreviation]} control strategy are described
 in detail as follows:
 
 \subsection{Action space}
 \label{actionSpace}
-In this study, the acceleration of the Follower Vehicle is considered as the action of the RL agent. To maintain  comfortable driving and to allow full-brake in safety-critical situations the acceleration is by default a continuous variable between $a_{min} = -9m/s^2$ and $a_{max} = 2m/s^2$.
+In this study, the acceleration of the following vehicle is considered
+as the action of the RL agent. To enable comfortable driving and
+\martin{allow for a maximum braking deceleration} in safety-critical
+situations, the acceleration \martin{is a continuous variable in the
+  range} between $a_{\rm min} = \unit[-9]{m/s^2}$ and 
+$a_{\rm max} =\unit[2]{m/s^2}$.\martin{[In contrast to variables or symbolic
+    constants which are set in italic, units are set in roman
+    (upright) font. If super- or subscripts are variables, they are
+    set italic. If they are abbreviations (e.g., min, max) they are set
+    upright. Multi-letter standard function names such as $\sin$,
+    $\tan$, $\cosh$ or $\exp$ are written upright (use
+    \texttt{\$\textbackslash sin\$} etc)]}
 
 
 \subsection{State space}
-The state space defines the observations, the Follower Vehicle can receive from the environment. To compute an optimal acceleration, the Follower Vehicle observes its own acceleration $a$, its own velocity $v$, the difference velocity $\Delta v$ and the spatial distance to the Leading Vehicle $s$. These observations are normalized to the range $[-1,1]$.
+The state space defines the observations \martin{that} the following
+vehicle can receive from the environment. To compute an optimal
+acceleration, the following vehicle observes its own acceleration $a$,
+its own \martin{speed [velocity=vector, speed=abs(velocity)=scalar]}
+$v$, the \martin{relative speed $\Delta v=v_l-v$ where $v_l$ denotes
+  the speed of the leading vehicle [crucial since both definitions
+    $v_l-v$ or $v-v_l$ are common]} and the \martin{(bumper-to-bumper)
+  gap $s$ to the leader [again, some use the space headway (including
+    the leading vehicle length), and some the gap]}. These
+observations are normalized to the range $[-1,1]$. \martin{[How? If it
+    is just linear translation and scaling, you need min and max
+    values of the state variables. How to determine them?]}
 
 
 \subsection{Reward Function}
 \label{rewardFunction}
-The goal of the RL strategy is to reduce the crash risk, while maintaining comfortable driving in non-safety-critical situations. The Reward Function is based on a set of parameters, that can be adjusted to realize different driver styles. $v_{des}$ is the desired velocity, that should not be exceeded. $a_{min}$ and $a_{max}$ are the minimum and maximum possible accelerations, as described in Section \ref{actionSpace}. All parameters are described in Table \ref{tab:agentParameters}.
+The goal of the RL strategy is to reduce the crash risk, while
+maintaining comfortable driving in non-safety-critical situations
+\martin{and minimizing the travel time [without that, creeping which
+    is safe and comfortable would be the optimum strategy]}. The
+\martin{r}eward function includes a set of parameters that can be
+adjusted to realize different \martin{driving} styles. $v_{\rm des}$
+is the desired velocity that should not be exceeded. $a_{\rm min}$ and $a_{\rm max}$ are the minimum and maximum possible accelerations, as described in Section \ref{actionSpace}. All parameters are described in Table \ref{tab:agentParameters}.
 
 \begin{table}
 \caption{RL agent parameters and default values} 
@@ -148,55 +193,59 @@ The goal of the RL strategy is to reduce the crash risk, while maintaining comfo
 \begin{center}
 \begin{tabular}{ p{0.12\textwidth}| p{0.65\textwidth}| p{0.1\textwidth}}
 	Parameter & Description & Value \\ \hline
-	$a_{min}$ & Minimum acceleration & $-9m/s^2$ \\  
-	$a_{max}$ & Maximum acceleration & $2m/s^2$ \\  
-	$b_{comf}$ & Comfortable deceleration & $2m/s^2$ \\  
-	$v_{des}$ & Desired velocity & $16.6 m/s$ \\  		
-	$T_{gap}$ & Desired time gap to Leader & $1.5s$ \\
-	$s_{min}$ & Desired minimum distance to Leader & $2m$ \\
-	$T_{var}$ & Time gap to describe the variance of the normal probability function (see Equation \ref{eq:r1} - \ref{eq:r13}) & $0.7s$ \\
-	$T_{lim}$ & Upper time gap limit for zero reward (see Equation \ref{eq:r1} - \ref{eq:r13}) & $15s$ 
+	$a_{\rm min}$ & Minimum acceleration & $-9m/s^2$ \\  
+	$a_{\rm max}$ & Maximum acceleration & $2m/s^2$ \\  
+	$b_{\rm comf}$ & Comfortable deceleration & $-2m/s^2$ \\  
+	$v_{\rm des}$ & Desired velocity & $16.6 m/s$ \\  		
+	$T_{\rm gap}$ & Desired time gap to Leader & $1.5s$ \\
+	$s_{\rm min}$ & Desired minimum space gap to Leader & $2m$ \\
+	$T_{\rm var}$ & Time gap to describe the variance of the normal probability function (see Equation \ref{eq:r1} - \ref{eq:r13}) & $0.7s$ \\
+	$T_{\rm lim}$ & Upper time gap limit for zero reward (see Equation \ref{eq:r1} - \ref{eq:r13}) & $15s$ 
 \end{tabular}
 \end{center}
 \end{table}
 
 
-The Reward Function consists of four parts, described as follows:
-
+The reward function consists of four parts, described as follows:
+\martin{[The standard normal distribution has the symbol $\Phi(.)$ and
+    its density $\phi(.)$ or $\varphi(.)$; I prefer $\varphi$ since, then,
+    the optical difference to the CDF $\Phi$ is greater]}
 
 \begin{equation}
 \label{eq:r1}
 r_1  = 
 \begin{cases}
-\frac{normpdf(s,  s_{opt},  s_{var})}{normpdf( s_{opt},  s_{opt},  s_{var})},& \text{if } s < s^*\\
-\frac{normpdf(s^*,  s_{opt},  s_{var})}{normpdf( s_{opt},  s_{opt},  s_{var})} (1-\frac{s-s^*}{s_{lim} - s^*})              & \text{otherwise}
+\frac{\varphi(s,  s_{\rm opt},  s_{\rm var})}{\varphi( s_{\rm opt},  s_{\rm opt},  s_{\rm var})},& \text{if } s < s^*\\
+\frac{\varphi(s^*,  s_{\rm opt},  s_{\rm var})}{\varphi( s_{\rm opt},  s_{\rm opt},  s_{\rm var})} \left(1-\frac{s-s^*}{s_{\rm lim} - s^*}\right)              & \text{otherwise}
 \end{cases}
 \end{equation}
-
-
-
+\martin{[Use \texttt{\textbackslash left( ... \textbackslash right)}
+    to make ``bigger'' parentheses, brackets, braces around fractions
+    or super- and subscript quantities]}
 with
 \begin{equation}
 \label{eq:r11}
-s_{opt} = vT_{gap} + s_{min},
+s_{\rm opt} = vT_{\rm gap} + s_{\rm min},
 \end{equation}
 \begin{equation}
 \label{eq:r12}
-s_{var} = vT_{var} + 0.5s_{min},
+s_{\rm var} = vT_{\rm var} + 0.5s_{\rm min},
 \end{equation}
 \begin{equation}
 \label{eq:r13}
-s_{lim} = vT_{lim} + 2s_{min},
+s_{\rm lim} = vT_{\rm lim} + 2s_{\rm min},
 \end{equation}
+%
+and $\varphi(x,\mu,\sigma^2)$ describing a normal probability density
+function. \martin{[No empty line if no new paragraph; otherwise, you get an
+  indent that looks strange] [$s^*$ is not defined]}.
 
-and $normpdf(x,\mu,\sigma^2)$ describing a normal probability density function.
-
-The first part of the Reward Function aims to maintain a reasonable distance to the Leader Vehicle. Figure \ref{fig:RewardFunc1} illustrates the Reward Function for $r_1$, containing the parameter $s_{opt}$, $s^*$ and $s_{lim}$. The Reward Function is designed in a way, that for high velocities $v$ of the Follower Vehicle the time gap between Follower and Leader Vehicle tends to $T_{gap}$, while for low velocities the distance between both tends to $s_{min}$. Different values of $T_{opt}$ result in different driving styles in a way, that for higher values of $T_{opt}$ the Follower drives up closer, resulting in a more aggressive driving style. The results for different values of $T_{opt}$ can be found in Section \ref{sec:differentT}. Different functions for $ s > s^*$ has been applied, but the best results regarding a smooth and comfortable approaching of the Follower Vehicle has been reached with a linear function. Also, a high value of $T_{lim}$ results in an early deceleration and comfortable approaching. 
+The first part of the reward function aims to maintain a reasonable distance to the Leader Vehicle. Figure \ref{fig:RewardFunc1} illustrates the reward function for $r_1$, containing the parameter $s_{\rm opt}$, $s^*$ and $s_{\rm lim}$. The reward function is designed in a way, that for high velocities $v$ of the following vehicle the time gap between Follower and Leader Vehicle tends to $T_{\rm gap}$, while for low velocities the distance between both tends to $s_{\rm min}$. Different values of $T_{\rm opt}$ result in different driving styles in a way, that for higher values of $T_{\rm opt}$ the Follower drives up closer, resulting in a more aggressive driving style. The results for different values of $T_{\rm opt}$ can be found in Section \ref{sec:differentT}. Different functions for $ s > s^*$ has been applied, but the best results regarding a smooth and comfortable approaching of the following vehicle has been reached with a linear function. Also, a high value of $T_{\rm lim}$ results in an early deceleration and comfortable approaching. 
 
 \begin{figure}
 	\centering
 	\includegraphics[width=12cm]{images/RewardFunc1}
-	\caption{Reward Function part 1 maximizes the reward for car following with time gap $T_{gap}$}
+	\caption{Reward function part 1 maximizes the reward for car following with time gap $T_{\rm gap}$}
 	\label{fig:RewardFunc1}
 \end{figure}
 
@@ -204,36 +253,33 @@ The first part of the Reward Function aims to maintain a reasonable distance to 
 \begin{equation}
 r_2 = 
 \begin{cases}
-\tanh\left(\frac{b_{kin}-b_{comf}}{a_{min}}\right),& \text{if } b_{kin}>b_{comf}\\
+\tanh\left(\frac{b_{kin}-b_{\rm comf}}{a_{\rm min}}\right),& \text{if } b_{kin}>b_{\rm comf}\\
 0,              & \text{otherwise}
 \end{cases}
 \end{equation}
 
 with
 \begin{equation}
-b_{kin}=
-\begin{cases} \frac{\Delta v^2}{s},& \text{if } \Delta v >0\\
-0,              & \text{otherwise}
-\end{cases}
+b_{kin} = \frac{\Delta v^2}{s}
 \end{equation}
-The second part of the Reward Function addresses the vehicle behavior in safety-critical situations.
-For a deceleration with the delay $b_{kin}$ the braking distance is equal to the current distance $s$. Thus, the kinematic deceleration $b_{kin}$ represents the minimum deceleration necessary to avoid a collision. A situation is considered as "safety-critical", if the kinematic deceleration $b_{kin}$ is greater than the comfortable deceleration $b_{comf}$. Thus, just in safety-critical situations the RL agent is getting penalized, illustrated in figure xy.
+The second part of the reward function addresses the vehicle behavior in safety-critical situations.
+For a deceleration with the delay $b_{kin}$ the braking distance is equal to the current distance $s$. Thus, the kinematic deceleration $b_{kin}$ represents the minimum deceleration necessary to avoid a collision. A situation is considered as "safety-critical", if the kinematic deceleration $b_{kin}$ is greater than the comfortable deceleration $b_{\rm comf}$. Thus, just in safety-critical situations the RL agent is getting penalized, illustrated in figure xy.
 
 \begin{equation}
 r_3 = -\left(\dfrac{da}{dt}\right)^2
 \end{equation}
 
-The third part of the Reward Function aims to reduce the jerk in order to achieve comfortable driving. 
+The third part of the reward function aims to reduce the jerk in order to achieve comfortable driving. 
 
 \begin{equation}
 r_4 =  
 \begin{cases} 
- -min\left(1,\left( v - v_{des}\right)^2\right), & \text{if } v>v_{des}\\
+ -min\left(1,\left( v - v_{\rm des}\right)^2\right), & \text{if } v>v_{\rm des}\\
 0, & \text{otherwise}
 \end{cases}             
 \end{equation}
 
-The fourth part of the Reward Function penalizes the RL agent, if the current velocity $v$ is above the desired velocity $v_{des}$. 
+The fourth part of the reward function penalizes the RL agent, if the current velocity $v$ is above the desired velocity $v_{\rm des}$. 
 
 \begin{equation}
 r = 0.6r_1 + 1.1r_2 + 0.001 r_3 + r_4
@@ -355,7 +401,7 @@ Figure \ref{fig:AR1process} shows an example trajectory of the leading vehicle b
 
 \subsection{Training episode definition}
 
-To train the RL agent, a training episode has to be defined. One episode has a simulation time of $50s$ with a step size of $d=100ms$, resulting in a episode length of $500$ steps. The initial velocities of Follower and Leader Vehicle is a randomly set in the range $[0,v_{des}]$ respectively  $[0,v_{l,des}]$. The initial gap between both is set to $120m$. 
+To train the RL agent, a training episode has to be defined. One episode has a simulation time of $50s$ with a step size of $d=100ms$, resulting in a episode length of $500$ steps. The initial velocities of Follower and Leader Vehicle is a randomly set in the range $[0,v_{\rm des}]$ respectively  $[0,v_{l,des}]$. The initial gap between both is set to $120m$. 
 
 \subsection{Results of the RL training process}
 
@@ -369,7 +415,7 @@ effective, and comfortable. The RL strategy is evaluated with respect to these m
 
 \subsection{Response to an external leading vehicle speed profile}
 The first scenario is designed in order to evaluate the transition between free driving and car-following as well as the Follower behavior in safety-critical situations. 
-Figure \ref{fig:manipulatedLeader} shows a driving scenario with an external Leading Vehicle speed profile. The initial gap between Follower and Leader is 200 meters, which refers to a free driving scenario. The Follower accelerates with $a_{max} = 2m/s^2$ until the desired speed $v_{des} = 16.6m/s$ is reached and approaches the standing Leader Vehicle. When the gap between both drops below 90 meters, the Follower starts to decelerate with a approximately $b_{comf} = 2m/s^2$ (transition between free driving and car-following) and comes to a standstill with a final gap of approximately $s_{min} = 2m$. In the following the Leader Vehicle makes some random acceleration and deceleration. At the time $t = 40s$ the Leading Vehicle makes a full brake, resulting in a comfortable and safe braking of the Follower Vehicle. The transition between different accelerations happens in a comfortable way, reducing the resulting jerk. 
+Figure \ref{fig:manipulatedLeader} shows a driving scenario with an external Leading Vehicle speed profile. The initial gap between Follower and Leader is 200 meters, which refers to a free driving scenario. The Follower accelerates with $a_{\rm max} = 2m/s^2$ until the desired speed $v_{\rm des} = 16.6m/s$ is reached and approaches the standing Leader Vehicle. When the gap between both drops below 90 meters, the Follower starts to decelerate with a approximately $b_{\rm comf} = -2m/s^2$ (transition between free driving and car-following) and comes to a standstill with a final gap of approximately $s_{\rm min} = 2m$. In the following the Leader Vehicle makes some random acceleration and deceleration. At the time $t = 40s$ the Leading Vehicle makes a full brake, resulting in a comfortable and safe braking of the following vehicle. The transition between different accelerations happens in a comfortable way, reducing the resulting jerk. 
 
 
 
@@ -407,7 +453,7 @@ The second scenario, shown in Figure \ref{fig:AR1Kolonne}, consists of a Leader 
 
 \subsection{Response to a real leader trajectory}
 
-In a further scenario, the abilities of the RL strategy are evaluated with a real leader trajectory. This trajectory comes from experiments in Napoli, where exact data from Leader and Follower were obtained (reference to Punzo et al.). Figure \ref{fig:PunzoKolonne} shows the result of a sequence of five vehicles following a real leader trajectory. Similar to the experiment from Section \ref{sec:stringStability} string stability and the reduction of acceleration variance, shown by the red bars in Figure \ref{fig:VarAccComp}, is demonstrated. At time $t = 140s$ the Leader stands still, and it can be observed, that all following vehicles are keeping the minimum distance $s_{min}$ to the Leader. 
+In a further scenario, the abilities of the RL strategy are evaluated with a real leader trajectory. This trajectory comes from experiments in Napoli, where exact data from Leader and Follower were obtained (reference to Punzo et al.). Figure \ref{fig:PunzoKolonne} shows the result of a sequence of five vehicles following a real leader trajectory. Similar to the experiment from Section \ref{sec:stringStability} string stability and the reduction of acceleration variance, shown by the red bars in Figure \ref{fig:VarAccComp}, is demonstrated. At time $t = 140s$ the Leader stands still, and it can be observed, that all following vehicles are keeping the minimum distance $s_{\rm min}$ to the Leader. 
 
 
 \begin{figure}
@@ -421,7 +467,7 @@ In a further scenario, the abilities of the RL strategy are evaluated with a rea
 \subsection{Response of different driver characteristics}
 \label{sec:differentT}
 
-As mentioned in Section \ref{rewardFunction}, different driving styles can be achieved by adjusting the parameters of the Reward Function. Three RL agents has been trained on a Reward Function, that differs in the desired time gap $T_{gap}$ between Follower and Leader Vehicle ($T_{gap,1} = 1.0s$, $T_{gap,2} = 1.5s$, $T_{gap,3} = 2.0s$). Figure \ref{fig:differentT} shows the result of these agents, following the real leader trajectory from Napoli. It can be observed, that a lower value for $T_{gap}$ results in closer driving to the Leader, higher accelerations and decelerations and thus in a more aggressive driving behavior. 
+As mentioned in Section \ref{rewardFunction}, different driving styles can be achieved by adjusting the parameters of the reward function. Three RL agents has been trained on a reward function, that differs in the desired time gap $T_{\rm gap}$ between Follower and Leader Vehicle ($T_{gap,1} = 1.0s$, $T_{gap,2} = 1.5s$, $T_{gap,3} = 2.0s$). Figure \ref{fig:differentT} shows the result of these agents, following the real leader trajectory from Napoli. It can be observed, that a lower value for $T_{\rm gap}$ results in closer driving to the Leader, higher accelerations and decelerations and thus in a more aggressive driving behavior. 
 
 \begin{figure}
 	\centering
@@ -435,11 +481,11 @@ As mentioned in Section \ref{rewardFunction}, different driving styles can be ac
 To compare the performance of the trained RL agent with a classical car-following model, the RL agent and an IDM are calibrated on the same set of parameters. These parameters are obtained from one and the same follower from the Napoli data set (reference) and can be found in Table \ref{tab:IDMparameters}. The IDM is formulated as 
 
 \begin{equation}
-a=a_{max}\left(1-\left(\frac{v}{v_{des}}\right)^{4}-\left(\frac{s^{*}\left(v, \Delta v\right)}{s}\right)^{2}\right),
+a=a_{\rm max}\left(1-\left(\frac{v}{v_{\rm des}}\right)^{4}-\left(\frac{s^{*}\left(v, \Delta v\right)}{s}\right)^{2}\right),
 \end{equation}
 with
 \begin{equation}
-s^{*}\left(v, \Delta v\right)=s_{min}+vT_{gap}+\frac{v \Delta v}{2 \sqrt{a_{max} b_{comf}}},
+s^{*}\left(v, \Delta v\right)=s_{\rm min}+vT_{\rm gap}+\frac{v \Delta v}{2 \sqrt{a_{\rm max} b_{\rm comf}}},
 \end{equation}
 \begin{equation}
 \Delta v = v-v_l
@@ -451,17 +497,17 @@ s^{*}\left(v, \Delta v\right)=s_{min}+vT_{gap}+\frac{v \Delta v}{2 \sqrt{a_{max}
 	\begin{center}
 		\begin{tabular}{ p{0.14\textwidth} |p{0.1\textwidth}  } 
 		Parameter & Value   \\ \hline
-			$T_{gap}$ & $0.83s$\\
-			$s_{min}$ & $4.90m$\\
-			$a_{max}$ & $4.32m/s^2$\\
-			$b_{comf}$ & $2.34 m/s^2$\\
-			$v_{des}$ & $33.73m/s$
+			$T_{\rm gap}$ & $0.83s$\\
+			$s_{\rm min}$ & $4.90m$\\
+			$a_{\rm max}$ & $4.32m/s^2$\\
+			$b_{\rm comf}$ & $2.34 m/s^2$\\
+			$v_{\rm des}$ & $33.73m/s$
 			
 		\end{tabular}
 	\end{center}
 \end{table}
 
-Figure \ref{fig:IDMvsRL} shows the results for: First, the RL agent, calibrated on the real follower data. Second, the IDM, calibrated on the follower data. And third, the real follower of the Napoli experiment. To evaluate the performance, for both approaches the respective objective function has been computed. The objective function of the RL agent correspondences to the Reward Function, while the Goodness-of-Fit Function $SSE(s)$ defines the objective function of the IDM. A comparison between RL agent and IDM for both, the Reward Function and the Goodness-of-Fit Function, is shown in Table \ref{tab:objectiveFunc}. For both objectives the RL agent shows a better performance.
+Figure \ref{fig:IDMvsRL} shows the results for: First, the RL agent, calibrated on the real follower data. Second, the IDM, calibrated on the follower data. And third, the real follower of the Napoli experiment. To evaluate the performance, for both approaches the respective objective function has been computed. The objective function of the RL agent correspondences to the reward function, while the Goodness-of-Fit Function $SSE(s)$ defines the objective function of the IDM. A comparison between RL agent and IDM for both, the reward function and the Goodness-of-Fit Function, is shown in Table \ref{tab:objectiveFunc}. For both objectives the RL agent shows a better performance.
 
 \begin{figure}
 	
