@@ -10,6 +10,10 @@
 \usepackage{graphicx}
 \usepackage{mathtools}
 \usepackage{units}
+\usepackage{physics} % normal derivative v=dv{x}{t},
+                     % partial derivative pdv{V(x,t)}{t}
+                     % n'th normal derivative a=dv[2]{x}{t}
+
 
 \usepackage{color}
 \providecommand{\red}[1]{\textcolor{red}{#1}}
@@ -17,12 +21,17 @@
 \definecolor{green}{rgb}{0,0.7,0}
 \providecommand{\green}[1]{\textcolor{green}{#1}}
 
+% local macros
+
 \providecommand{\martin}[1]{\red{#1}} %literal, Preprint
 \providecommand{\martinc}[1]{\green{[#1]}} %comment, Preprint
 %\providecommand{\martin}[1]{#1}                  %fuer Veroeffentlichung
 %\providecommand{\martinc}[1]{#1}                  %fuer Veroeffentlichung
-\providecommand{\sub}[1]{_{\text{{\scriptsize \hspace{-0.0ex}#1}}}}
-\renewcommand{\sup}[1]{^{\text{{\scriptsize \hspace{-0.0ex}#1}}}}
+
+\providecommand{\sup}[1]{^{\mathrm{#1}}}  % upright superscript
+\providecommand{\sub}[1]{_{\mathrm{#1}}}  % upright subscript $b\sub{comf}$
+                                        % symbolic subscripts without:
+                                        % $\epsilon_t$
 \providecommand{\3}{{\ss}}
 
 \journal{Transportation Research Part C}
@@ -186,7 +195,7 @@ $a_{\rm max} =\unit[2]{m/s^2}$.\martinc{In contrast to variables or symbolic
 The state space defines the observations \martin{that} the following
 vehicle can receive from the environment. To compute an optimal
 acceleration, the following vehicle observes its own acceleration $a$,
-its own \martin{speed}\martinc{ [velocity=vector, speed=abs(velocity)=scalar}
+its own \martin{speed}\martinc{velocity=vector, speed=abs(velocity)=scalar}
 $v$, the \martin{relative speed $\Delta v=v_l-v$ where $v_l$ denotes
   the speed of the leading vehicle} \martinc{crucial since both definitions
     $v_l-v$ or $v-v_l$ are common} and the \martin{(bumper-to-bumper)
@@ -205,22 +214,32 @@ maintaining comfortable driving in non-safety-critical situations
     is safe and comfortable would be the optimum strategy}. The
 \martin{r}eward function includes a set of parameters that can be
 adjusted to realize different \martin{driving} styles. $v_{\rm des}$
-is the desired velocity that should not be exceeded. $a_{\rm min}$ and $a_{\rm max}$ are the minimum and maximum possible accelerations, as described in Section \ref{actionSpace}. All parameters are described in Table \ref{tab:agentParameters}.
+is the desired speed that should not be exceeded. $a_{\rm min}$ and
+$a_{\rm max}$ are the minimum and maximum possible accelerations, as
+described in Section \ref{actionSpace}. All parameters are described
+in Table \ref{tab:agentParameters}.
+\martin{Ich habe die simultan
+  verwendeten bezeichnungen $T$ und $T\sub{opt}$ in $T$
+  umbenannt.} 
 
 \begin{table}
-\caption{RL agent parameters and default values} 
+\caption{RL agent parameters and default values \martinc{check the weights!}} 
 \label{tab:agentParameters} 
 \begin{center}
 \begin{tabular}{ p{0.12\textwidth}| p{0.65\textwidth}| p{0.1\textwidth}}
 	Parameter & Description & Value \\ \hline
-	$a_{\rm min}$ & Minimum acceleration & $-9m/s^2$ \\  
-	$a_{\rm max}$ & Maximum acceleration & $2m/s^2$ \\  
-	$b_{\rm comf}$ & Comfortable deceleration & $-2m/s^2$ \\  
-	$v_{\rm des}$ & Desired velocity & $16.6 m/s$ \\  		
-	$T_{\rm gap}$ & Desired time gap to the leading vehicle & $1.5s$ \\
-	$s_{\rm min}$ & Desired minimum space gap to the leading vehicle & $2m$ \\
-	$T_{\rm var}$ & Time gap to describe the variance of the normal probability function (see Equation \ref{eq:r1} - \ref{eq:r13}) & $0.7s$ \\
-	$T_{\rm lim}$ & Upper time gap limit for zero reward (see Equation \ref{eq:r1} - \ref{eq:r13}) & $15s$ 
+	$a_{\rm min}$ & Minimum acceleration & $\unit[-9]{m/s^2}$ \\  
+	$a_{\rm max}$ & Maximum acceleration & $\unit[2]{m/s^2}$ \\  
+	$b_{\rm comf}$ & Comfortable deceleration & $\unit[-2]{m/s^2}$ \\  
+	$v_{\rm des}$ & Desired speed & $\unit[16.6]{ m/s}$ \\  		
+	$T$ & Desired time gap to the leading vehicle & $\unit[1.5]{s}$ \\
+	$s_{\rm min}$ & Desired minimum space gap & $\unit[2]{m}$ \\
+	$T_{\rm var}$ & \martin{Time gap parameter (cf Eq. \eqref{eq:r12})} & $\unit[0.7]{s}$ \\
+	$T_{\rm lim}$ & Upper time gap limit for zero reward (see
+        Eq. \eqref{eq:r1}) & $\unit[15]{s}$ \\
+  $w_1$ & \martin{relative weight for keeping the desired gap} & 0.6\\
+  $w_2$ & \martin{relative weight for driving safely} & 1.1\\
+  $w_3$ & \martin{relative weight for driving comfortably} & 0.001\\
 \end{tabular}
 \end{center}
 \end{table}
@@ -240,36 +259,41 @@ distance to the leading vehicle.
     to make ``bigger'' parentheses, brackets, braces around fractions
     or super- and subscript quantities}
 
+\martinc{Warum nicht einfach $r_1=1-((s-s\sub{opt})/s\sub{opt})^2$
+  f\"ur $s\le s\sub{opt}$ und $r_1=1$ sonst? Das erspart 2
+  Parameter, 2 Gleichungen und die komischen Ad-Hoc Zahlen 0.5 und 2}
 \begin{equation}
 \label{eq:r1}
 r_1  = 
 \begin{cases}
-\frac{\varphi(s,  s_{\rm opt},  s_{\rm var})}{\varphi( s_{\rm opt},  s_{\rm opt},  s_{\rm var})},& \text{if } s < s^*\\
-\frac{\varphi(s^*,  s_{\rm opt},  s_{\rm var})}{\varphi( s_{\rm opt},  s_{\rm opt},  s_{\rm var})} \left(1-\frac{s-s^*}{s_{\rm lim} - s^*}\right)              & \text{otherwise}
+\frac{\varphi((s-s\sub{opt})/s\sub{var})}{\varphi(0)},
+  & \text{if } s < s^*\\
+\frac{\varphi((s-s\sub{opt})/s\sub{var})}{\varphi(0)}
+ \left(1-\frac{s-s^*}{s\sub{lim} - s^*}\right)  & \text{otherwise}
 \end{cases}
 \end{equation}
 with
 \begin{equation}
 \label{eq:r11}
-s_{\rm opt} = vT_{\rm gap} + s_{\rm min},
+s\sub{opt} = vT + s\sub{min},
 \end{equation}
 \begin{equation}
 \label{eq:r12}
-s_{\rm var} = vT_{\rm var} + 0.5s_{\rm min},
+s\sub{var} = vT\sub{var} + 0.5s\sub{min},
 \end{equation}
 \begin{equation}
 \label{eq:r13}
-s_{\rm lim} = vT_{\rm lim} + 2s_{\rm min},
+s\sub{lim} = vT\sub{lim} + 2s\sub{min},
 \end{equation}
 %
-and $\varphi(x,\mu,\sigma^2)$ describing a normal probability density
+and $\varphi(x)$ describing the standard-normal probability density
 function. \martinc{No empty line if no new paragraph; otherwise, you get an
   indent that looks strange] [$s^*$ is not defined}.
 
 Figure \ref{fig:RewardFunc1} illustrates the reward function for
-$r_1$, containing the parameter $s_{\rm opt}$, $s^*$ and $s_{\rm
+$r_1$, containing the parameter $s\sub{opt}$, $s^*$ and $s_{\rm
   lim}$. \martinc{Schaut man auf die Grafik, erweckt dies den
-    Eindruck, dass $s^*$ von $s\sub{lim}$ und $s_{\rm opt}$ abh\"angt,
+    Eindruck, dass $s^*$ von $s\sub{lim}$ und $s\sub{opt}$ abh\"angt,
     genau so, dass die Funktion differenzierbar ist. Warum nicht
     $s\sub{lim}\to \infty$ setzen? Das bedeutet lediglich, dass
     dieser Teil der Reward-Funktion indifferent gegen sehr gro\3e
@@ -280,16 +304,16 @@ $r_1$, containing the parameter $s_{\rm opt}$, $s^*$ and $s_{\rm
     Reward-Funktion ggf auch auf gr\"o\3ere Abst\"ande an} 
 The reward function is designed in a way, that for high speeds $v$
 of the following vehicle the time gap between following and leading
-vehicle tends to $T_{\rm gap}$, while for low speeds the distance
-between both tends to $s_{\rm min}$. Different values of $T_{\rm opt}$
+vehicle tends to $T$, while for low speeds the distance
+between both tends to $s\sub{min}$. Different values of $T$
 result in different driving styles in a way that, for \martin{lower} values of
-$T_{\rm opt}$ \martin{and $s\sub{min}$,} the \martin{driver follows
+$T$ \martin{and $s\sub{min}$,} the \martin{driver follows
   more closely the leading vehicle} resulting in a more aggressive
-driving style. The results for different values of $T_{\rm opt}$ can
+driving style. The results for different values of $T$ can
 be found in Section \ref{sec:differentT}. Different functions for $ s
 > s^*$ has been applied, but the best results regarding a smooth and
 comfortable approaching of the following vehicle has been reached with
-a linear function. Also, a high value of $T_{\rm lim}$ results in an
+a linear function. Also, a high value of $T\sub{lim}$ results in an
 early deceleration and comfortable approaching. \martinc{Daf\"ur
   sollte eigentlich ein Anteil $\propto (v-v_l)/s$ zust\"andig sein;
   bis jetzt kommt die ``relative speed'' nur quadratisch vor} 
@@ -304,7 +328,7 @@ The second factor of the reward function addresses the \martin{driver's
 	\centering
 	\includegraphics[width=12cm]{images/RewardFunc1}
 	\caption{Factor 1 of the reward function maximizing the reward
-          for car following with time gap $T_{\rm gap}$} 
+          for car following with time gap $T$} 
 	\label{fig:RewardFunc1}
 \end{figure}
 
@@ -313,7 +337,7 @@ The second factor of the reward function addresses the \martin{driver's
 \label{r2}
 r_2 = 
 \begin{cases}
-\tanh\left(\frac{b_{kin}-b_{\rm comf}}{b_{\rm min}}\right),& \text{if } b_{kin}>b_{\rm comf}\\
+\tanh\left(\frac{b_{kin}-b\sub{comf}}{b\sub{min}}\right),& \text{if } b_{kin}>b\sub{comf}\\
 0,              & \text{otherwise}
 \end{cases}
 \end{equation}
@@ -335,30 +359,46 @@ this term is not activated in non-critical situations as illustrated in Fig.~\re
     stehende Fahrzeuge, da dann $r_1$ in der Regel nicht gen\"ugend
     Bremskraft entwickelt}
 
-The third factor of the reward function aims to reduce the jerk in order to achieve comfortable driving,
+The third factor of the reward function aims to reduce the jerk in
+order to achieve comfortable driving, \martinc{\textbackslash dv from
+  the physics package; notice the upright 'd's}
+\martinc{$r_3$ muss einheitenlos sein, sonst vergleicht man in
+  \eqref{rt} \"Apfel mit Birnen! Check, ob das Gewicht $w_3$ noch
+  stimmt (Tabelle)}
 \begin{equation}
-r_3 = -\left(\dfrac{da}{dt}\right)^2.
+r_3 = -\left(\frac{1}{b\sub{comf}} \ \dv{a}{t}\right)^2.
 \end{equation}
 %
-The fourth factor of the reward function penalizes the RL agent, if the current velocity $v$ is above the desired velocity $v_{\rm des}$,
+Since building up a comfortable value of acceleration or deceleration
+from zero in one second is at the limit of comfortable jerks, $r_3$
+values above unity tend to feel uncomfortable. 
+
+ The fourth factor of the reward function penalizes the RL agent, if
+ the current speed $v$ is above the desired speed $v\sub{des}$,
+ \martinc{Einheitenlos! Schon wegen des Vergleichs mit 1, aber auch,
+   um keine \"Apfel und Birnen in~\eqref{rt} zu vergleichen!}
 \begin{equation}
 r_4 =  
 \begin{cases} 
- -min\left(1,\left( v - v_{\rm des}\right)^2\right), & \text{if } v>v_{\rm des}\\
+ -\min\left[1,\left(\frac{v - v\sub{des}}{v\sub{des}}\right)^2\right], & \text{if } v>v\sub{des}\\
 0, & \text{otherwise.}
 \end{cases}             
 \end{equation}
 %
 \martin{The contribution of the final reward function~\eqref{Rt}  at simulation time step $t$ is the weighted
-sum of these factors according to}
+sum of these factors according to}\martinc{Die Gewichte $w_1$
+  ... $w_3$ sind wichtige Modellparameter. Ich habe sie deshalb als
+  solche benannt und in Table \ref{tab:agentParameters} eingef\"uhrt}
 \begin{equation}
 \label{rt}
-r_t = 0.6r_1 + 1.1r_2 + 0.001 r_3 + r_4,
+%r_t = 0.6r_1 + 1.1r_2 + 0.001 r_3 + r_4,
+r_t = w_1r_1 + w_2r_2+w_3r_3 + r_4,
 \end{equation}
-where all the factors are evaluated at time step $t$. The weights have been found experimentally and can be optimized in future studies.
-
-[also relate parameters to driving style attributes such as desired
-speed, accelerations, decelerations, desired time gap, minimum gap]
+\martin{where all the factors are evaluated at time step $t$. The weights (cf.
+Table~\ref{tab:agentParameters})} have been found experimentally and
+can be optimized in future studies. \martin{Notice that the weights are
+relative weights related to the incentive of driving at the desired
+speed.}
 
 
 \subsection{\label{RL-algorithm}RL algorithm}
@@ -455,7 +495,7 @@ set to \unit[100]{ms}. \martinc{use the \textbackslash unit macro applicable
   in text and math mode. As in the multi-letter math functions, this
   controls the space after it ($>0$, less than a normal text space)} 
 
-To adjust the parameters of the AR(1) process, typical values for real leader trajectories has to be defined: With $v_{l,des}$ as the desired velocity for the leader, the mean of the AR(1) process is set to be $v_{l,des}/2$ and the standard deviation is set to be $v_{l,des}$. The acceleration $a\sub{phys}$ corresponds to typical physical leader accelerations. With these values and by using Equation \ref{eq:E_AR1} - \ref{eq:tau_AR1}, the parameters of the AR(1) process can be calculated as:
+To adjust the parameters of the AR(1) process, typical values for real leader trajectories has to be defined: With $v_{l,des}$ as the desired speed for the leader, the mean of the AR(1) process is set to be $v_{l,des}/2$ and the standard deviation is set to be $v_{l,des}$. The acceleration $a\sub{phys}$ corresponds to typical physical leader accelerations. With these values and by using Equation \eqref{eq:E_AR1} - \eqref{eq:tau_AR1}, the parameters of the AR(1) process can be calculated as:
 
  \begin{equation}
 \phi = e^{(\frac{-2da\sub{phys}}{v_{l,des}})},
@@ -486,7 +526,7 @@ The assumed typical values for $v_{l,des}$ and  $a\sub{phys}$ as well as the res
 	\end{center}
 \end{table}
 
-Figure \ref{fig:AR1process} shows an example trajectory of the leading vehicle based on the AR(1) process using the parameters of Table \ref{tab:AR1Parameters}. If the velocity exceeds the defined range of $[0, v_{l,des}]$, it is manually set to the range limits.
+Figure \ref{fig:AR1process} shows an example trajectory of the leading vehicle based on the AR(1) process using the parameters of Table \ref{tab:AR1Parameters}. If the speed exceeds the defined range of $[0, v_{l,des}]$, it is manually set to the range limits.
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\textwidth]{images/AR1process}
@@ -516,7 +556,7 @@ steps.\martin{Reine Zahlen (aber nicht das Minus-Zeichen!) sind im Text- und Mat
   wie Einheiten ohne Exponent ben\"otigen positive Zahlen keine Dollars, also 500
   steps oder \unit[50]{s} mit oder ohne \$ OK}   The initial
 speeds of \martin{the} following and leading \martin{vehicles are
-  randomly}  set in the range $[0,v_{\rm des}]$ and $[0,v_{l,des}]$,
+  randomly}  set in the range $[0,v\sub{des}]$ and $[0,v_{l,des}]$,
 respectively. \martinc{``respectively'' kommt immer, mit Komma
   abgetrennt, nach der Aufz\"ahlung, auch bei zwei items} The initial
 space gap between both is set to \unit[120]{m}. 
@@ -547,14 +587,14 @@ Figure \ref{fig:manipulatedLeader} shows a driving scenario with an
 artificial external profile for the leading vehicle speed. The initial
 gap between 
 follower and leader is 200 meters, which refers to a free driving
-scenario. The follower accelerates with $a_{\rm max} = 2m/s^2$ until
-the desired speed $v_{\rm des} = 16.6m/s$ is reached and approaches
+scenario. The follower accelerates with $a\sub{max} = 2m/s^2$ until
+the desired speed $v\sub{des} = 16.6m/s$ is reached and approaches
 the standing leading vehicle. When the gap between both drops below 90
 meters, the follower starts to decelerate with a \martin{maximum
   deceleration of} approximately $b_{\rm
   comf} = \unit[2]{m/s^2}$ (transition between free driving and car-following)
 and comes to a standstill with a final gap of approximately 
-$s_{\rm min} = \unit[2]{m}$. \martin{Afterwards ($t=\unit[27]{s}$),  the leading vehicle accelerates to a speed
+$s\sub{min} = \unit[2]{m}$. \martin{Afterwards ($t=\unit[27]{s}$),  the leading vehicle accelerates to a speed
 that is below the desired speed of the follower before performing a
 maximum braking maneuver ($a=\unit[-9]{m/s^2}$) to a full stop ($t=\unit[40]{s}$).} \martinc{Die Beschleunigung
   ist \emph{nicht} random}. \martin{At the time of the start of the
@@ -642,7 +682,7 @@ Section~\ref{sec:stringStability}, string stability and the reduction
 of  the acceleration variance, shown by the red bars in Figure
 \ref{fig:VarAccComp}, is demonstrated. At time $t = 140s$ the leader
 stands still, and it can be observed, that all following vehicles are
-keeping the minimum distance $s_{\rm min}$ to the leader.  
+keeping the minimum distance $s\sub{min}$ to the leader.  
 
 
 \begin{figure}
@@ -650,7 +690,8 @@ keeping the minimum distance $s_{\rm min}$ to the leader.
 	\includegraphics[width=0.95\textwidth]{images/PunzoKolonne}
 	\caption{Response to a real leader trajectory \martinc{Die
             leader acceleration hat das falsche Vorzeichen bzw passt
-            f\"ur $t>\unit[160]{s}$ \"uberhaupt nicht!}}
+            f\"ur $t>\unit[160]{s}$ \"uberhaupt nicht! Gilt auch f\"ur
+        die n\"achste Abbildung}}
 	\label{fig:PunzoKolonne}
 \end{figure}
 
@@ -658,41 +699,71 @@ keeping the minimum distance $s_{\rm min}$ to the leader.
 \subsection{Response of different driver characteristics}
 \label{sec:differentT}
 
-As mentioned in Section \ref{rewardFunction}, different driving styles can be achieved by adjusting the parameters of the reward function. Three RL agents has been trained on a reward function, that differs in the desired time gap $T_{\rm gap}$ between following and leading vehicle ($T_{gap,1} = 1.0s$, $T_{gap,2} = 1.5s$, $T_{gap,3} = 2.0s$). Figure \ref{fig:differentT} shows the result of these agents, following the real leader trajectory from Napoli. It can be observed, that a lower value for $T_{\rm gap}$ results in closer driving to the leader, higher accelerations and decelerations and thus in a more aggressive driving behavior. 
+As mentioned in Section \ref{rewardFunction}, different driving styles
+can be achieved by adjusting the parameters of the reward
+function. Three RL agents has been trained on a reward function, that
+differs in the desired time gap $T$ das between following and
+leading vehicle ($T_{1} = 1.0s$, $T_{2} = 1.5s$, $T_{3} =
+2.0s$). Figure \ref{fig:differentT} shows the result of these agents,
+following the real leader trajectory from Napoli. It can be observed,
+that a lower value for $T$ results in closer driving to the
+leader \martin{which can be considered as a more ``aggressive''
+  driving style. Since this also means that there are less options in
+increasing driving comfort without affecting safety, the follower's
+accelerations and decelerations also increase although the relatve
+weighting $w_2/w_3$ of the safety and comfort aspects in Eq.~\eqref{rt} has not been
+changed.} 
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\textwidth]{images/differentT}
-	\caption{Impact of different parametrized RL agents on driving behavior}
+	\caption{Impact of different\martin{ly} parametrized RL agents
+          on the driving behavior \martinc{Fehler Leader-Beschl., vgl. vorherige Abb.}}
 	\label{fig:differentT}
 \end{figure}
 
 
 \subsection{Cross validation with the Intelligent Driver Model}
-To compare the performance of the trained RL agent with a classical car-following model, the RL agent and an IDM are calibrated on the same set of parameters. These parameters are obtained from one and the same follower from the Napoli data set (reference) and can be found in Table \ref{tab:IDMparameters}. The IDM is formulated as 
-
+\martinc{reformulated}
+To compare the performance of the RL agent with that of
+classical car-following models, we chose the commonly used
+Intelligent-Driver Model (IDM)\cite{Opus} whose acceleration is given
+by
 \begin{equation}
-a=a_{\rm max}\left(1-\left(\frac{v}{v_{\rm des}}\right)^{4}-\left(\frac{s^{*}\left(v, \Delta v\right)}{s}\right)^{2}\right),
+\label{eq:IDM}
+a=a\sub{max}\left(1-\left(\frac{v}{v\sub{des}}\right)^{4}-\left(\frac{s^{*}\left(v, \Delta v\right)}{s}\right)^{2}\right),
 \end{equation}
 with
 \begin{equation}
-s^{*}\left(v, \Delta v\right)=s_{\rm min}+vT_{\rm gap}+\frac{v \Delta v}{2 \sqrt{a_{\rm max} b_{\rm comf}}},
+\label{eq:IDMsstar}
+s^{*}\left(v, \Delta v\right)=s\sub{min}+\max \left(0,vT+\frac{v \Delta v(v-v_l)}{2 \sqrt{a\sub{max} b\sub{comf}}}\right).
 \end{equation}
-\begin{equation}
-\Delta v = v-v_l
-\end{equation}
+Notice that the IDM parameters desired
+speed $v\sub{des}$, minimum gap $s\sub{min}$, time gap $T$, maximum
+acceleration $a\sub{max}$, and
+comfortable deceleration $b\sub{comf}$ are a subset of that of the RL reward
+function. 
 
+First, we calibrate the IDM on the Napoli data set by
+minimizing the sum of squares of the relative gap error,
+$\mathrm{SSE}(\ln s)$, of the first follower with respect to the
+data (cf. Table~\ref{tab:IDMparameters}). The same parameters are also
+assumed for the reward function of the RL agent before it was trained
+on the artificial AR(1) generated leader speed profile
+\martinc{check!}. Notice that the RL agent used the Napoli data only
+indirectly by parameterizing its reward function.
 \begin{table}
-	\caption{Parameters obtained from experimental data and used to calibrate the RL agent and the IDM} 
+	\caption{\martin{IDM parameters calibrated to the Napoli
+            data and also used for the reward function of the RL agent}} 
 	\label{tab:IDMparameters} 
 	\begin{center}
 		\begin{tabular}{ p{0.14\textwidth} |p{0.1\textwidth}  } 
 		Parameter & Value   \\ \hline
-			$T_{\rm gap}$ & $0.83s$\\
-			$s_{\rm min}$ & $4.90m$\\
-			$a_{\rm max}$ & $4.32m/s^2$\\
-			$b_{\rm comf}$ & $2.34 m/s^2$\\
-			$v_{\rm des}$ & $33.73m/s$
+			$T$ & $0.83s$\\
+			$s\sub{min}$ & $4.90m$\\
+			$a\sub{max}$ & $4.32m/s^2$\\
+			$b\sub{comf}$ & $2.34 m/s^2$\\
+			$v\sub{des}$ & $33.73m/s$
 			
 		\end{tabular}
 	\end{center}
