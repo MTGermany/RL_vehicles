@@ -148,128 +148,252 @@ In a further experiment the proposed model is compared to an Intelligent Driver 
 
 [short textual enumeration of the sections to come]
 
-\section{Model specification}
-The \martin{following vehicle} \martinc{only named things are written
-    in uppercase; special concepts/definitions such as Reinforcement Learning
-    can be written both upper and lowercase; abbreviation always
-    uppercase (RL); the
-    ``reward function'' is generic, hence lowercase} is controlled by a Reinforcement
+\section{Reinforcement Learning Background}
+The following vehicle is controlled by a Reinforcement
 Learning (RL) agent. By interaction with an environment, the RL agent
 optimizes a sequential decision making problem. At each time step
-$t$,\martinc{always comma before the main clause starts} the agent
-observes an environment state $s_t$ and, based on that state, selects
+$t$, the agent observes an environment state $s_t$ and, based on that state, selects
 an action $a_t$. After conducting action $a_t$, the RL agent receives
 a reward $r(a_t,s_t)$. The agent aims to learn an optimal state-action
 mapping policy $\pi$ that maximizes the expected accumulated
-discounted reward. \martinc{Du musst zwischen der Summe $R_t$  und den
-  Termen $r_t$ unterscheiden. W\"are links $r_t$, w\"are dies ein
-  Gleichungssystem mit den L\"osungen $\{r_t=0 \forall t \} $ oder
-  $\{r_t\to\infty \forall t \} $. Diese wichtige Formel verdient eine
-  eigene Nummer.}
+discounted reward
 \begin{equation}
 \label{Rt}
 R_{t}=\sum_{k=0}^{\infty} \gamma^{k} r_{t+k},
 \end{equation}
  where $\gamma = (0,1]$ denotes the discount factor and 
-$\gamma^k r_{t+k}$ the expected contribution $k$ time steps ahead. The crucial elements
-of the RL-based \martinc{use your abbreviation} control strategy are described
-in detail as follows:
+$\gamma^k r_{t+k}$ the expected contribution $k$ time steps ahead. 
+  \subsection{\label{RL-algorithm}RL algorithm}
+  In various similar control problems, the Deep Deterministic Policy
+  Gradient (DDPG) Algorithm has been used and proven to perform well on
+  tasks with a continuous action and state space, such as in
+  \cite{SafeEfficientAndComfortable}, \cite{ComparisonRLvsMPC} or
+  \cite{HumanLikeAutonomouCF}. The original work can be found in
+  \cite{DDPG}. DDPG is an Actor-Critic method, that uses an Actor to propose an action based on a given state and Critic to predict if the action is good or bad, based on a given state and action. To achieve a better training stability, DDPG uses target networks. While training these networks are updated slowly, hence keeping the estimated targets stable. Furthermore DDPG uses Experience Replay, that implements a buffer, where a list of tuples (xyz) are stored. Instead of learning from the most recent experience, DDPG learns from sampling a mini-batch from the experience buffer. To implement better exploration by the Actor network, DDPG uses noisy perturbations, specifically an Ornstein-Uhlenbeck process for generating noise. It samples noise from a correlated normal distribution. The entire DDPG algorithm is shown in xyz. 
+  
+  \subsection{\label{MRL}Modularized Reinforcement Learning}
+  Furthermore we used a modularized approach to decompose the task into two subtasks. Modular Reinforcement Learning (MRL) refers to the decomposition of a complex, multi-goal
+  problem into a collection of simultaneously running single goal learning processes, typically modeled as Markov Decision Processes. Typically, these subagents share an action
+  set but have their own reward signal and state space. At each
+  time step, every subagent reports a numerical preference for
+  each available action to an arbitrator, which then selects one
+  of the actions for the agent as a whole to take (\cite{MRL}). There are numerous works, that are using a modularized Reinforcement Learning approach, like in \cite{MRLexample1}, \cite{MRLexample2} or \cite{MRLexample3} to name just a few. The advantage of decomposing multiple-goal reward functions with MRL, we also want to use in this work. 
+  Figure \ref{fig:MRL} shows the architecture of our MRL System. We divide our car-following problem into two subtasks, handled by two different policies. The Free-Driving-Policy refers to free driving and aims to not to exceed a desired speed. The Car-Following-Policy refers to following a vehicle and aims to keep a reasonable gap to a leader vehicle. Although both policies are trained with different reward functions and in different training environments, they both output an acceleration value. As an arbitrator between both accelerations we use a simple min-function. In the next sections the model specifications of the Free-Driving-Policy and the Car-Following-Policy, which are both trained with the DDPG algorithm, are described in detail.
+  
+  \begin{figure}
+  	\centering
+  	\includegraphics[width=12cm]{images/MRL}
+  	\caption{Modularized RL architecture with actor networks of both policies.} 
+  	\label{fig:MRL}
+  \end{figure}
 
-\subsection{Action space}
-\label{actionSpace}
-In this study, the acceleration of the following vehicle is considered
-as the action of the RL agent. To enable comfortable driving and
-\martin{allow for a maximum braking deceleration} in safety-critical
-situations, the acceleration \martin{is a continuous variable in the
-  range} between $a_{\rm min} = \unit[-9]{m/s^2}$ and 
-$a_{\rm max} =\unit[2]{m/s^2}$.\martinc{In contrast to variables or symbolic
-    constants which are set in italic, units are set in roman
-    (upright) font. If super- or subscripts are variables, they are
-    set italic. If they are abbreviations (e.g., min, max) they are set
-    upright. Multi-letter standard function names such as $\sin$,
-    $\tan$, $\cosh$ or $\exp$ are written upright (use
-    \texttt{\$\textbackslash sin\$} etc)}
+  
+  % In this study, both networks are feed-forward neural networks with two layers of hidden neurons and %32 neurons each hidden layer. All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
+  
 
 
-\subsection{State space}
-The state space defines the observations \martin{that} the following
+
+\section{Free-Driving-Policy}
+\subsection{Action and state space}
+\label{actionSpace1}
+ The defined modularized RL approach requires that the action space of both sub-policies are identical. To enable comfortable driving and allow for a maximum braking deceleration in safety-critical
+situations, the acceleration is defined as a continuous variable in the
+  range between $a\sub{\rm min} = \unit[-9]{m/s^2}$ and $a\sub{\rm max} =\unit[2]{m/s^2}$.
+
+%\martinc{In contrast to variables or symbolic
+%    constants which are set in italic, units are set in roman
+%    (upright) font. If super- or subscripts are variables, they are
+%    set italic. If they are abbreviations (e.g., min, max) they are set
+%    upright. Multi-letter standard function names such as $\sin$,
+%    $\tan$, $\cosh$ or $\exp$ are written upright (use
+%    \texttt{\$\textbackslash sin\$} etc)}
+
+
+The state space defines the observations that the 
 vehicle can receive from the environment. To compute an optimal
 acceleration, the following vehicle observes its own acceleration $a$,
-its own \martin{speed}\martinc{velocity=vector, speed=abs(velocity)=scalar}
-$v$, the \martin{relative speed $\Delta v=v_l-v$ where $v_l$ denotes
-  the speed of the leading vehicle} \martinc{crucial since both definitions
-    $v_l-v$ or $v-v_l$ are common} and the \martin{(bumper-to-bumper)
-  gap $s$ to the leader} \martinc{again, some use the space headway (including
-    the leading vehicle length), and some the gap}. These
-observations are normalized to the range $[-1,1]$. \martinc{How? If it
-    is just linear translation and scaling, you need min and max
-    values of the state variables. How to determine them?}
+and its own speed $v$. Linear translation and scaling is used to reduce the dimensions and to bring all observations approximately into the same range of $[0,1]$. The observation at time step $t$ is defined as
 
-
+\begin{equation}
+s_t = \begin{pmatrix} \frac{v_t}{v\sub{des}} \\ \frac{a_t-a\sub{\rm min}}{a\sub{\rm max} - a\sub{\rm min}}\end{pmatrix}.
+\end{equation}
 \subsection{Reward Function}
 \label{rewardFunction}
-The goal of the RL strategy is to reduce the crash risk, while
-maintaining comfortable driving in non-safety-critical situations
-\martin{and minimizing the travel time} \martinc{without that, creeping which
-    is safe and comfortable would be the optimum strategy}. The
-\martin{r}eward function includes a set of parameters that can be
-adjusted to realize different \martin{driving} styles. $v_{\rm des}$
-is the desired speed that should not be exceeded. $a_{\rm min}$ and
-$a_{\rm max}$ are the minimum and maximum possible accelerations, as
-described in Section \ref{actionSpace}. All parameters are described
-in Table \ref{tab:agentParameters}.
-\martin{Ich habe die simultan
-  verwendeten bezeichnungen $T$ und $T\sub{opt}$ in $T$
-  umbenannt.} 
+The reward function contribution a time step $t$ is decomposed into two factors. The first part aims to
+to not to exceed a desired speed $v\sub{des}$, but also to accelerate if the desired speed is not reached yet.  
 
-\begin{table}
-\caption{RL agent parameters and default values \martinc{check the weights!}} 
-\label{tab:agentParameters} 
-\begin{center}
-\begin{tabular}{ p{0.12\textwidth}| p{0.65\textwidth}| p{0.1\textwidth}}
-	Parameter & Description & Value \\ \hline
-	$a_{\rm min}$ & Minimum acceleration & $\unit[-9]{m/s^2}$ \\  
-	$a_{\rm max}$ & Maximum acceleration & $\unit[2]{m/s^2}$ \\  
-	$b_{\rm comf}$ & Comfortable deceleration & $\unit[-2]{m/s^2}$ \\  
-	$v_{\rm des}$ & Desired speed & $\unit[16.6]{ m/s}$ \\  		
-	$T$ & Desired time gap to the leading vehicle & $\unit[1.5]{s}$ \\
-	$s_{\rm min}$ & Desired minimum space gap & $\unit[2]{m}$ \\
-	$T_{\rm var}$ & \martin{Time gap parameter (cf Eq. \eqref{eq:r12})} & $\unit[0.7]{s}$ \\
-	$T_{\rm lim}$ & Upper time gap limit for zero reward (see
-        Eq. \eqref{eq:r1}) & $\unit[15]{s}$ \\
-  $w_1$ & \martin{relative weight for keeping the desired gap} & 0.6\\
-  $w_2$ & \martin{relative weight for driving safely} & 1.1\\
-  $w_3$ & \martin{relative weight for driving comfortably} & 0.001\\
-\end{tabular}
-\end{center}
+\begin{equation}
+	r_1  = 
+	\begin{cases}
+	\frac{v}{v\sub{des}},
+	& \text{if } v < v\sub{des}\\
+	0
+	 & \text{otherwise}
+	\end{cases}
+\end{equation}
+
+The second part of the reward function aims to reduce the jerk in
+order to achieve comfortable driving, 
+\begin{equation}
+r_2 = -\left(\frac{1}{\dot{a}\sub{comf}} \ \dv{a}{t}\right)^2.
+\end{equation}
+
+Since building up a comfortable value of acceleration or deceleration
+from zero in one second is at the limit of comfortable jerks, $r_2$
+values above unity tend to feel uncomfortable.
+
+
+The contribution of the final reward function at simulation time step $t$ is the weighted
+sum of these factors according to
+\begin{equation}
+\label{rt1}
+r_t =r_1 + w\sub{jerk} r_2,
+\end{equation}
+where all the factors are evaluated at time step $t$. 
+
+
+\subsection{Training environment}
+\label{training_environment1}
+In order to train the RL agent for the task of keeping a desired speed, the training environment is defined as follows. To describe the dynamics of the vehicle, a point-mass kinematic model is used. For updating the speed for time step $t + 1$ the Euler method is used.
+
+\begin{equation}
+	v\sub{t+1} = v\sub{t} + a\sub{t} d
+\end{equation}
+
+\begin{equation}
+x\sub{t+1} = x\sub{t} + \frac{v\sub{t} + v\sub{t+1}}{2} d
+\end{equation}
+
+
+with $d$ corresponding to the simulation step size, which is globally
+set to \unit[100]{ms}. To train the RL agent, a training episode has to be defined. One training episode contains 300 time steps and the vehicle's initial speed is set randomly in the range $[0,v\sub{des}]$.
+
+\subsection{RL hyperparameters}
+Both neural networks, Critic and Actor, are feed-forward neural networks with one layer of hidden neurons, containing 16 neurons (see Figure \ref{fig:MRL}). ReLU activation functions are used.  The learning rate for Critic and Actor is set to 0.001. For the exploration of the action space, an exploration noise model has to be defined. We adopted an Ornstein-Uhlenbeck process with $\Theta = 0.15$  and $\sigma = 0.2$ as suggested in \cite{DDPG}. The update rate of the target networks is set to 0.001.
+All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
+
+
+  \begin{table}
+	\caption{DDPG parameter values} 
+	\label{tab:DDPGparameters} 
+	\begin{center}
+		\begin{tabular}{ p{0.4\textwidth} p{0.2\textwidth}  p{0.2\textwidth} }
+			 & Free-Driving-Policy & Car-Following-Policy \\ \hline
+			Learning rate & 0.001 & 0.001\\ 
+			Reward discount factor & 0.95 & 0.95 \\ 
+			Experience buffer length & 100000 & 100000 \\ 
+			Mini batch size & 32 & 32 \\ 			
+			Ornstein-Uhlenbeck  $\Theta$ & 0.15& 0.15 \\ 
+			Ornstein-Uhlenbeck  $\sigma$ & 0.2 & 0.2 \\ 
+			Number of hidden layers & 1 & 2\\
+			Neurons per hidden layer & 16 & 32\\
+			Soft target update  $\tau$ & 0.001 & 0.001\\
+			
+			
+		\end{tabular}
+	\end{center}
 \end{table}
 
 
-\martinc{first describe the element shortly, then come with
-    the formulas}
-The reward function contribution at time step $t$ consists of four factors. \martin{not parts; the
-    parts are the weighted factors, see~\eqref{reward}}
-The first part aims \martin{to not fall below} \martinc{above is OK: free flow} a reasonable
+\section{Car-Following-Policy}
+\subsection{Action and state space}
+\label{actionSpace1}
+To match the action space of the Free-Driving-Policy, the acceleration is analogously defined as a continuous variable in the range between $a\sub{\rm min} = \unit[-9]{m/s^2}$ and 
+$a\sub{\rm max} =\unit[2]{m/s^2}$.
+
+
+The state space defines the observations that the following
+vehicle can receive from the environment. To compute an optimal
+acceleration, the following vehicle uses its own acceleration $a$,
+its own speed $v$, the relative speed $\Delta v=v_l-v$ where $v_1$ denotes
+the speed of the leading vehicle  and the (bumper-to-bumper)
+gap $s$ to the leader. Again, linear translation and scaling is used to reduce the dimensions and to bring all observations approximately into the same range of $[0,1]$. The observation at time step $t$ is defined as
+
+\begin{equation}
+s_t = 
+\begin{pmatrix} 
+\frac{v}{v\sub{des}} \\ 
+\frac{a-a\sub{\rm min}}{a\sub{\rm max} - a\sub{\rm min}}\\
+\frac{\Delta v}{v\sub{des}}\\
+\frac{s}{s\sub{\rm max}}
+
+\end{pmatrix},
+\end{equation}
+%
+where $s\sub{max}$ is set to  \unit[200]{m}.
+
+\subsection{Reward Function}
+\label{rewardFunction}
+The goal of the Car-Follower-Policy is to reduce the crash risk, while
+maintaining comfortable driving in non-safety-critical situations. The
+reward function includes a set of parameters that can be
+adjusted to realize different driving styles. 
+
+\begin{table}
+	\caption{RL agent parameters and default values \martinc{check the weights!}} 
+	\label{tab:agentParameters} 
+	\begin{center}
+		\begin{tabular}{ p{0.12\textwidth}| p{0.65\textwidth}| p{0.1\textwidth}}
+			Parameter & Description & Value \\ \hline
+			$a\sub{\rm min}$ & Minimum acceleration & $\unit[-9]{m/s^2}$ \\  
+			$a_{\rm max}$ & Maximum acceleration & $\unit[2]{m/s^2}$ \\  
+			$b_{\rm comf}$ & Comfortable deceleration & $\unit[2]{m/s^2}$ \\  
+			$\dot{a}_{\rm comf}$ & Comfortable jerk & $\unit[2]{m/s^3}$ \\  
+			$v_{\rm des}$ & Desired speed & $\unit[15]{ m/s}$ \\  		
+			$T$ & Desired time gap to the leading vehicle & $\unit[1.5]{s}$ \\
+			$s_{\rm min}$ & Desired minimum space gap & $\unit[2]{m}$ \\
+			$T_{\rm lim}$ & Upper time gap limit for zero reward (see
+			Eq. \eqref{eq:r1}) & $\unit[15]{s}$ \\
+			$w\sub{gap}$ & relative weight for keeping the desired gap & 0.5\\
+			$w\sub{jerk}$ & relative weight for comfortable acceleration & 0.004\\
+		\end{tabular}
+	\end{center}
+\end{table}
+
+
+
+The reward function contribution at time step $t$ consists of three factors. 
+The first factor addresses the driver's
+response in safety-critical situations by comparing the
+kinematically needed deceleration $(\Delta v)^2/(2s)$ (assuming an
+unchanged speed of the leader) with the
+comfortable deceleration $b\sub{comf}$,
+
+
+
+\begin{equation}
+\label{r2}
+r_1 = 
+\begin{cases}
+-\tanh\left(\frac{b_{kin}-b\sub{comf}}{b\sub{min}}\right),& \text{if } b_{kin}>b\sub{comf}\\
+0,              & \text{otherwise}
+\end{cases}
+\end{equation}
+
+with
+\begin{equation}
+b_{kin} = \frac{\Delta v^2}{s}
+\end{equation}
+The argument of the tanh function with  the
+maximum possible deceleration ($\approx 1 g$ on dry roads) gives a
+non-dimensional measure for the seriousness of the critical situation
+with values 
+near or above 1 indicating an imminent crash. \martinc{$b\sub{max}$
+	or $-a\sub{min}$}. The tanh function functions as a limitation for the reward value to the range [-1,0]. This has shown to make the learning process more stable. Notice that the case distinction in ~\eqref{r2}  ensures that
+this term is not activated in non-critical situations.
+
+The second part of the reward function aims to not fall below a reasonable
 distance to the leading vehicle. 
 
-\martinc{The standard normal distribution has the symbol $\Phi(.)$ and
-    its density $\phi(.)$ or $\varphi(.)$; I prefer $\varphi$ since, then,
-    the optical difference to the CDF $\Phi$ is greater}
-\martinc{Use \texttt{\textbackslash left( ... \textbackslash right)}
-    to make ``bigger'' parentheses, brackets, braces around fractions
-    or super- and subscript quantities}
 
-\martinc{Warum nicht einfach $r_1=1-((s-s\sub{opt})/s\sub{opt})^2$
-  f\"ur $s\le s\sub{opt}$ und $r_1=1$ sonst? Das erspart 2
-  Parameter, 2 Gleichungen und die komischen Ad-Hoc Zahlen 0.5 und 2}
 \begin{equation}
 \label{eq:r1}
-r_1  = 
+r_2  = 
 \begin{cases}
 \frac{\varphi((s-s\sub{opt})/s\sub{var})}{\varphi(0)},
-  & \text{if } s < s^*\\
+& \text{if } s < s^*\\
 \frac{\varphi((s-s\sub{opt})/s\sub{var})}{\varphi(0)}
- \left(1-\frac{s-s^*}{s\sub{lim} - s^*}\right)  & \text{otherwise}
+\left(1-\frac{s-s^*}{s\sub{lim} - s^*}\right)  & \text{otherwise}
 \end{cases}
 \end{equation}
 with
@@ -279,7 +403,7 @@ s\sub{opt} = vT + s\sub{min},
 \end{equation}
 \begin{equation}
 \label{eq:r12}
-s\sub{var} = vT\sub{var} + 0.5s\sub{min},
+s\sub{var} = 0.5s\sub{opt},
 \end{equation}
 \begin{equation}
 \label{eq:r13}
@@ -287,245 +411,121 @@ s\sub{lim} = vT\sub{lim} + 2s\sub{min},
 \end{equation}
 %
 and $\varphi(x)$ describing the standard-normal probability density
-function. \martinc{No empty line if no new paragraph; otherwise, you get an
-  indent that looks strange] [$s^*$ is not defined}.
-
+function. The value of $s^*$ is chosen in a way, that the reward function $r_2$ is differentiable.
+%
+\begin{figure}
+	\centering
+	\includegraphics[width=12cm]{images/RewardFunc1}
+	\caption{Factor 2 of the reward function maximizing the reward
+		for car following with time gap $T$} 
+	\label{fig:RewardFunc1}
+\end{figure}
+%
 Figure \ref{fig:RewardFunc1} illustrates the reward function for
-$r_1$, containing the parameter $s\sub{opt}$, $s^*$ and $s_{\rm
-  lim}$. \martinc{Schaut man auf die Grafik, erweckt dies den
-    Eindruck, dass $s^*$ von $s\sub{lim}$ und $s\sub{opt}$ abh\"angt,
-    genau so, dass die Funktion differenzierbar ist. Warum nicht
-    $s\sub{lim}\to \infty$ setzen? Das bedeutet lediglich, dass
-    dieser Teil der Reward-Funktion indifferent gegen sehr gro\3e
-    Abst\"ande ist (``es ist egal, ob der Abstand $s\sub{opt}$ oder
-    $\infty$ ist, Hauptsache, er ist nicht kleiner''). Falls
-    $v<v\sub{des}$ ist, wird sich der realisierte Abstand dennoch auf
-    $s\sub{opt}$ einstellen. Au\3erdem spricht der n\"achste Teil der
-    Reward-Funktion ggf auch auf gr\"o\3ere Abst\"ande an} 
-The reward function is designed in a way, that for high speeds $v$
+$r_2$, containing the parameter $s\sub{opt}$, $s^*$ and $s_{\rm
+	lim}$. The reward function is designed in a way, that for high speeds $v$
 of the following vehicle the time gap between following and leading
 vehicle tends to $T$, while for low speeds the distance
 between both tends to $s\sub{min}$. Different values of $T$
-result in different driving styles in a way that, for \martin{lower} values of
-$T$ \martin{and $s\sub{min}$,} the \martin{driver follows
-  more closely the leading vehicle} resulting in a more aggressive
+result in different driving styles in a way that, for lower values of
+$T$ and $s\sub{min}$, the driver follows
+more closely the leading vehicle resulting in a more aggressive
 driving style. The results for different values of $T$ can
 be found in Section \ref{sec:differentT}. Different functions for $ s
 > s^*$ has been applied, but the best results regarding a smooth and
 comfortable approaching of the following vehicle has been reached with
 a linear function. Also, a high value of $T\sub{lim}$ results in an
-early deceleration and comfortable approaching. \martinc{Daf\"ur
-  sollte eigentlich ein Anteil $\propto (v-v_l)/s$ zust\"andig sein;
-  bis jetzt kommt die ``relative speed'' nur quadratisch vor} 
-
-The second factor of the reward function addresses the \martin{driver's
-  response} in safety-critical situations \martin{by comparing the
-  kinematically needed deceleration $(\Delta v)^2/(2s)$ (assuming an
-  unchanged speed of the leader) with the
-  comfortable deceleration $b\sub{comf}$,}
-
-\begin{figure}
-	\centering
-	\includegraphics[width=12cm]{images/RewardFunc1}
-	\caption{Factor 1 of the reward function maximizing the reward
-          for car following with time gap $T$} 
-	\label{fig:RewardFunc1}
-\end{figure}
+early deceleration and comfortable approaching.
 
 
-\begin{equation}
-\label{r2}
-r_2 = 
-\begin{cases}
-\tanh\left(\frac{b_{kin}-b\sub{comf}}{b\sub{min}}\right),& \text{if } b_{kin}>b\sub{comf}\\
-0,              & \text{otherwise}
-\end{cases}
-\end{equation}
-
-with
-\begin{equation}
-b_{kin} = \frac{\Delta v^2}{s}
-\end{equation}
-\martinc{Ich habe nun nur noch ``instruktive'' \"Anderungen markiert}
-The argument of the tanh function with  the
-  maximum possible deceleration ($\approx 1 g$ on dry roads) gives a
-  non-dimensional measure for the seriousness of the critical situation
-  with values 
-  near or above 1 indicating an imminent crash. \martinc{$b\sub{max}$
-    or $-a\sub{min}$}. Notice that the case distinction in
-~\eqref{r2}  ensures that
-this term is not activated in non-critical situations as illustrated in Fig.~\ref{fig:xy}. \martinc{Das
-    f\"uhrt aber evtl zu einer ``Stotterbremse'' beinm Ann\"ahern an
-    stehende Fahrzeuge, da dann $r_1$ in der Regel nicht gen\"ugend
-    Bremskraft entwickelt}
 
 The third factor of the reward function aims to reduce the jerk in
-order to achieve comfortable driving, \martinc{\textbackslash dv from
-  the physics package; notice the upright 'd's}
-\martinc{$r_3$ muss einheitenlos sein, sonst vergleicht man in
-  \eqref{rt} \"Apfel mit Birnen! Check, ob das Gewicht $w_3$ noch
-  stimmt (Tabelle)}
+order to achieve comfortable driving and has been designed analogously to the Free-Driving-Policy, 
 \begin{equation}
-r_3 = -\left(\frac{1}{b\sub{comf}} \ \dv{a}{t}\right)^2.
+r_3 = -\left(\frac{1}{\dot{a}\sub{comf}} \ \dv{a}{t}\right)^2.
 \end{equation}
 %
-Since building up a comfortable value of acceleration or deceleration
-from zero in one second is at the limit of comfortable jerks, $r_3$
-values above unity tend to feel uncomfortable. 
-
- The fourth factor of the reward function penalizes the RL agent, if
- the current speed $v$ is above the desired speed $v\sub{des}$,
- \martinc{Einheitenlos! Schon wegen des Vergleichs mit 1, aber auch,
-   um keine \"Apfel und Birnen in~\eqref{rt} zu vergleichen!}
+The contribution of the final reward function~\eqref{Rt}  at simulation time step $t$ is the weighted
+sum of these factors according to
 \begin{equation}
-r_4 =  
-\begin{cases} 
- -\min\left[1,\left(\frac{v - v\sub{des}}{v\sub{des}}\right)^2\right], & \text{if } v>v\sub{des}\\
-0, & \text{otherwise.}
-\end{cases}             
-\end{equation}
-%
-\martin{The contribution of the final reward function~\eqref{Rt}  at simulation time step $t$ is the weighted
-sum of these factors according to}\martinc{Die Gewichte $w_1$
-  ... $w_3$ sind wichtige Modellparameter. Ich habe sie deshalb als
-  solche benannt und in Table \ref{tab:agentParameters} eingef\"uhrt}
-\begin{equation}
-\label{rt}
+\label{rt2}
 %r_t = 0.6r_1 + 1.1r_2 + 0.001 r_3 + r_4,
-r_t = w_1r_1 + w_2r_2+w_3r_3 + r_4,
+r_t = r_1 + w\sub{gap}r_2+w\sub{jerk}r_3,
 \end{equation}
-\martin{where all the factors are evaluated at time step $t$. The weights (cf.
-Table~\ref{tab:agentParameters})} have been found experimentally and
-can be optimized in future studies. \martin{Notice that the weights are
-relative weights related to the incentive of driving at the desired
-speed.}
-
-
-\subsection{\label{RL-algorithm}RL algorithm}
-In various similar control problems, the Deep Deterministic Policy
-Gradient (DDPG) Algorithm has been used and proven to perform well on
-tasks with a continuous action and state space, such as in
-\cite{SafeEfficientAndComfortable}, \cite{ComparisonRLvsMPC} or
-\cite{HumanLikeAutonomouCF}. The original work can be found in
-\cite{DDPG}. In order to reduce the variance of policy gradients and
-increase learning speed, DDPG is an actor-critic method. \martinc{Was
-  ist eine ``policy'' bzw ein ``policy gradient'' in diesem Kontext? TRB und TRC sind nicht spezialisiert
-  auf Deep Learning Methods, deshalb ist ein Satz Erkl\"arung n\"otig} The actor determines the action, while the critic judges about the quality of the action and how the policy should be adjusted. In this study, both networks are feed-forward neural networks with two layers of hidden neurons and 32 neurons each hidden layer. All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
-
-\begin{table}
-	\caption{DDPG parameter values} 
-	\label{tab:DDPGparameters} 
-	\begin{center}
-		\begin{tabular}{ p{0.4\textwidth} p{0.2\textwidth} }
-			Parameter & Value \\ \hline
-			Learning rate & 0.001 \\ 
-			Reward discount factor & 0.95 \\ 
-			Experience buffer length & 100000 \\ 
-			Mini batch size & 32 \\ 			
-			Gaussian noise mean & 0.15 \\ 
-			Gaussian noise variance & 0.2 \\ 
-			Gaussian noise variance decay  & 1e-5 \\ 
-			Number of hidden layers & 2\\
-			Neurons per hidden layer & 32\\
-			
-
-		\end{tabular}
-	\end{center}
-\end{table}
-
-
-\subsection{Reward Function}
-\martinc{Die wurden bereits in Abschnitt~\ref{rewardFunction}
-  spezifiziert. Parameter sollten auch dort erkl\"art werden. Wie man
-  die reward function in den RL-Algorithmus einbaut, sollte in
-  Sec~\ref{RL-algorithm} erkl\"art werden. Insbesondere, wie man die
-  eigenen Bewegungen (konstante Beschleunigung?) und die Bewegungen
-  des Leaders voraussagt, um $r_{t+k}$ f\"ur die Zukunft ($k$
-  Zeitschritte im
-  Vorraus) bestimmen zu k\"onnen und wie gro\3 der prediction time
-  horizon ist}
+where all the factors are evaluated at time step $t$. The weights (cf.
+Table~\ref{tab:agentParameters}) have been found experimentally and
+can be optimized in future studies.
 
 
 
-\section{Model training}
-The training of the model comprises two important components, which
-have to be defined in advance: Generation of trajectories for the
-leading vehicle and
-the specification of a training episode.
 
-\subsection{Generating synthetic trajectories for the leading vehicle}
-The leading trajectory is based on an AR(1) process, whose parameters
+
+\subsection{Training environment}
+The training environment is modeled by a leader and a follower vehicle. Both vehicles implement the point-mass kinematic model described in Section~\ref{training_environment1}. While the follower vehicle is controlled by the RL agent, the  leading trajectory is based on an AR(1) process, whose parameters
 reflect the kinematics of real leaders. The AR(1) process describes
-the speed of the leading vehicle and is defined as \martinc{Habe ich
-  pr\"azisiert} 
+the speed of the leading vehicle and is defined as 
 
 \begin{equation} \label{eq:AR1}
-	v_l(t) = c+\phi v_l(t-1)+ \epsilon_t
+v_l(t) = c+\phi v_l(t-1)+ \epsilon_t
 \end{equation}
 with
 \begin{equation}
-    E(\epsilon_t) = 0, \ \text{Var}(\epsilon_t) = \sigma, \ 
+E(\epsilon_t) = 0, \ \text{Var}(\epsilon_t) = \sigma, \ 
 \text{Cov}(\epsilon_t\epsilon_{t+k})=0 \text{ for }k\neq 0
 \end{equation}
 
 After reaching stationarity, this process has 
 \begin{equation}
 \label{eq:E_AR1}
- \text{the expectation value }E(v_l) = \frac{c}{1-\phi}, 
- \end{equation}
- 
- \begin{equation}
- \label{eq:V_AR1}
- \text{the variance }\text{Var}(v_l) = \frac{\sigma^2}{1-\phi^2}, 
- \end{equation}
+\text{the expectation value }E(v_l) = \frac{c}{1-\phi}, 
+\end{equation}
 
- \begin{equation}
- \label{eq:ACF_AR1}
+\begin{equation}
+\label{eq:V_AR1}
+\text{the variance }\text{Var}(v_l) = \frac{\sigma^2}{1-\phi^2}, 
+\end{equation}
+
+\begin{equation}
+\label{eq:ACF_AR1}
 \text{the autocorrelation  }\text{ACF}(dt) = \phi^{dt}, 
 \end{equation}
 
- \begin{equation}
- \label{eq:tau_AR1}
+\begin{equation}
+\label{eq:tau_AR1}
 \text{and the correlation time  }\tau = -\frac{1}{\ln \phi}, 
 \end{equation}
-\martinc{multi-letter special functions $\sin, \cos, \tan, \ln, \tanh
-  ...$ have latex macros}
-with $d$ corresponding to the simulation step size, which is globally
-set to \unit[100]{ms}. \martinc{use the \textbackslash unit macro applicable
-  in text and math mode. As in the multi-letter math functions, this
-  controls the space after it ($>0$, less than a normal text space)} 
-
+ 
 To adjust the parameters of the AR(1) process, typical values for real leader trajectories has to be defined: With $v_{l,des}$ as the desired speed for the leader, the mean of the AR(1) process is set to be $v_{l,des}/2$ and the standard deviation is set to be $v_{l,des}$. The acceleration $a\sub{phys}$ corresponds to typical physical leader accelerations. With these values and by using Equation \eqref{eq:E_AR1} - \eqref{eq:tau_AR1}, the parameters of the AR(1) process can be calculated as:
 
- \begin{equation}
+\begin{equation}
 \phi = e^{(\frac{-2da\sub{phys}}{v_{l,des}})},
 \end{equation}
 
- \begin{equation}
+\begin{equation}
 c=(1-\phi)\frac{v_{l,des}}{2},
 \end{equation}
 
- \begin{equation}
- \sigma^2=(1-\phi^2)\frac{v_{l,des}^2}{4}.
+\begin{equation}
+\sigma^2=(1-\phi^2)\frac{v_{l,des}^2}{4}.
 \end{equation}
 The assumed typical values for $v_{l,des}$ and  $a\sub{phys}$ as well as the resulting values of the AR(1) process parameters can be found in Table \ref{tab:AR1Parameters}.
-
+%
 \begin{table}
 	\caption{Assumed typical values for leading trajectories and
-          the resulting values of the AR(1) process parameters \martin{for an
-          update time step of \unit[100]{ms}}} 
+		the resulting values of the AR(1) process parameters for an
+		update time step of \unit[100]{ms}} 
 	\label{tab:AR1Parameters} 
 	\begin{center}
 		\begin{tabular}{ p{0.1\textwidth} p{0.1\textwidth} |p{0.1\textwidth} p{0.1\textwidth}  }
-			 \multicolumn{2}{c|}{Real trajectory} & \multicolumn{2}{c}{AR(1) process}   \\ \hline
-			$v_{l,des}$ &$\unit[15]{m/s}$ &$\phi$ & $0.9933$\\
-			$a\sub{phys}$ &$\unit[1]{m/s^2}$ &$c$ & $\unit[0.05]{m/s}$\\
-			& & $\sigma^2$ & $\unit[0.75]{m^2/s^2}$
+			\multicolumn{2}{c|}{Real trajectory} & \multicolumn{2}{c}{AR(1) process}   \\ \hline
+			$v_{l,des}$ &$\unit[15]{m/s}$ &$\phi$ & $0.9868$\\
+			$a\sub{phys}$ &$\unit[1]{m/s^2}$ &$c$ & $\unit[0.0993]{m/s}$\\
+			& & $\sigma^2$ & $\unit[1.475]{m^2/s^2}$
 			
 		\end{tabular}
 	\end{center}
 \end{table}
-
+%
 Figure \ref{fig:AR1process} shows an example trajectory of the leading vehicle based on the AR(1) process using the parameters of Table \ref{tab:AR1Parameters}. If the speed exceeds the defined range of $[0, v_{l,des}]$, it is manually set to the range limits.
 \begin{figure}
 	\centering
@@ -533,47 +533,43 @@ Figure \ref{fig:AR1process} shows an example trajectory of the leading vehicle b
 	\caption{Example of a leading trajectory based on the parametrized AR1 process used to train the RL agent}
 	\label{fig:AR1process}
 \end{figure}
-
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.95\textwidth]{images/Training}
-	\caption{RL training process, one episode contains 500
-          steps. Shown are the reward values of the individual
-          episodes (blue) and a 50-step asymmetric moving average
-          \martinc{Im Gegensatz zum exponential moving average ist der
-          normale moving average standardm\"a\3ig symmetrisch,
-          enth\"alt also Vergangenheit und Zukunft.}}
-	\label{fig:training}
-\end{figure}
-
-\subsection{Training episode definition}
-
-To train the RL agent, a training episode has to be defined. One
-episode has a simulation time of \unit[50]{s} with a step size of
+%
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.95\textwidth]{images/Training}
+%	\caption{RL training process, one episode contains 500
+%		steps. Shown are the reward values of the individual
+%		episodes (blue) and a 30-step asymmetric moving average.}
+%	\label{fig:training}
+%\end{figure}
+%
+%
+One episode has a simulation time of \unit[50]{s} with a step size of
 $d=\unit[100]{ms}$ resulting in an episode length of $500$
-steps.\martin{Reine Zahlen (aber nicht das Minus-Zeichen!) sind im Text- und Math-Modus gleich. Ebenso
-  wie Einheiten ohne Exponent ben\"otigen positive Zahlen keine Dollars, also 500
-  steps oder \unit[50]{s} mit oder ohne \$ OK}   The initial
-speeds of \martin{the} following and leading \martin{vehicles are
-  randomly}  set in the range $[0,v\sub{des}]$ and $[0,v_{l,des}]$,
-respectively. \martinc{``respectively'' kommt immer, mit Komma
-  abgetrennt, nach der Aufz\"ahlung, auch bei zwei items} The initial
-space gap between both is set to \unit[120]{m}. 
+steps. The initial speeds of the following and leading vehicles are
+randomly set in the range $[0,v\sub{des}]$ and $[0,v_{l,des}]$,
+respectively. The initial space gap between both is set to \unit[120]{m}. 
 
-\subsection{Results of the RL training process}
+\subsection{RL hyperparameters}
+Both neural networks, Critic and Actor, are feed-forward neural networks with two layers of hidden neurons, containing 32 neurons each layer (see Figure \ref{fig:MRL}). ReLU activation functions are used. We used the same Ornstein-Uhlenbeck model as we used for the Free-Driving-Policy.
+All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
 
-Figure \ref{fig:training} shows an example of the training
-process. The red line shows the moving average reward of the last 30
-episodes. After approximately 570 episodes\martin{,} the maximum
-average reward has been reached. \martin{Once the saturation has been
-confirmed at an episode count of 850, the learning
-process has been stopped.} \martinc{Das Maximum war
-  doch schon bei 570. Warum saturation erst bei 850? Ich habe es so
-  umformuliert wie ich denke, dass der Algo l\"auft. \"Ubrigens sollte
-  man den Sprung nach etwa 350 Episoden erkl\"aren. Ist das der
-  typische Fall? Falls ja, kann es passieren, dass der Algo vorher
-  stoppt, da er nicht mehr denkt, dass noch ein Sprung kommt?}
+
+%\subsection{Results of the RL training process}
+%
+%Figure \ref{fig:training} shows an example of the training
+%process. The red line shows an asymmetric moving average reward of the last 30
+%episodes. After approximately 570 episodes, the maximum
+%average reward has been reached. Once the saturation has been
+%confirmed at an episode count of 850, the learning
+%process has been stopped.
+
+
+
+
+
+
+
 
 \section{Validation}
 
@@ -588,16 +584,15 @@ artificial external profile for the leading vehicle speed. The initial
 gap between 
 follower and leader is 200 meters, which refers to a free driving
 scenario. The follower accelerates with $a\sub{max} = 2m/s^2$ until
-the desired speed $v\sub{des} = 16.6m/s$ is reached and approaches
+the desired speed $v\sub{des} = \unit[15]{m/s} $ is reached and approaches
 the standing leading vehicle. When the gap between both drops below 90
-meters, the follower starts to decelerate with a \martin{maximum
-  deceleration of} approximately $b_{\rm
+meters, the follower starts to decelerate with a maximum
+  deceleration of approximately $b_{\rm
   comf} = \unit[2]{m/s^2}$ (transition between free driving and car-following)
 and comes to a standstill with a final gap of approximately 
-$s\sub{min} = \unit[2]{m}$. \martin{Afterwards ($t=\unit[27]{s}$),  the leading vehicle accelerates to a speed
+$s\sub{min} = \unit[2]{m}$. Afterwards ($t=\unit[30]{s}$),  the leading vehicle accelerates to a speed
 that is below the desired speed of the follower before performing a
-maximum braking maneuver ($a=\unit[-9]{m/s^2}$) to a full stop ($t=\unit[40]{s}$).} \martinc{Die Beschleunigung
-  ist \emph{nicht} random}. \martin{At the time of the start of the
+maximum braking maneuver ($a=\unit[-9]{m/s^2}$) to a full stop ($t=\unit[46]{s}$). At the time of the start of the
   emergency braking, the follower has nearly reached a steady
   following mode at the desired space gap $s=s_0+v_l T$. While this
   gap makes it impossible to keep the deceleration in the comfortable
@@ -605,13 +600,12 @@ maximum braking maneuver ($a=\unit[-9]{m/s^2}$) to a full stop ($t=\unit[40]{s}$
   the situation by braking smoothly with a maximum deceleration of $-a
   \approx \unit[5]{m/s^2}$.  The transition between different
 accelerations happens in a comfortable way reducing the resulting
-jerk. Only at the beginning ($t=\unit[39]{s}$) where the situation is
+jerk. Only at the beginning ($t=\unit[46]{s}$) where the situation is
 really critical, the jerk $\text{d}a/\text{d}t$ exceeds the comfortable range 
 $\pm \unit[1.5]{m/s^3}$. Afterwards, the leader performs a series of
 non-critical acceleration and deceleration maneuvers and the follower
 tries to follow the leader at the speed dependent desired space gap
-$s_0+v_lT$ while 
-simultaneously smoothing the leader's speed profile.} 
+$s_0+v_lT$ while simultaneously smoothing the leader's speed profile. After the leaders speed exceeds the desired speed of the follower at $t=\unit[88]{s}$ (transition between car-following and free driving), the follower keeps the desired speed $v\sub{des} = \unit[15]{m/s} $.
 
 
 
@@ -632,10 +626,7 @@ simultaneously smoothing the leader's speed profile.}
 	\caption{Comparison of the acceleration variance between
           leader and follower for a leader controlled by AR(1) (blue
           bars) and the leading vehicle of the Napoli experiment
-          (red).
-\martinc{Die Varianz hat die Einheit $\unit{m^2/s^4}$ (Korrektur in der
-Grafik!) In der Tat stimmt der blaue Balken des Leaders, der eine
-H\"ohe von $\sigma^2/d^2=\unit[75]{m^2/s^4}$ haben sollte}}
+          (red).}
 	\label{fig:VarAccComp}
 \end{figure}
 
@@ -646,7 +637,7 @@ H\"ohe von $\sigma^2/d^2=\unit[75]{m^2/s^4}$ haben sollte}}
 
 \subsection{String stability}
 \label{sec:stringStability}
-The second \martin{validation} scenario, shown in Figure
+The second validation scenario, shown in Figure
 \ref{fig:AR1Kolonne}, consists of a leader based on the AR(1) process
 that is
 followed by five vehicles, each controlled by the trained RL
@@ -671,13 +662,10 @@ comfort and reduce fuel consumption and emissions.
 \subsection{Response to a real leader trajectory}
 
 In a further scenario, the abilities of the RL strategy are evaluated
-with a real leader trajectory (Fig.~\ref{fig:PunzoKolonne})
-\martinc{Die Tilde im Latex Quelltext bedeutet ein reserviertes
-  Leerzeichen, bei dem kein Zeilenumbruch stattfinden darf}. This
-trajectory comes from \martin{platoon driving} experiments in Napoli
-where \martin{high-precision distance data between the platoon
-vehicles} were obtained (reference to Punzo et al.). \martinc{wdh
-  gestrichen} Similar to the experiment from
+with a real leader trajectory (Fig.~\ref{fig:PunzoKolonne}). This
+trajectory comes from platoon driving experiments in Napoli
+where high-precision distance data between the platoon
+vehicles were obtained (reference to Punzo et al.). Similar to the experiment from
 Section~\ref{sec:stringStability}, string stability and the reduction
 of  the acceleration variance, shown by the red bars in Figure
 \ref{fig:VarAccComp}, is demonstrated. At time $t = 140s$ the leader
@@ -688,10 +676,7 @@ keeping the minimum distance $s\sub{min}$ to the leader.
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\textwidth]{images/PunzoKolonne}
-	\caption{Response to a real leader trajectory \martinc{Die
-            leader acceleration hat das falsche Vorzeichen bzw passt
-            f\"ur $t>\unit[160]{s}$ \"uberhaupt nicht! Gilt auch f\"ur
-        die n\"achste Abbildung}}
+	\caption{Response to a real leader trajectory}
 	\label{fig:PunzoKolonne}
 \end{figure}
 
@@ -702,29 +687,28 @@ keeping the minimum distance $s\sub{min}$ to the leader.
 As mentioned in Section \ref{rewardFunction}, different driving styles
 can be achieved by adjusting the parameters of the reward
 function. Three RL agents has been trained on a reward function, that
-differs in the desired time gap $T$ das between following and
+differs in the desired time gap $T$ between following and
 leading vehicle ($T_{1} = 1.0s$, $T_{2} = 1.5s$, $T_{3} =
 2.0s$). Figure \ref{fig:differentT} shows the result of these agents,
 following the real leader trajectory from Napoli. It can be observed,
 that a lower value for $T$ results in closer driving to the
-leader \martin{which can be considered as a more ``aggressive''
-  driving style. Since this also means that there are less options in
+leader which can be considered as a more ``aggressive''
+driving style. Since this also means that there are less options in
 increasing driving comfort without affecting safety, the follower's
-accelerations and decelerations also increase although the relatve
-weighting $w_2/w_3$ of the safety and comfort aspects in Eq.~\eqref{rt} has not been
-changed.} 
+accelerations and decelerations also increase although the relative
+weighting $w\sub{jerk}/w\sub{gap}$ of the safety and comfort aspects in Eq.~\eqref{rt1} and \eqref{rt2} has not been
+changed.
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\textwidth]{images/differentT}
-	\caption{Impact of different\martin{ly} parametrized RL agents
-          on the driving behavior \martinc{Fehler Leader-Beschl., vgl. vorherige Abb.}}
+	\caption{Impact of differently parametrized RL agents
+          on the driving behavior }
 	\label{fig:differentT}
 \end{figure}
 
 
 \subsection{Cross validation with the Intelligent Driver Model}
-\martinc{reformulated}
 To compare the performance of the RL agent with that of
 classical car-following models, we chose the commonly used
 Intelligent-Driver Model (IDM)\cite{Opus} whose acceleration is given
@@ -749,12 +733,11 @@ minimizing the sum of squares of the relative gap error,
 $\mathrm{SSE}(\ln s)$, of the first follower with respect to the
 data (cf. Table~\ref{tab:IDMparameters}). The same parameters are also
 assumed for the reward function of the RL agent before it was trained
-on the artificial AR(1) generated leader speed profile
-\martinc{check!}. Notice that the RL agent used the Napoli data only
+on the artificial AR(1) generated leader speed profile. Notice that the RL agent used the Napoli data only
 indirectly by parameterizing its reward function.
 \begin{table}
-	\caption{\martin{IDM parameters calibrated to the Napoli
-            data and also used for the reward function of the RL agent}} 
+	\caption{IDM parameters calibrated to the Napoli
+            data and also used for the reward function of the RL agent}
 	\label{tab:IDMparameters} 
 	\begin{center}
 		\begin{tabular}{ p{0.14\textwidth} |p{0.1\textwidth}  } 
@@ -786,7 +769,7 @@ Figure \ref{fig:IDMvsRL} shows the results for: First, the RL agent, calibrated 
 		\begin{tabular}{p{0.3\textwidth} | p{0.2\textwidth} p{0.2\textwidth}  } 
 			& RL agent & IDM   \\ \hline
 			$SSE(log(s))$ & $389.10$ &  $418.05$	\\
-			Accumulated Reward &  $8.23 \times 10^3$   & $8.08\times 10^3$
+			Accumulated Reward &  $6.86 \times 10^3$   & $6.73\times 10^3$
 			
 		\end{tabular}
 	\end{center}
