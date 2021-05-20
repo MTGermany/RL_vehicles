@@ -10,6 +10,7 @@
 \usepackage{graphicx}
 \usepackage{mathtools}
 \usepackage{units}
+\usepackage[ruled,vlined]{algorithm2e}
 \usepackage{physics} % normal derivative v=dv{x}{t},
                      % partial derivative pdv{V(x,t)}{t}
                      % n'th normal derivative a=dv[2]{x}{t}
@@ -169,7 +170,41 @@ $\gamma^k r_{t+k}$ the expected contribution $k$ time steps ahead.
   tasks with a continuous action and state space, such as in
   \cite{SafeEfficientAndComfortable}, \cite{ComparisonRLvsMPC} or
   \cite{HumanLikeAutonomouCF}. The original work can be found in
-  \cite{DDPG}. DDPG is an Actor-Critic method, that uses an Actor to propose an action based on a given state and Critic to predict if the action is good or bad, based on a given state and action. To achieve a better training stability, DDPG uses target networks. While training these networks are updated slowly, hence keeping the estimated targets stable. Furthermore DDPG uses Experience Replay, that implements a buffer, where a list of tuples (xyz) are stored. Instead of learning from the most recent experience, DDPG learns from sampling a mini-batch from the experience buffer. To implement better exploration by the Actor network, DDPG uses noisy perturbations, specifically an Ornstein-Uhlenbeck process for generating noise. It samples noise from a correlated normal distribution. The entire DDPG algorithm is shown in xyz. 
+  \cite{DDPG}. DDPG is an Actor-Critic method, that uses an Actor  $\mu\left(s \mid \theta^{\mu}\right)$ with weights $\theta^{\mu} $ to propose an action based on a given state $s$ and a Critic $Q\left(s, a \mid \theta^{Q}\right) $ with weights  $\theta^{Q}$ to predict if the action is good or bad, based on a given state $s$ and action $a$. To achieve a better training stability, DDPG uses target networks  $\mu^{\prime}$ and $Q^{\prime}$ for Actor and Critic. While training, these networks are updated slowly, hence keeping the estimated targets stable. Furthermore DDPG uses Experience Replay, that implements a Replay Buffer $R$, where a list of tuples $\left(s_{t}, a_{t}, r_{t}, s_{t+1}\right)$ are stored. Instead of learning from the most recent experience, DDPG learns from sampling a mini-batch from the experience buffer. To implement better exploration by the Actor network, DDPG uses noisy perturbations, specifically an Ornstein-Uhlenbeck process for generating noise. It samples noise from a correlated normal distribution. The entire DDPG algorithm is shown in Algorithm~\ref{alg:ddpg}. 
+  
+  \begin{algorithm}
+  	\label{alg:ddpg}
+  	Randomly initialize critic network $Q\left(s, a \mid \theta^{Q}\right) $ and actor $\mu\left(s \mid \theta^{\mu}\right)$ with weights $\theta^{Q}$ and $\theta^{\mu} $  \\
+  	Initialize target network $Q^{\prime}$ and $\mu^{\prime}$ with weights $\theta^{Q^{\prime}} \leftarrow \theta^{Q}, \theta^{\mu^{\prime}} \leftarrow \theta^{\mu}$\\
+  	Initialize Replay Buffer $R$\\
+  	\For{$episode = 1$ \KwTo $M$}{
+  		Initialize a random process $\mathcal{N}$ for action exploration\\
+  		 Receive initial observation state $s_{1}$ \\
+  		\For{$t = 1$ \KwTo $T$}{
+  			Select action $a_{t}=\mu\left(s_{t} \mid \theta^{\mu}\right)+\mathcal{N}_{t}$ according to the current policy and exploration noise\\
+  			 Execute action $a_{t}$ and observe reward $r_{t}$ and observe new state $s_{t+1}$\\
+  			  Store transition $\left(s_{t}, a_{t}, r_{t}, s_{t+1}\right)$ in $R$\\
+  			   Sample a random minibatch of $N$ transitions $\left(s_{i}, a_{i}, r_{i}, s_{i+1}\right)$ from $R$\\
+  			    Set $y_{i}=r_{i}+\gamma Q^{\prime}\left(s_{i+1}, \mu^{\prime}\left(s_{i+1} \mid \theta^{\mu^{\prime}}\right) \mid \theta^{Q^{\prime}}\right)$\\
+  			Update critic by minimizing the loss: $L=\frac{1}{N} \sum_{i}\left(y_{i}-Q\left(s_{i}, a_{i} \mid \theta^{Q}\right)\right)^{2}$\\
+  			 Update the actor policy using the sampled policy gradient:
+  			$$
+  			\left.\left.\nabla_{\theta^{\mu}} J \approx \frac{1}{N} \sum_{i} \nabla_{a} Q\left(s, a \mid \theta^{Q}\right)\right|_{s=s_{i}, a=\mu\left(s_{i}\right)} \nabla_{\theta^{\mu}} \mu\left(s \mid \theta^{\mu}\right)\right|_{s_{i}}
+  			$$
+  			Update the target networks:
+  			$$
+  			\begin{aligned}
+  			\theta^{Q^{\prime}} & \leftarrow \tau \theta^{Q}+(1-\tau) \theta^{Q^{\prime}} \\
+  			\theta^{\mu^{\prime}} & \leftarrow \tau \theta^{\mu}+(1-\tau) \theta^{\mu^{\prime}}
+  			\end{aligned}
+  			$$
+  		}
+  	}
+  	
+  	
+  	\caption{DDPG algorithm according to \cite{DDPG}}
+  \end{algorithm}
+  
   
   \subsection{\label{MRL}Modularized Reinforcement Learning}
   Furthermore we used a modularized approach to decompose the task into two subtasks. Modular Reinforcement Learning (MRL) refers to the decomposition of a complex, multi-goal
@@ -495,7 +530,7 @@ After reaching stationarity, this process has
 \text{and the correlation time  }\tau = -\frac{1}{\ln \phi}, 
 \end{equation}
  
-To adjust the parameters of the AR(1) process, typical values for real leader trajectories has to be defined: With $v_{l,des}$ as the desired speed for the leader, the mean of the AR(1) process is set to be $v_{l,des}/2$ and the standard deviation is set to be $v_{l,des}$. The acceleration $a\sub{phys}$ corresponds to typical physical leader accelerations. With these values and by using Equation \eqref{eq:E_AR1} - \eqref{eq:tau_AR1}, the parameters of the AR(1) process can be calculated as:
+To adjust the parameters of the AR(1) process, typical values for real leader trajectories has to be defined: With $v_{l,des}$ as the desired speed for the leader, the mean of the AR(1) process is set to be $v_{l,des}/2$ and the standard deviation is set to be $v_{l,des}/2$. The acceleration $a\sub{phys}$ corresponds to typical physical leader accelerations. With these values and by using Equation \eqref{eq:E_AR1} - \eqref{eq:tau_AR1}, the parameters of the AR(1) process can be calculated as:
 
 \begin{equation}
 \phi = e^{(\frac{-2da\sub{phys}}{v_{l,des}})},
@@ -612,11 +647,7 @@ $s_0+v_lT$ while simultaneously smoothing the leader's speed profile. After the 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\textwidth]{images/manipulatedLeader.eps}
-	\caption{Response to an external leading vehicle speed profile
-\martinc{runtime $\to$ time, da sich runtime so nach Computerlaufzeit
-  anh\"ort, distance $\to$ gap. Dort sollte man die Skala nur bis
-  \unit[50]{m} gehen lassen, da man sonst fast nichts sieht,
-  insbesondere nicht, ob $s\sub{des}$ ann\"ahernd eingehalten wird.} }
+	\caption{Response to an external leading vehicle speed profile}
 	\label{fig:manipulatedLeader}
 \end{figure}
 
