@@ -365,7 +365,7 @@ reward function includes a set of parameters that can be
 adjusted to realize different driving styles. 
 
 \begin{table}
-	\caption{RL agent parameters and default values \martinc{check the weights!}} 
+	\caption{RL agent parameters and default values} 
 	\label{tab:agentParameters} 
 	\begin{center}
 		\begin{tabular}{ p{0.12\textwidth}| p{0.65\textwidth}| p{0.1\textwidth}}
@@ -808,7 +808,15 @@ Figure \ref{fig:IDMvsRL} shows the results for: First, the RL agent, calibrated 
 
 
 \section{Conclusion/Discussion}
-evaluation of safety and comfort, comparison to IDM
+This study presented a novel car-following model based on DRL. The proposed model considers free driving, car-following, as well as the transition between both in a way, that approaching the leading vehicle is smooth and comfortable. We used an approach called Modularized Reinforcement Learning (\cite{MRL}) to decompose the multi-goal problem into two subtasks. Two different RL policies have been designed using the Deep Deterministic Policy Gradient algorithm. The Free-Driving-Policy refers to free driving and aims not to exceed a desired speed. The Car-Following-Policy refers to following a vehicle and aims to keep a reasonable gap to a leader vehicle.
+
+For each policy, we defined separate reward functions, which reflect traffic safety and comfort aspects. 
+Different driver characteristics can be modeled by adjusting the parameter of the reward function.
+
+The proposed model is trained on leading trajectories based on an AR(1)-process. This leads to high generalization capabilities and a model usage in a wider variety of traffic scenarios. 
+For the evaluation of the trained agents, different traffic scenarios have been simulated. The scenarios based on both synthetic and naturalistic trajectory data, bringing the model to its limits. 
+In all cases, the car-following model proved to be accident-free and comfortable. Further scenarios showed that traffic oscillations could effectively be dampened with a sequence of trained followers, even if the leader shows large outliers in acceleration.
+
 
 
 
