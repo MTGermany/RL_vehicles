@@ -48,4 +48,6 @@ tmp
 *.glo
 *.gls
 
+# own files/directories not for distribution
 
+save
