@@ -247,7 +247,10 @@ situations, the acceleration is defined as a continuous variable in the
 The state space defines the observations that the 
 vehicle can receive from the environment. To compute an optimal
 acceleration, the following vehicle observes its own acceleration $a$,
-and its own speed $v$. Linear translation and scaling is used to reduce the dimensions and to bring all observations approximately into the same range of $[0,1]$. The observation at time step $t$ is defined as
+and its own speed $v$. Linear translation and scaling is used to
+reduce the dimensions and to bring all observations approximately into
+the same range of $[0,1]$. The observation at time step $t$ is defined
+as 
 
 \begin{equation}
 s_t = \begin{pmatrix} \frac{v_t}{v\sub{des}} \\ \frac{a_t-a\sub{\rm min}}{a\sub{\rm max} - a\sub{\rm min}}\end{pmatrix}.
@@ -289,7 +292,11 @@ where all the factors are evaluated at time step $t$.
 
 \subsection{Training environment}
 \label{training_environment1}
-In order to train the RL agent for the task of keeping a desired speed, the training environment is defined as follows. To describe the dynamics of the vehicle, a point-mass kinematic model is used. For updating the speed for time step $t + 1$ the Euler method is used.
+In order to train the RL agent for the task of keeping a desired
+speed, the training environment is defined as follows. To describe the
+dynamics of the vehicle, a point-mass kinematic model is used. \martin{For
+updating the speed and position for time step $t + 1$ the Euler and
+ballistic methods are used, respectively.}
 
 \begin{equation}
 	v\sub{t+1} = v\sub{t} + a\sub{t} d
@@ -304,7 +311,16 @@ with $d$ corresponding to the simulation step size, which is globally
 set to \unit[100]{ms}. To train the RL agent, a training episode has to be defined. One training episode contains 300 time steps and the vehicle's initial speed is set randomly in the range $[0,v\sub{des}]$.
 
 \subsection{RL hyperparameters}
-Both neural networks, Critic and Actor, are feed-forward neural networks with one layer of hidden neurons, containing 16 neurons (see Figure \ref{fig:MRL}). ReLU activation functions are used.  The learning rate for Critic and Actor is set to 0.001. For the exploration of the action space, an exploration noise model has to be defined. We adopted an Ornstein-Uhlenbeck process with $\Theta = 0.15$  and $\sigma = 0.2$ as suggested in \cite{DDPG}. The update rate of the target networks is set to 0.001.
+Both neural networks, critic and actor,\martinc{critic and actor are
+  generic concepts, thus lowercase. Named policies (Free-Driving
+  Policy or free-driving policy) may be written upper- or lowercase but
+  always without a hyphen connecting the last word} are feed-forward neural
+networks with one layer of hidden neurons, containing 16 neurons (see
+Figure \ref{fig:MRL}). ReLU activation functions are used
+\martinc{define ReLU or give a reference}.  The learning rate for
+Critic and Actor is set to 0.001. For the exploration of the action
+space, an exploration noise model has to be defined. We adopted a
+\martin{zero-reverting} Ornstein-Uhlenbeck process with $\Theta = 0.15$  and $\sigma = 0.2$ as suggested in \cite{DDPG}. The update rate of the target networks is set to 0.001.
 All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
 
 
@@ -341,8 +357,11 @@ The state space defines the observations that the following
 vehicle can receive from the environment. To compute an optimal
 acceleration, the following vehicle uses its own acceleration $a$,
 its own speed $v$, the relative speed $\Delta v=v_l-v$ where $v_1$ denotes
-the speed of the leading vehicle  and the (bumper-to-bumper)
-gap $s$ to the leader. Again, linear translation and scaling is used to reduce the dimensions and to bring all observations approximately into the same range of $[0,1]$. The observation at time step $t$ is defined as
+the speed of the leading vehicle,  and the (bumper-to-bumper)
+gap $s$ to the leader. Again, linear translation and scaling is used
+to reduce the dimensions and to bring all observations approximately
+into the same range of $[0,1]$. \martinc{The third state usually is in
+  $[-1,1]$ and $s/s\sub{max}$ needs a fallback if there is no leader} The observation at time step $t$ is defined as
 
 \begin{equation}
 s_t = 
@@ -392,8 +411,13 @@ The first factor addresses the driver's
 response in safety-critical situations by comparing the
 kinematically needed deceleration $(\Delta v)^2/(2s)$ (assuming an
 unchanged speed of the leader) with the
-comfortable deceleration $b\sub{comf}$,
-
+comfortable deceleration $b\sub{comf}$, \martinc{a theta function
+  $\Theta(v-v_l)=\Theta(-\Delta v)$ is missing in Eq.~\eqref{bkin}}
+\martinc{Why a tanh function? \eqref{r2} has a kink at zero and
+  flattens if the situation becomes really critical. Why not 
+$-((b\sub{kin}-b\sub{comf})/b\sub{min})^2
+  \Theta(b\sub{kin}-b\sub{comf})$ possibly normalized to a max of 1 if
+  this is needed?}
 
 
 \begin{equation}
@@ -407,6 +431,7 @@ r_1 =
 
 with
 \begin{equation}
+\label{bkin}
 b_{kin} = \frac{\Delta v^2}{s}
 \end{equation}
 The argument of the tanh function with  the
