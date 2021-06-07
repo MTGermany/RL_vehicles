@@ -309,9 +309,9 @@ x_{t+1} = x_{t} + \frac{v_{t} + v_{t+1}}{2} d
 
 
 with $d$ corresponding to the simulation step size, which is globally
-set to \unit[100]{ms}. To train the RL agent, a training episode has to be defined. One training episode contains 300 time steps and the vehicle's initial speed is set randomly in the range $[0,v\sub{des}]$.
+set to \unit[100]{ms}. To train the RL agent, a training episode has to be defined. One training episode contains 500 time steps and the vehicle's initial speed is set randomly in the range $[0,v\sub{des}]$.
 
-\subsection{RL hyperparameters}
+\subsection{Model training}
 Both neural networks, critic and actor, are feed-forward neural
 networks with one layer of hidden neurons, containing 16 neurons (see
 Figure \ref{fig:MRL}). ReLU activation functions (\cite{relu}) are used. The learning rate for
@@ -319,8 +319,7 @@ critic and actor is set to 0.001. For the exploration of the action
 space, an exploration noise model has to be defined. We adopted a
 zero-reverting Ornstein-Uhlenbeck process with $\Theta = 0.15$  and $\sigma = 0.2$ as suggested in \cite{DDPG}. The update rate of the target networks is set to 0.001.
 All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
-
-
+%
   \begin{table}
 	\caption{DDPG parameter values} 
 	\label{tab:DDPGparameters} 
@@ -341,7 +340,9 @@ All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
 		\end{tabular}
 	\end{center}
 \end{table}
-
+%
+Figure \ref{fig:TrainingReward} shows an example of the training
+process, where the asymmetric moving average reward of the last 30 training episodes is plotted over training episodes. For the Free-Driving Policy, a maximum average reward has been reached after approximately 3200 training episodes.
 
 \section{Car-Following Policy}
 \subsection{Action and state space}
@@ -613,19 +614,19 @@ steps. The initial speeds of the following and leading vehicles are
 randomly set in the range $[0,v\sub{des}]$ and $[0,v_{l,\text{des}}]$,
 respectively. The initial space gap between both is set to \unit[120]{m}. 
 
-\subsection{RL hyperparameters}
+\subsection{Model training}
 Both neural networks, critic and Actor, are feed-forward neural networks with two layers of hidden neurons, containing 32 neurons each (see Figure \ref{fig:MRL}). ReLU activation functions are used. We used the same Ornstein-Uhlenbeck model as we used for the Free-Driving Policy.
 All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
 
-
-%\subsection{Results of the RL training process}
+Figure \ref{fig:TrainingReward} shows an example of the training
+process, where the asymmetric moving average reward of the last 30 training episodes is plotted over training episodes. For the Car-Following Policy, a maximum average reward has been reached after approximately 8900 training episodes.  
 %
-%Figure \ref{fig:training} shows an example of the training
-%process. The red line shows an asymmetric moving average reward of the last 30
-%episodes. After approximately 570 episodes, the maximum
-%average reward has been reached. Once the saturation has been
-%confirmed at an episode count of 850, the learning
-%process has been stopped.
+\begin{figure}
+	\centering
+	\includegraphics[width=12cm]{images/TrainingReward}
+	\caption{Asymmetric moving average reward of the last 30 training episodes for Free-Driving Policy and Car-Following Policy} 
+	\label{fig:TrainingReward}
+\end{figure}
 
 
 
