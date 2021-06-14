@@ -109,47 +109,48 @@ processes \sep string stability \sep validation \sep trajectory data
 %\linenumbers
 
 \section{Introduction}
-
-Autonomous driving technologies are seen as promising solutions to improve road safety, where human errors account for 94\% of the total accidents \cite{vehicleCrashSurvey2015}. Moreover congestion, energy consumption and emissions are intended to be reduced. 
+Autonomous driving technologies are seen as promising solutions to improve road safety, where human errors account for 94\% of the total accidents \cite{vehicleCrashSurvey2015}. Moreover, congestion, energy consumption and emissions are intended to be reduced. 
 But autonomous driving is a challenging task since the transportation traffic can be dynamic and unpredictable.
 On the way to fully autonomous driving, Advanced Driver Assistance Systems
 (ADAS) has been developed to solve tasks like lane-keeping, lane-changing, car-following, emergency braking, etc.
-Since Deep Learning methods has been demonstrated to surpass humans in certain domains, they are also adopted in the area of autonomous driving.
+Since Deep Learning methods have been demonstrated to surpass humans in certain domains, they are also adopted in the area of autonomous driving.
 Especially Deep Reinforcement Learning (DRL), which combines the power of Deep Learning in tackling large, complicated problems with Reinforcement Learning, has shown its potential in a broad variety of autonomous driving tasks. 
 In \cite{OnRampMerge2018} and \cite{OnRampMerge2020}, DRL is used to guide an autonomous vehicle safely from on-ramp to freeway. In \cite{intersection1}, \cite{intersection3} and \cite{intersection2}, DRL methods are used to manage traffic of autonomous vehicles at intersections, optimizing safety and efficiency.
 In \cite{LangeChange1}, DRL is used to solve lane change maneuvers.
 
-A further task in autonomous driving is to model the vehicle behavior under car following scenarios, where suitable accelerations has to computed in order to achieve a safe and comfortable driving. Approaches to solve this task are classical car-following models, such as the Intelligent Driver Model \cite{Opus} or stochastic car-following models, such as in \cite{Treiber2018stochIDM_TRB}. Furthermore data-driven approaches use Machine Learning methods to train a car-following model based on experimental car-follower data, such as in \cite{Chong2011SimulationOD} or \cite{ZHOU2017245}. Downside of this approach is that the model tries to emulate human driver behavior which still can be suboptimal.
+A further task in autonomous driving is to model the vehicle behavior under car-following scenarios, where suitable accelerations has to be computed in order to achieve safe and comfortable driving. Approaches to solving this task are classical car-following models, such as the Intelligent Driver Model \cite{Opus} or stochastic car-following models, such as in \cite{Treiber2018stochIDM_TRB}. Furthermore, data-driven approaches use Machine Learning methods to train a car-following model based on experimental car-follower data, such as in \cite{Chong2011SimulationOD} or \cite{ZHOU2017245}. The downside of this approach is that the model tries to emulate human driver behavior, which can still be suboptimal.
 
 To overcome this issue, DRL methods train non-human car-following models that can optimize metrics such as safety, efficiency and comfort. 
-One approach is to train on scenarios, where the leading vehicle trajectory, used for training, is based on experimental data, such as in \cite{SafeEfficientAndComfortable} or \cite{HumanLikeAutonomouCF}. Similar approaches suggest a standardized driving cycle, which functions as leading vehicle trajectory, such as \cite{ComparisonRLvsMPC} or \cite{CFelectricVehicle}, which uses the New European Driving Cycle.
-A disadvantage coming along with these approaches is, that for scenarios, which are not in the scope of the training data, the performance decreases, indicating inadequate machine learning generalization \cite{ComparisonRLvsMPC}. 
+One approach is to train on scenarios where the leading vehicle trajectory, used for training, is based on experimental data, such as in \cite{SafeEfficientAndComfortable} or \cite{HumanLikeAutonomouCF}. Similar approaches suggest a standardized driving cycle, which functions as leading vehicle trajectory, such as \cite{ComparisonRLvsMPC} or \cite{CFelectricVehicle}, which uses the New European Driving Cycle.
+A disadvantage coming along with these approaches is that for scenarios, which are not in the scope of the training data, the performance decreases, indicating inadequate machine learning generalization \cite{ComparisonRLvsMPC}. 
 
-Another issue of car-following models is string-stability. There are several studies focusing on dampening traffic oscillations by using a sequence of trained vehicles, such as \cite{qu2020jointly}, \cite{DissipatingStopAndGoWaves} and \cite{DampenStopAndGoTraffic}.
+Another issue of car-following models is string stability. There are several studies focusing on dampening traffic oscillations by using a sequence of trained vehicles, such as \cite{qu2020jointly}, \cite{DissipatingStopAndGoWaves} and \cite{DampenStopAndGoTraffic}.
 
-All the mentioned DRL car-following models have three disadvantages in common: At first the acceleration range is limited in a way, that full-brakes are not considered. This results in models that are just designed for non-safety-critical scenarios. Second these models just consider car-following scenarios, while free driving or the transition between both is not reflected in the reward function. Third the trained models have just been validated on data that is similar to the training data set, so that the generalization capabilities cannot be proved. 
+All the mentioned DRL car-following models have three disadvantages in common: At first, the acceleration range is limited in a way that full-brakes are not considered. This results in models that are just designed for non-safety-critical scenarios. Second, these models just consider car-following scenarios, while free driving or the transition between both is not reflected in the reward function. Third, the trained models have just been validated on data that is similar to the training data set so that the generalization capabilities cannot be proved. 
 
 This motivated us to design a model, which overcomes these issues.
 To our knowledge, no RL based car-following model has been proposed which has the following features combined:
 
 
 \begin{itemize}
-	\item  The proposed model considers free driving, car-following, as well as the transition between both in a way, that approaching of the leading vehicle is smooth and comfortable.
+	\item  The proposed model considers free driving, car-following, as well as the transition between both in a way that approaching the leading vehicle is smooth and comfortable.
 	\item The proposed model has a wider range of possible accelerations, which leads to a collision-free behavior also in safety-critical situations such as full-braking of the leader.
-	\item The proposed model is trained on leading trajectories, based on an AR(1)-process, e. g. \cite{HonerkampEngl}, the parameters reflecting kinematics of real drivers. This leads to high generalization capabilities and a model usage in a broader variety of traffic scenarios. 
+	\item The proposed model is trained on leading trajectories, based on an AR(1)-process, e. g. \cite{HonerkampEngl}, the parameters reflecting kinematics of real drivers. This leads to high generalization capabilities and model usage in a broader variety of traffic scenarios. 
 	\item Different driver characteristics can be modeled by adjusting the parameters of the reward function.
 	\item The proposed model shows string-stability.
 	
 \end{itemize}
 
-Another feature of this work is a thorough validation of the above mentioned properties in scenarios based on both synthetic and naturalistic trajectory data, bringing the model to its limits. 
-In all cases, the model proved to be accident free and string stable.
-In a further experiment the proposed model is compared to an Intelligent Driver Model, calibrated on the same data. The results indicate a better performance of the proposed model.
+Another feature of this work is a thorough validation of the above-mentioned properties in scenarios based on both synthetic and real trajectory data, bringing the model to its limits. 
+In all cases, the model proved to be accident-free and string stable.
+In a further experiment, the proposed model is compared to an Intelligent Driver Model, calibrated on the same data. The results indicate a better performance of the proposed model.
 
+This work is structured as follows. In Section \ref{sec:RLBackground} we introduce some basic RL background as well as our modularized RL approach, followed by a detailed description of our two sub-modules: The Free-Driving policy in Section \ref{sec:FreeDrivingPolicy} and the Car-Following policy in Section \ref{sec:CarFollowingPolicy}. In Section \ref{sec:validation} we evaluate our RL strategy with respect to safety, effectiveness and comfort aspects, followed by the conclusion in Section \ref{sec:conclusion}.
 
-[short textual enumeration of the sections to come]
 
 \section{Reinforcement Learning Background}
+\label{sec:RLBackground}
+
 The following vehicle is controlled by a Reinforcement
 Learning (RL) agent. By interaction with an environment, the RL agent
 optimizes a sequential decision making problem. At each time step
@@ -229,6 +230,7 @@ $\gamma^k r_{t+k}$ the expected contribution $k$ time steps ahead.
 
 
 \section{Free-Driving Policy}
+\label{sec:FreeDrivingPolicy}
 \subsection{Action and state space}
 \label{actionSpace1}
  The defined modularized RL approach requires that the action space of both sub-policies are identical. To enable comfortable driving and allow for a maximum braking deceleration in safety-critical
@@ -345,6 +347,7 @@ Figure \ref{fig:TrainingReward} shows an example of the training
 process, where the asymmetric moving average reward of the last 30 training episodes is plotted over training episodes. For the Free-Driving Policy, a maximum average reward has been reached after approximately 3200 training episodes.
 
 \section{Car-Following Policy}
+\label{sec:CarFollowingPolicy}
 \subsection{Action and state space}
 \label{actionSpace1}
 To match the action space of the Free-Driving Policy, the acceleration is analogously defined as a continuous variable in the range between $a\sub{\rm min} = \unit[-9]{m/s^2}$ and 
@@ -413,7 +416,7 @@ comfortable deceleration $b\sub{comf}$,
 
 
 \begin{equation}
-\label{r2}
+\label{eq:r1_CFP}
 r_1 = 
 \begin{cases}
 -\tanh\left(\frac{b_{kin}-b\sub{comf}}{-a\sub{min}}\right),& \text{if } b_{kin}>b\sub{comf}\\
@@ -636,7 +639,7 @@ process, where the asymmetric moving average reward of the last 30 training epis
 
 
 \section{Validation}
-
+\label{sec:validation}
 The goal is not to minimize some error measure as in usual
 calibration/validation but to check if the driving style is safe,
 effective, and comfortable. The RL strategy is evaluated with respect to these metrics in different driving scenarios, described in the following.
@@ -773,6 +776,7 @@ changed. Still, when simulating platoons of the three RL
 
 
 \subsection{Cross validation with the Intelligent Driver Model}
+\label{sec:crossValIDM}
 To compare the performance of the RL agent with that of
 classical car-following models, we chose the commonly used
 Intelligent-Driver Model (IDM)\cite{Opus} whose acceleration is given
@@ -840,8 +844,26 @@ Figure \ref{fig:IDMvsRL} shows the results for: First, the RL agent, calibrated 
 	\end{center}
 \end{table}
 
+\subsection{Time-to-collision comparison with the Intelligent Driver Model}
+
+An important safety measure for car-following models is the time-to-collision (TTC). Again we took leading trajectories coming from platoon driving experiments in Napoli to conduct a TTC analysis. We simulated 15 different leaders from those experiments, once followed by an RL agent and the other time by a vehicle controlled with the IDM from Section \ref{sec:crossValIDM}. Both followers are parametrized on the default parameter from Table \ref{tab:agentParameters}. Figure \ref{fig:DistributionTTC} shows the distribution of TTC for all 15 experiments. The TTC has been evaluated at each simulation time step. The lower TTC bound for the RL agent is \unit[2.6]{s}, while the one for the IDM controlled vehicle is \unit[2.2]{s}. This difference in driving behavior is further evaluated by focusing on a single leader-follower experiment, shown in Figure \ref{fig:TTC_CaseStudy}. All situations where the TTC of the IDM drops below \unit[2.5]{s} are marked in green. In all three of these situations, the leader brakes to a standstill. In the situation where the TTC is most critical, the deceleration of the leader is quite high with $b = \unit[6]{m/s^2}$. The main reason for the difference in TTC between IDM and RL agent lies in the fact, that the RL agent keeps a slightly higher gap to the leader most of the time, which simply reflects a more defensive driving style of the RL agent. This presumably comes from the weighting of factor $r_1$  of the Car-Following policy (\ref{eq:r1_CFP}), which motivates the RL agent to avoid safety-critical situations. 
+
+\begin{figure}	
+	\centering
+	\includegraphics[width=0.95\textwidth]{images/DistributionTTC}
+	\caption{Distribution of time-to-collision (TTC) for IDM and RL agent in different experiments based on real leader trajectories}
+	\label{fig:DistributionTTC}
+\end{figure}
+
+\begin{figure}	
+	\centering
+	\includegraphics[width=0.95\textwidth]{images/TTC_CaseStudy}
+	\caption{Response of an IDM and RL agent on a real trajectory. Safety-critical situations where the TTC of the IDM drops below \unit[2.5]{s} are marked in green.}
+	\label{fig:TTC_CaseStudy}
+\end{figure}
 
 \section{Conclusion/Discussion}
+\label{sec:conclusion}
 This study presented a novel car-following model based on DRL. The proposed model considers free driving, car-following, as well as the transition between both in a way, that approaching the leading vehicle is smooth and comfortable. We used an approach called Modularized Reinforcement Learning (\cite{MRL}) to decompose the multi-goal problem into two subtasks. Two different RL policies have been designed using the Deep Deterministic Policy Gradient algorithm. The Free-Driving Policy refers to free driving and aims not to exceed a desired speed. The Car-Following Policy refers to following a vehicle and aims to keep a reasonable gap to a leader vehicle.
 
 For each policy, we defined separate reward functions, which reflect traffic safety and comfort aspects. 
