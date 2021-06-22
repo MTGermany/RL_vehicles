@@ -1,0 +1,15 @@
+vinpunzo@unina.it
+
+subj.: Request to use experimental data
+
+Dear Vincenzo Punzo,
+
+Several years ago, you provided me with car-following data from platoon driving experiments in and around Napoli at a TRB conference. Now, we are about to write a paper on a novel car-following model based on reinforcement learning and would like to use your data for validation purposes.
+
+I kindly ask if we can do this.
+
+All the best,
+
+Martin
+
+

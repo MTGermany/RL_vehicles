@@ -96,7 +96,7 @@
 
 
 \begin{abstract}
-To be written at the end
+\martinc{After the final research has settled, I can write it}
 \end{abstract}
 
 \begin{keyword}
@@ -116,47 +116,52 @@ accidents \citep{vehicleCrashSurvey2015}.
   fuer anderes missbrauchen, da je nach Zitierstil nur zwei Autoren
   drankommen und bibtex diverse andere Manipulationen vornimmt; .bib
   File korrigiert.}
-  \martinc{citep=cite wqith parentheses}
+  \martinc{citep=cite with parentheses}
 Moreover, congestion, energy
 consumption, and emissions \martinc{Die Englaender haben bei
   Aufzaehlungen von $\ge 3$ items auch vor dem ``and'' ein Komma} are intended to be reduced. 
 \martin{On the other hand,} autonomous driving is a challenging task
 since \martin{traffic flow} can be dynamic and unpredictable.
 On the way to fully autonomous driving, Advanced Driver Assistance Systems
-(ADAS) has been developed to solve tasks like car-following, emergency
-braking, lane-keeping, or lane-changing. \martinc{``like'' startet
+(ADAS) have been developed to solve tasks like car following, emergency
+braking, lane keeping, or lane changing. \martinc{``like'' startet
   bereits eine unvollst\"andige Aufz\"ahlung, so no need for ``etc.''}
+\martinc{Bindestriche in zusammengesetzten Worten gibt es i.A. nur bei 
+  $\ge 3$ Teilen, und zwar in alle L\"ucken au\3er der letzten, also
+  \emph{lane changing} aber \emph{lane-changing model}}
 Since Deep Learning methods have been demonstrated to surpass humans
 in certain domains, they are also adopted in the area of autonomous
 driving.
 \martinc{Generelles ueber which vs. that: 
 1. \emph{which mit Komma:}
   ``non-defining clauses'': der darauf folgende Relativsatz gibt interessante Details,
-  schraenken das Subjekt/Objekt im Hauptsatz aber nicht ein (I use my bike, which has 18
+  schraenkt das Subjekt/Objekt im Hauptsatz aber nicht ein (I use my bike, which has 18
   gears, rather often)
-2. \emph{which ohne Komma oder besser ``that'' oder ein Gerund (``ing-Form''):} ``defining (relative)
-clauses''. Der darauf folgende Relativsatz enthaelt einschraenkende,
+2. \emph{which ohne Komma oder besser ``that'' oder ein Gerund (``ing-Form''):} ``defining clauses''. Der darauf folgende Relativsatz enthaelt einschraenkende,
 wesentliche Informationen: ``The bike that/which has a
 broken chain/having a broken chain is in the garage'' (impliziert,
 dass ich mindestens ein zweites Rad habe). Im Folgenden ist eine ``nice-to
-mention''-Definition, also which mit Komma OK, oft folgen bei dir dann
+mention''-Definition, also ist which mit Komma OK, oft folgen bei dir dann
 aber defining clauses, die ich durch ``that'', ``who'' (bei Menschen)
-oder einem Gerund ersetzt habe}
+oder einem Gerund ersetzt habe. Pedantische Korrewktoren nennen das
+auch ``which hunting'' (witch=Hexe)}
 Especially Deep Reinforcement Learning (DRL), which combines the power
 of Deep Learning in tackling large, complicated problems with
 Reinforcement Learning, has shown its potential in a broad variety of
 autonomous driving tasks.\martinc{Inwiefern unterscheidet sich
-  reinforcement learning von deep learning? in einen Satz erkl\"aren.}  
+  reinforcement learning von deep learning? in einen Satz erkl\"aren,
+  z.B. ``normales'' Deep Learning \emph{minimiert} wie SSE-Regression
+  eine Fehlerfunktion, nur halt auf mehrschichtigen NN basierend, w\"ahrend RL eine reward function \emph{maximiert}}  
 In \cite{OnRampMerge2018} and \cite{OnRampMerge2020}, DRL is used to
 guide an autonomous vehicle safely via an on-ramp to the freeway. In \cite{intersection1}, \cite{intersection3} and \cite{intersection2}, DRL methods are used to manage traffic of autonomous vehicles at intersections, optimizing safety and efficiency.
-In \cite{LangeChange1}, DRL is used to solve lane change maneuvers.
+In \cite{LangeChange1}, DRL is used to solve lane-changing maneuvers.
 
 A further task in autonomous driving is to model the vehicle behavior
 under car-following scenarios, where suitable accelerations has to be
 computed in order to achieve safe and comfortable driving. Approaches
-to solving this task are classical car-following models, such as the
-Intelligent Driver Model \cite{Opus} or stochastic car-following
-models \martin{such as that of} \cite{Treiber2018stochIDM_TRB}. Furthermore, data-driven approaches use Machine Learning methods to train a car-following model based on experimental car-follower data, such as in \cite{Chong2011SimulationOD} or \cite{ZHOU2017245}. The downside of this approach is that the model tries to emulate human driver behavior, which can still be suboptimal.
+for solving this task are classical car-following models, such as the
+Intelligent Driver Model \citep{Opus} or stochastic car-following
+models \martin{such as that of} \cite{Treiber2018stochIDM_TRB}. Furthermore, data-driven approaches used Machine Learning methods to train a car-following model based on experimental car-follower data, such as in \cite{Chong2011SimulationOD} or \cite{ZHOU2017245}. The downside of this approach is that the model tries to emulate human driver behavior, which can still be suboptimal.
 
 To overcome this issue, DRL methods train non-human car-following models that can optimize metrics such as safety, efficiency, and comfort. 
 One approach is to train on scenarios where the leading vehicle
@@ -168,11 +173,15 @@ as \cite{ComparisonRLvsMPC} or \cite{CFelectricVehicle}
 \martin{who}\martinc{relative clauses mit Menschen: ``who'' statt
   ``which'' oder ``that''} use the New European Driving Cycle.
 A disadvantage coming along with these approaches is that the
-performance decreases for scenarios \martin{that} are not in the scope of the training data, indicating inadequate machine learning generalization \cite{ComparisonRLvsMPC}. 
+performance decreases for scenarios \martin{that} are not in the scope of the training data, indicating inadequate machine learning generalization \citep{ComparisonRLvsMPC}. 
 
-Another issue of car-following models is string stability. There are several studies focusing on dampening traffic oscillations by using a sequence of trained vehicles, such as \cite{qu2020jointly}, \cite{DissipatingStopAndGoWaves} and \cite{DampenStopAndGoTraffic}.
+Another issue of car-following models is string stability. There are
+several studies focusing on dampening traffic oscillations by using a
+sequence of trained vehicles, such as these by \cite{qu2020jointly}, \cite{DissipatingStopAndGoWaves}, and \cite{DampenStopAndGoTraffic}.
 
-All the mentioned DRL car-following models have three disadvantages in common: At first, the acceleration range is limited in a way that full-brakes are not considered. This results in models that are just designed for non-safety-critical scenarios. Second, these models just consider car-following scenarios, while free driving or the transition between both is not reflected in the reward function. Third, the trained models have just been validated on data that is similar to the training data set so that the generalization capabilities cannot be proved. 
+All the mentioned DRL car-following models have three disadvantages in
+common: First, the acceleration range is limited in a way that
+full-braking maneuvers are not considered. This results in models that are just designed for non-safety-critical scenarios. Second, these models just consider car-following scenarios, while free driving or the transition between both is not reflected in the reward function. Third, the trained models have just been validated on data that is similar to the training data set so that the generalization capabilities cannot be proven. 
 
 This motivated us to design a model \martin{that} overcomes these issues.
 To our knowledge, no RL based car-following model has been proposed \martin{that} has the following features combined:
@@ -211,13 +220,15 @@ the Free-Driving policy in Section \ref{sec:FreeDrivingPolicy} and the
 Car-Following policy in Section
 \ref{sec:CarFollowingPolicy}. \martinc{In Englisch wird nach
   Doppelpunkt klein weitergeschrieben, wenn kein vollst\"andiger Satz
-  folgt wie hier} In Section \ref{sec:validation}, we evaluate our RL strategy with respect to safety, effectiveness, and comfort aspects, followed by the conclusion in Section \ref{sec:conclusion}.
+  folgt wie hier} In Section \ref{sec:validation}, we evaluate our RL
+strategy with respect to safety, \emph{stability}, and comfort aspects
+before we conclude in Section \ref{sec:conclusion}.
 
 
 \section{Reinforcement Learning Background}
 \label{sec:RLBackground}
 
-The following vehicle is controlled by a Reinforcement
+The \martin{follower} is controlled by a Reinforcement
 Learning (RL) agent. By interaction with an environment, the RL agent
 optimizes a sequential decision-making problem. At each time step
 $t$, the agent observes an environment state $s_t$ and, based on that state, selects
@@ -234,7 +245,8 @@ $\gamma^k r_{t+k}$ the expected contribution $k$ time steps ahead.
   \subsection{\label{RL-algorithm}RL algorithm}
   In various similar control problems, the Deep Deterministic Policy
   Gradient (DDPG) Algorithm has been used and proven to perform well on
-  tasks with a continuous action and state space, such as in
+  tasks with a \martin{deterministic and} continuous action and a
+  continuous state space, such as in
   \cite{SafeEfficientAndComfortable}, \cite{ComparisonRLvsMPC} or
   \cite{HumanLikeAutonomouCF}. The original work can be found in
   \cite{DDPG}. DDPG is an actor-critic method, that uses an actor
@@ -246,16 +258,15 @@ $\gamma^k r_{t+k}$ the expected contribution $k$ time steps ahead.
   $\theta_{\mu}$ und $\theta_Q$ nehmen. Oder sind die Superskripte
     Konvention hier?}
 \martinc{Ferner ist mir nicht klar, wie sich die
-    Einleitung (Parameter des Aktions-Algorithmus bzw  Policy $\pi$ so w\"ahlen, dass der reward $R$
+    Einleitung (Parameter des Aktions-Algorithmus bzw  Policy $\pi$ so w\"ahlen, dass der reward $R_t$
     maximiert wird) von der
     Actor-Critic Darstellung unterscheiden. F\"ur mich ist der Actor
-    $\mu|\theta$ einfach der Algorithmus $\pi|\theta$ und der Critic die
-    Zielfunktion $R$, die als kumulierte Rewardfunktion eigentlich keine im Lernprozess
+    $\mu|\theta$ einfach der Algorithmus $\pi|\theta$ und die Critic die
+    Rewardfunktion $R_t$, die als kumulierter Reward eigentlich keine im Lernprozess
     ver\"anderbaren Parameter hat, also alter Wein in neuen
     Schl\"auchen: Der Unterschied zu bzw. die Pr\"azisierung der
-    Einleitung sollte klar werden, insbesondere an einem Beispiel, wie
-Actor und Critic aussehen (hat das was mit der internen Vernetzung des
-NN zu tun, weil hier was von ``network'' steht?)} 
+    Einleitung sollte klar werden, Au\3erdem, dass $\theta$ wohl den
+    Vektor der Synapsenst\"arken/Linkst\"arken des jeweiligen NN angibt.)} 
 To achieve a better training stability, DDPG uses target networks  $\mu^{\prime}$ and $Q^{\prime}$ for actor and Critic. While training, these networks are updated slowly, hence keeping the estimated targets stable. Furthermore DDPG uses Experience Replay, that implements a Replay Buffer $R$, where a list of tuples $\left(s_{t}, a_{t}, r_{t}, s_{t+1}\right)$ are stored. Instead of learning from the most recent experience, DDPG learns from sampling a mini-batch from the experience buffer. To implement better exploration by the actor network, DDPG uses noisy perturbations, specifically an Ornstein-Uhlenbeck process for generating noise. It samples noise from a correlated normal distribution. The entire DDPG algorithm is shown in Algorithm~\ref{alg:ddpg}. 
   
   \begin{algorithm}
@@ -650,6 +661,7 @@ can be optimized in future studies.
 
 
 \subsection{Training environment}
+\label{training_environment2}
 The training environment is modeled by a leader and a follower vehicle. Both vehicles implement the point-mass kinematic model described in Section~\ref{training_environment1}. While the follower vehicle is controlled by the RL agent, the  leading trajectory is based on an AR(1) process, whose parameters
 reflect the kinematics of real leaders. The AR(1) process describes
 the speed of the leading vehicle and is defined as 
@@ -676,19 +688,22 @@ After reaching stationarity, this process has
 
 \begin{equation}
 \label{eq:ACF_AR1}
-\text{the autocorrelation  }\text{ACF}(\Delta t) = \phi^{\Delta t}, 
+\martin{\text{the autocorrelation function ($k$ in multiples of $d$) }
+\text{ACF}(k) = \phi^{k}}, 
 \end{equation}
 
 \begin{equation}
 \label{eq:tau_AR1}
 \text{and the correlation time (in multiples of $d$) }\tau = -\frac{1}{\ln \phi}. 
 \end{equation}
- 
+ \martinc{Die Variable $\tau$ ist doppelt verwirrend: Erstens steht sie
+   in der RL-Literatur oft f\"ur eine Trajektorie, zweitens wird sie
+   hier doppelt verwendet: correlation time und ``Soft target update'' (Table~1)}
 To adjust the parameters of the AR(1) process, typical values for real
 leader trajectories has to be defined: With $v_{l,\text{des}}$ as the
 desired speed for the leader, the mean of the AR(1) process is set to
 be $v_{l,\text{des}}/2$ and the standard deviation is set to be
-$v_{l,\text{des}}/2$. The acceleration $a\sub{phys}$ corresponds to
+$v_{l,\text{des}}/2$ \martin{as well}. The acceleration $a\sub{phys}$ corresponds to
 typical physical leader accelerations. Relating the acceleration to
 the physical correlation time $\tau d$ via 
 $a\sub{phys}=v_{l,\text{des}}/(2\tau d)$  and using Equation \eqref{eq:E_AR1} - \eqref{eq:tau_AR1}, the parameters of the AR(1) process can be calculated as:
@@ -712,9 +727,9 @@ The assumed typical values for $v_{l,\text{des}}$ and  $a\sub{phys}$ as well as 
 		update time step of \unit[100]{ms}} 
 	\label{tab:AR1Parameters} 
 	\begin{center}
-		\begin{tabular}{ p{0.1\textwidth} p{0.1\textwidth} |p{0.1\textwidth} p{0.1\textwidth}  }
+		\begin{tabular}{ p{0.15\textwidth} p{0.1\textwidth} |p{0.1\textwidth} p{0.1\textwidth}  }
 			\multicolumn{2}{c|}{Real trajectory} & \multicolumn{2}{c}{AR(1) process}   \\ \hline
-			$v_{l,\text{des}}$ &$\unit[15]{m/s}$ &$\phi$ & $0.9868$\\
+			$v_{l,\text{des}}\martin{=v\sub{des}}$ &$\unit[15]{m/s}$ &$\phi$ & $0.9868$\\
 			$a\sub{phys}$ &$\unit[1]{m/s^2}$ &$c$ & $\unit[0.0993]{m/s}$\\
 			& & $\sigma^2$ & $\unit[1.475]{m^2/s^2}$
 			
@@ -724,7 +739,17 @@ The assumed typical values for $v_{l,\text{des}}$ and  $a\sub{phys}$ as well as 
 %
 Figure \ref{fig:AR1process} shows an example trajectory of the leading
 vehicle based on the AR(1) process using the parameters of Table
-\ref{tab:AR1Parameters}. After the AR(1) process is calculated for one episode, all speed values below zero are set to zero. This generates training situations, where the leader vehicle stands still for some time, e. g. at t= [\unit[48]{s}, \unit[50]{s}] in Figure \ref{fig:AR1process}. 
+\ref{tab:AR1Parameters}. After the AR(1) process is calculated for one
+episode, all speed values below zero are set to zero. This generates
+training situations, where the leader vehicle stands still for some
+time, e. g. at t= [\unit[48]{s}, \unit[50]{s}] in Figure
+\ref{fig:AR1process}. \martin{Furthermore, the leader's trajectory
+  also contains intervals where the speed is above the desired speed
+  $v\sub{des}=\unit[15]{m/s}$ of both the leader and the follower,
+  e.g., around $t=\unit[58]{s}$ and $t\in [\unit[97]{s},
+    \unit[100]{s}]$.}
+\martinc{Es scheint, dass du $v_l$ auf etwa \unit[16.5]{m/s}
+  beschr\"ankt hast (\unit[97]{s} bis \unit[99]{s}). Stimmt das?}   
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\textwidth]{images/AR1process}
@@ -744,8 +769,8 @@ vehicle based on the AR(1) process using the parameters of Table
 %
 
 
-One episode has a simulation time of \unit[50]{s} with a step size of
-$d=\unit[100]{ms}$ resulting in an episode length of $500$
+One \martin{training} episode has a simulation time of \unit[50]{s}.  With a step size of
+$d=\unit[100]{ms}$, this results in an episode length of $500$
 steps. The initial speeds of the following and leading vehicles are
 randomly set in the range $[0,v\sub{des}]$ and $[0,v_{l,\text{des}}]$,
 respectively. The initial space gap between both is set to \unit[120]{m}. 
@@ -755,7 +780,14 @@ Both neural networks, critic and Actor, are feed-forward neural networks with tw
 All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
 
 Figure \ref{fig:TrainingReward} shows an example of the training
-process, where the asymmetric moving average reward of the last 30 training episodes is plotted over training episodes. For the Car-Following Policy, a maximum average reward has been reached after approximately 8900 training episodes.  
+process, where the asymmetric moving average reward of the last 30
+training episodes is plotted over training episodes. For the
+Car-Following Policy, a maximum average reward has been reached after
+approximately 8900 training episodes.  \martinc{Also ich sehe da noch
+  kein Plateau. Es koennte auch noch weiter nach oben gehen. Auch bei
+  der Free Policy sollte man den Reward nicht beim globalen Maximum
+  enden lassen, sondern zu einem Zeitpunkt, wo die Ausbildung des
+  Plateaus deutlich sichtbar ist.}
 %
 \begin{figure}
 	\centering
@@ -783,10 +815,11 @@ Figure \ref{fig:manipulatedLeader} shows a driving scenario with an
 artificial external profile for the leading vehicle speed. The initial
 gap between 
 follower and leader is 200 meters \martin{referring} to a free driving
-scenario. The follower accelerates with $a\sub{max} = 2m/s^2$ until
+scenario. The follower accelerates with $a\sub{max} = \unit[2]{m/s^2}$ until
 the desired speed $v\sub{des} = \unit[15]{m/s} $ is reached and approaches
-the standing leading vehicle. When the gap between both drops below 90
-meters, the follower starts to decelerate with a maximum
+the standing leading vehicle. When the gap between both drops below 
+\martin{\unit[70]{m}},
+the follower starts to decelerate with a maximum
   deceleration of approximately $b_{\rm
   comf} = \unit[2]{m/s^2}$ (transition between free driving and car-following)
 and comes to a standstill with a final gap of approximately 
@@ -860,13 +893,14 @@ comfort and reduce fuel consumption and emissions.
 
 In a further scenario, the abilities of the RL strategy are evaluated
 with a real leader trajectory (Fig.~\ref{fig:PunzoKolonne}). This
-trajectory comes from platoon driving experiments in Napoli
+trajectory comes from \martin{the platoon driving experiments of
+  \cite{punzo2005nonstationary} on urban and peripheral arterials in Napoli}
 where high-precision distance data between the platoon
-vehicles were obtained (reference to Punzo et al.). Similar to the experiment from
+vehicles were obtained. Similar to the experiment from
 Section~\ref{sec:stringStability}, string stability and the reduction
 of  the acceleration variance, shown by the red bars in Figure
-\ref{fig:VarAccComp}, is demonstrated. At time $t = 140s$ the leader
-stands still, and it can be observed, that all following vehicles are
+\ref{fig:VarAccComp}, is demonstrated. At time $t = \unit[140]{s}$ the leader
+stands still and it can be observed that all following vehicles are
 keeping the minimum distance $g\sub{min}$ to the leader.  
 
 
@@ -891,8 +925,12 @@ following the real leader trajectory from Napoli. It can be observed,
 that a lower value for $T$ results in closer driving to the
 leader which can be considered as a more ``aggressive''
 driving style. \martinc{It would be instructive to have a time series
-  plot of the actual time gap $g/v$ or $(g-g_0)/v$. For the IDM, these
-  are somewhat higher in steady state, for the RL, maybe even higher.}
+  plot of the actual time gap $g/v$ or $(g-g_0)/v$ (restricted to
+  values $<2T$). For the IDM, these
+  are somewhat higher in steady state: Analytical expression 
+$T_e(v):=(g_e(v)-g_0)/v=T/\sqrt{1-(v/v_0)^4}$, for the IDM+ $T_e(v)=T$
+  for $v<v_0$, for  the RL, it probably depends on the right gradient
+  of Fig. 2 (Text below Eq. (11))}
 Since this also means that there are less options in
 increasing driving comfort without affecting safety, the follower's
 accelerations and decelerations are higher than that of the more
@@ -915,11 +953,11 @@ changed. Still, when simulating platoons of the three RL
 \label{sec:crossValIDM}
 To compare the performance of the RL agent with that of
 classical car-following models, we chose the commonly used
-Intelligent-Driver Model (IDM)\cite{Opus} whose acceleration is given
+Intelligent-Driver Model (IDM) of \cite{Opus} whose acceleration is given
 by 
 \begin{equation}
 \label{eq:IDM}
-a=a\sub{max}\left(1-\left(\frac{v}{v\sub{des}}\right)^{4}-\left(\frac{s^{*}\left(v, \martin{v_l}\right)}{g}\right)^{2}\right),
+\martin{\dv{v}{t}}=a\sub{max}\left(1-\left(\frac{v}{v\sub{des}}\right)^{4}-\left(\frac{s^{*}\left(v, \martin{v_l}\right)}{g}\right)^{2}\right),
 \end{equation}
 with
 \begin{equation}
@@ -947,17 +985,32 @@ indirectly by parameterizing its reward function.
 	\begin{center}
 		\begin{tabular}{ p{0.14\textwidth} |p{0.1\textwidth}  } 
 		Parameter & Value   \\ \hline
-			$T$ & $0.83s$\\
-			$g\sub{min}$ & $4.90m$\\
-			$a\sub{max}$ & $4.32m/s^2$\\
-			$b\sub{comf}$ & $2.34 m/s^2$\\
-			$v\sub{des}$ & $33.73m/s$
+			$T$ & $\unit[0.83]{s}$\\
+			$g\sub{min}$ & $\unit[4.90]{m}$\\
+			$a\sub{max}$ & $\unit[4.32]{m/s^2}$\\
+			$b\sub{comf}$ & $\unit[2.34]{ m/s^2}$\\
+			$v\sub{des}$ & $\unit[33.73]{m/s}$
 			
 		\end{tabular}
 	\end{center}
 \end{table}
 
-Figure \ref{fig:IDMvsRL} shows the results for: First, the RL agent, calibrated on the real follower data. Second, the IDM, calibrated on the follower data. And third, the real follower of the Napoli experiment. To evaluate the performance, for both approaches the respective objective function has been computed. The objective function of the RL agent corresponds to the reward function, while the Goodness-of-Fit Function $SSE(g)$ defines the objective function of the IDM. A comparison between RL agent and IDM for both, the reward function and the Goodness-of-Fit Function, is shown in Table \ref{tab:objectiveFunc}. For both objectives the RL agent shows a better performance.
+Figure \ref{fig:IDMvsRL} shows the results for \martin{(i)} the RL
+agent, calibrated on the real follower data (red lines), (ii) the IDM,
+calibrated on the same follower data (amber), and (iii) the real
+follower of the Napoli experiment (red). To \martin{compare} the
+performance for both approaches, the respective objective functions
+have been computed. The objective function of the RL agent corresponds
+to the reward function, while the goodness-of-fit function
+\martin{$\mathrm{SSE}(\ln g)$} defines the objective function of the
+IDM. \martin{Furthermore, we cross-compared the values by calculating the
+reward function for the IDM and $\mathrm{SSE}(\ln g)$ for the RL model. All
+values are shown in Table \ref{tab:objectiveFunc}. 
+As expected, the RL agent performs better than the IDM relative to the
+  reward function used for its learning. It is remarkable, however, 
+ that the RL model also outperforms the IDM relative to the
+ goodness-of-fit function which has been used only indirectly by
+ parameterizing its reward function.}
 
 \begin{figure}
 	
@@ -968,12 +1021,13 @@ Figure \ref{fig:IDMvsRL} shows the results for: First, the RL agent, calibrated 
 \end{figure}
 
 \begin{table}
-	\caption{Comparison between calibrated RL agent and IDM for accumulated Reward and Goodness-of-Fit Function $SSE(log(g))$} 
+	\caption{Comparison between calibrated RL agent and IDM for
+          accumulated Reward and Goodness-of-Fit Function $\mathrm{SSE}(\ln g)$} 
 	\label{tab:objectiveFunc} 
 	\begin{center}
 		\begin{tabular}{p{0.3\textwidth} | p{0.2\textwidth} p{0.2\textwidth}  } 
 			& RL agent & IDM   \\ \hline
-			$SSE(log(g))$ & $389.10$ &  $418.05$	\\
+			$\mathrm{SSE}(\ln g)$ & $389.10$ &  $418.05$	\\
 			Accumulated Reward &  $6.86 \times 10^3$   & $6.73\times 10^3$
 			
 		\end{tabular}
@@ -986,13 +1040,12 @@ An important safety measure for car-following models is the
 time-to-collision (TTC). Again we took leading trajectories coming
 from platoon driving experiments in Napoli to conduct a TTC
 analysis. We simulated 15 different leaders from those experiments,
-once followed by an RL agent and the other time by a vehicle
-controlled with the IDM from Section \ref{sec:crossValIDM}. Both
-followers are parametrized on the default parameter from Table
+once followed by an RL agent and the other time by an IDM vehicle (Sect. \ref{sec:crossValIDM}). Both
+followers are parametrized according to the default parameters of Table
 \ref{tab:agentParameters}. Figure \ref{fig:DistributionTTC} shows the
 distribution of TTC for all 15 experiments. The TTC has been evaluated
 at each simulation time step. The lower TTC bound for the RL agent is
-\unit[2.6]{s}, while the one for the IDM controlled vehicle is
+\unit[2.6]{s}, while the one for the IDM vehicle is
 \unit[2.2]{s}. This difference in driving behavior is further
 evaluated by focusing on a single leader-follower experiment, shown in
 Figure \ref{fig:TTC_CaseStudy}. All situations where the TTC of the
@@ -1022,16 +1075,57 @@ the Car-Following policy (\ref{eq:r1_CFP}) \martin{that} motivates the RL agent 
 
 \section{Conclusion/Discussion}
 \label{sec:conclusion}
-This study presented a novel car-following model based on DRL. The proposed model considers free driving, car-following, as well as the transition between both in a way, that approaching the leading vehicle is smooth and comfortable. We used an approach called Modularized Reinforcement Learning (\cite{MRL}) to decompose the multi-goal problem into two subtasks. Two different RL policies have been designed using the Deep Deterministic Policy Gradient algorithm. The Free-Driving Policy refers to free driving and aims not to exceed a desired speed. The Car-Following Policy refers to following a vehicle and aims to keep a reasonable gap to a leader vehicle.
+This study presented a novel car-following model based on
+\martin{Deep Reinforcement Learning}. \martinc{Die Conclusion wird
+  bisweilen separat gelesen, so besser (wie immer im Abstract) keine
+  Abk\"urzungen verwenden, au\3er die allergebr\"auchlichsten} The
+proposed model considers free driving, car-following, as well as the
+transition between both in a way, that approaching the leading vehicle
+is smooth and comfortable. We used an approach called Modularized
+Reinforcement Learning (\cite{MRL}) to decompose the multi-goal
+problem into two subtasks. Two different RL policies have been
+designed using the Deep Deterministic Policy Gradient algorithm. The
+Free-Driving Policy \martin{Der Name macht alles klar; keine doppelte
+  Moppelung noetig} \martin{aims to reach and not exceed a certain
+desired speed.} The Car-Following Policy aims to keep a reasonable gap
+to a leader vehicle \martin{and keep the traffic situation safe.} 
 
 For each policy, we defined separate reward functions \martin{reflecting} traffic safety and comfort aspects. 
 Different driver characteristics can be modeled by adjusting the parameter of the reward function.
 
-The proposed model is trained on leading trajectories based on an AR(1)-process. This leads to high generalization capabilities and a model usage in a wider variety of traffic scenarios. 
+The proposed model is trained on leading trajectories based on an
+AR(1)-process. This leads to high generalization capabilities and a
+model usage in a wider variety of traffic scenarios. \martin{Furthermore, the
+supply of learning data is unlimited.}
 For the evaluation of the trained agents, different traffic scenarios
-have been simulated. The scenarios based on both synthetic and
-real trajectory data, bringing the model to its limits. 
-In all cases, the car-following model proved to be accident-free and comfortable. Further scenarios showed that traffic oscillations could effectively be dampened with a sequence of trained followers, even if the leader shows large outliers in acceleration.
+\martin{based on both synthetic and
+real trajectory data have been simulated, including situations that
+bring the model} to its limits. 
+In all cases, the car-following model proved to be accident-free and
+comfortable. Further scenarios showed that traffic oscillations could
+effectively be dampened with a sequence of trained followers, even if
+the leader shows large outliers in acceleration.
+
+\martin{Besides driving comfort, string stability, and safety,
+  the efficiency of the resulting traffic flow is important,
+  particularly, the fundamental diagram, the maximum flow through a
+  bottleneck that can be 
+  sustained and the outflow from a region of congested
+  traffic. Furthermore, we have idealized the state dynamics by
+  assuming that a vehicle can instantaneously take on the acceleration
+  prescribed by the actor while the real control path is more
+  complicated and non-negligible response times happen, particularly
+  for positive accelerations. We expect that RL techniques play out
+  their strengths in such more complex state dynamics. All this  will
+  be investigate in a forthcoming paper.
+}
+
+\martin{
+\subsection*{Acknowledgements}
+We thank Vincenzo Punzo for making available to us the experimental
+car-following data used in this paper. This work was funded by ...}
+\martinc{Ostap: DFG oder andere funds nennen?}
+
 
 
 
