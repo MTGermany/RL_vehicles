@@ -146,12 +146,7 @@ aber defining clauses, die ich durch ``that'', ``who'' (bei Menschen)
 oder einem Gerund ersetzt habe. Pedantische Korrewktoren nennen das
 auch ``which hunting'' (witch=Hexe)}
 Especially Deep Reinforcement Learning (DRL), which combines the power
-of Deep Learning in tackling large, complicated problems with
-Reinforcement Learning, has shown its potential in a broad variety of
-autonomous driving tasks.\martinc{Inwiefern unterscheidet sich
-  reinforcement learning von deep learning? in einen Satz erkl\"aren,
-  z.B. ``normales'' Deep Learning \emph{minimiert} wie SSE-Regression
-  eine Fehlerfunktion, nur halt auf mehrschichtigen NN basierend, w\"ahrend RL eine reward function \emph{maximiert}}  
+using deep neural networks with Reinforcement Learning, has shown its potential in a broad variety of autonomous driving tasks. 
 In \cite{OnRampMerge2018} and \cite{OnRampMerge2020}, DRL is used to
 guide an autonomous vehicle safely via an on-ramp to the freeway. In \cite{intersection1}, \cite{intersection3} and \cite{intersection2}, DRL methods are used to manage traffic of autonomous vehicles at intersections, optimizing safety and efficiency.
 In \cite{LangeChange1}, DRL is used to solve lane-changing maneuvers.
@@ -435,7 +430,7 @@ zero-reverting Ornstein-Uhlenbeck process with $\Theta = 0.15$  and
 $\sigma = 0.2$ as suggested in
 \cite{DDPG}. \martinc{Einheitenbehaftet, also in $\unit[]{m/s^2}$ oder
   ist der action space skaliert gem\"a\3 der 2. Komponente des State
-  Vektors?} The update rate of the target networks is set to
+  Vektors?} The soft update rate of the target networks $\tau$ is set to
 0.001.\martinc{Och, noch eine Tiefpass-Zeitvariable der Gr\"o\3e
   0.001. Welche von den beiden ist $\tau$?}
 All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
@@ -464,7 +459,15 @@ All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
 \martinc{Evtl. diese Abb vorziehen. Manche Journals wollen Bilder in
   der Reihenfolge der ersten Erwaehnung im Haupttext}
 Figure \ref{fig:TrainingReward} shows an example of the training
-process, where the asymmetric moving average reward of the last 30 training episodes is plotted over training episodes. For the Free-Driving Policy, a maximum average reward has been reached after approximately 3200 training episodes.
+process, where the asymmetric moving average reward of the last 30 training episodes is plotted over training episodes. For the Free-Driving Policy, a maximum average reward has been reached after approximately 3200 training episodes (marked in red).
+%
+\begin{figure}
+	\centering
+	\includegraphics[width=12cm]{images/TrainingReward}
+	\caption{Asymmetric moving average reward of the last 30 training episodes for Free-Driving Policy and Car-Following Policy} 
+	\label{fig:TrainingReward}
+\end{figure}
+
 
 \section{Car-Following Policy}
 \label{sec:CarFollowingPolicy}
@@ -589,10 +592,7 @@ r_2  =
 \left(1-\frac{g-g^*}{g\sub{lim} - g^*}\right)  & \text{otherwise}
 \end{cases}
 \end{equation}
-with \martinc{Achtung: Wenn du hier $g\sub{lim}$ bzw $T\sub{lim}$
-  heruntersetzt, z.B. $T\sub{lim}=4T$ (ich w\"urde es von $T$
-  abh\"angig machen), werden die Steady-State-Abst\"ande des gelernten
-  Modells ziemlich sicher niedriger!}
+with 
 \begin{equation}
 \label{eq:r21}
 g\sub{opt} = vT + g\sub{min},
@@ -694,7 +694,7 @@ After reaching stationarity, this process has
 
 \begin{equation}
 \label{eq:tau_AR1}
-\text{and the correlation time (in multiples of $d$) }\tau = -\frac{1}{\ln \phi}. 
+\text{and the correlation time (in multiples of $d$) }\tau_{corr} = -\frac{1}{\ln \phi}. 
 \end{equation}
  \martinc{Die Variable $\tau$ ist doppelt verwirrend: Erstens steht sie
    in der RL-Literatur oft f\"ur eine Trajektorie, zweitens wird sie
@@ -705,8 +705,8 @@ desired speed for the leader, the mean of the AR(1) process is set to
 be $v_{l,\text{des}}/2$ and the standard deviation is set to be
 $v_{l,\text{des}}/2$ \martin{as well}. The acceleration $a\sub{phys}$ corresponds to
 typical physical leader accelerations. Relating the acceleration to
-the physical correlation time $\tau d$ via 
-$a\sub{phys}=v_{l,\text{des}}/(2\tau d)$  and using Equation \eqref{eq:E_AR1} - \eqref{eq:tau_AR1}, the parameters of the AR(1) process can be calculated as:
+the physical correlation time $\tau_{corr} d$ via 
+$a\sub{phys}=v_{l,\text{des}}/(2\tau_{corr} d)$  and using Equation \eqref{eq:E_AR1} - \eqref{eq:tau_AR1}, the parameters of the AR(1) process can be calculated as:
 
 \begin{equation}
 \phi = \exp\left(-\frac{2a\sub{phys}d}{v_{l,\text{des}}}\right),
@@ -740,16 +740,15 @@ The assumed typical values for $v_{l,\text{des}}$ and  $a\sub{phys}$ as well as 
 Figure \ref{fig:AR1process} shows an example trajectory of the leading
 vehicle based on the AR(1) process using the parameters of Table
 \ref{tab:AR1Parameters}. After the AR(1) process is calculated for one
-episode, all speed values below zero are set to zero. This generates
+episode, all speed values are clipped to the range $\unit[[0, 16.6]]{m/s}$. This generates
 training situations, where the leader vehicle stands still for some
 time, e. g. at t= [\unit[48]{s}, \unit[50]{s}] in Figure
-\ref{fig:AR1process}. \martin{Furthermore, the leader's trajectory
+\ref{fig:AR1process}. Furthermore, the leader's trajectory
   also contains intervals where the speed is above the desired speed
   $v\sub{des}=\unit[15]{m/s}$ of both the leader and the follower,
   e.g., around $t=\unit[58]{s}$ and $t\in [\unit[97]{s},
-    \unit[100]{s}]$.}
-\martinc{Es scheint, dass du $v_l$ auf etwa \unit[16.5]{m/s}
-  beschr\"ankt hast (\unit[97]{s} bis \unit[99]{s}). Stimmt das?}   
+    \unit[100]{s}]$.
+  
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\textwidth]{images/AR1process}
@@ -783,18 +782,7 @@ Figure \ref{fig:TrainingReward} shows an example of the training
 process, where the asymmetric moving average reward of the last 30
 training episodes is plotted over training episodes. For the
 Car-Following Policy, a maximum average reward has been reached after
-approximately 8900 training episodes.  \martinc{Also ich sehe da noch
-  kein Plateau. Es koennte auch noch weiter nach oben gehen. Auch bei
-  der Free Policy sollte man den Reward nicht beim globalen Maximum
-  enden lassen, sondern zu einem Zeitpunkt, wo die Ausbildung des
-  Plateaus deutlich sichtbar ist.}
-%
-\begin{figure}
-	\centering
-	\includegraphics[width=12cm]{images/TrainingReward}
-	\caption{Asymmetric moving average reward of the last 30 training episodes for Free-Driving Policy and Car-Following Policy} 
-	\label{fig:TrainingReward}
-\end{figure}
+approximately 8900 training episodes (marked in red). The training processes for both policies are quite unstable. As this is a known issue using the DDPG algorithm, we plan to use a more stable algorithm like the TD3 algorithm \citep{TD3}.    
 
 
 
@@ -929,8 +917,7 @@ driving style. \martinc{It would be instructive to have a time series
   values $<2T$). For the IDM, these
   are somewhat higher in steady state: Analytical expression 
 $T_e(v):=(g_e(v)-g_0)/v=T/\sqrt{1-(v/v_0)^4}$, for the IDM+ $T_e(v)=T$
-  for $v<v_0$, for  the RL, it probably depends on the right gradient
-  of Fig. 2 (Text below Eq. (11))}
+  for $v<v_0$}
 Since this also means that there are less options in
 increasing driving comfort without affecting safety, the follower's
 accelerations and decelerations are higher than that of the more
@@ -1045,23 +1032,20 @@ followers are parametrized according to the default parameters of Table
 \ref{tab:agentParameters}. Figure \ref{fig:DistributionTTC} shows the
 distribution of TTC for all 15 experiments. The TTC has been evaluated
 at each simulation time step. The lower TTC bound for the RL agent is
-\unit[2.6]{s}, while the one for the IDM vehicle is
-\unit[2.2]{s}. This difference in driving behavior is further
+\unit[1.99]{s}, while the one for the IDM vehicle is
+\unit[2.04]{s}. But except for some values around TTC = \unit[2]{s}, the TTC values of the RL agent show to be higher than those of the IDM.
+
+The difference in driving behavior is further
 evaluated by focusing on a single leader-follower experiment, shown in
-Figure \ref{fig:TTC_CaseStudy}. All situations where the TTC of the
-IDM drops below \unit[2.5]{s} are marked in green. In all three of
-these situations, the leader brakes to a standstill. In the situation
-where the TTC is most critical, the deceleration of the leader is
-quite high with $b = \unit[6]{m/s^2}$. The main reason for the
+Figure \ref{fig:TTC_CaseStudy}, where the situation with the lowest TTC for the RL agent is marked green. In this situation, the leader brakes to a standstill with a 
+quite high deceleration of $b = \unit[6]{m/s^2}$. The reason for the slight
 difference in TTC between IDM and RL agent lies in the fact, that the
-RL agent keeps a slightly higher gap to the leader most of the time,
-which simply reflects a more defensive driving style of the RL
-agent. This presumably comes from the weighting of factor $r_1$  of
-the Car-Following policy (\ref{eq:r1_CFP}) \martin{that} motivates the RL agent to avoid safety-critical situations. 
+IDM keeps a slightly higher gap to the leader most of the time,
+which simply reflects a more defensive driving style. 
 
 \begin{figure}	
 	\centering
-	\includegraphics[width=0.95\textwidth]{images/DistributionTTC}
+	\includegraphics[width=0.95\textwidth]{images/TTC}
 	\caption{Distribution of time-to-collision (TTC) for IDM and RL agent in different experiments based on real leader trajectories}
 	\label{fig:DistributionTTC}
 \end{figure}
@@ -1085,8 +1069,7 @@ is smooth and comfortable. We used an approach called Modularized
 Reinforcement Learning (\cite{MRL}) to decompose the multi-goal
 problem into two subtasks. Two different RL policies have been
 designed using the Deep Deterministic Policy Gradient algorithm. The
-Free-Driving Policy \martin{Der Name macht alles klar; keine doppelte
-  Moppelung noetig} \martin{aims to reach and not exceed a certain
+Free-Driving Policy \martin{aims to reach and not exceed a certain
 desired speed.} The Car-Following Policy aims to keep a reasonable gap
 to a leader vehicle \martin{and keep the traffic situation safe.} 
 
