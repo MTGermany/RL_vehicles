@@ -130,7 +130,7 @@
 	since traffic flow can be dynamic and unpredictable.
 	On the way to fully autonomous driving, Advanced Driver Assistance Systems
 	(ADAS) have been developed to solve tasks like car following, emergency
-	braking, lane-keeping, or lane changing. \martinc{``like'' startet
+	braking, lane keeping, or lane changing. \martinc{``like'' startet
 		bereits eine unvollst\"andige Aufz\"ahlung, so no need for ``etc.''}
 	\martinc{Bindestriche in zusammengesetzten Worten gibt es i.A. nur bei 
 		$\ge 3$ Teilen, und zwar in alle L\"ucken au\3er der letzten, also
@@ -386,9 +386,9 @@
 	r_{t,1}  = 
 	\begin{cases}
 	\frac{v_t}{v\sub{des}},
-	& \text{if } v_t < v\sub{des}\\
-	0
-	& \text{otherwise}
+	& \text{if } v_t \leq v\sub{des}\\
+	0,
+	& \text{otherwise}.
 	\end{cases}
 	\end{equation}
 	
@@ -436,9 +436,9 @@
 	Figure \ref{fig:MRL}). ReLU activation functions (\cite{relu}) are used, except for the output layer of the actor network that uses a tanh activation function. The bounded output in the range $[-1,1]$ is then mapped in the acceleration range. The learning rate for updating the weights of the critic and actor network is set to 0.001. For the exploration of the action space, an exploration noise model has to be defined. We adopted a
 	zero-reverting Ornstein-Uhlenbeck process as suggested in \cite{DDPG}
 	\begin{equation}
-	d x_{t}=-\theta x_{t} d t+\sigma d W_{t},
+    \mathrm{d} x_{t}=-\theta_1 x_{t} \mathrm{d} t+\sigma_1 \mathrm{d} W_{t},
 	\end{equation}
-	with $\Theta = 0.15$, $\sigma = 0.2$ and $W_{t}$ denoting the Wiener process.
+    with $\Theta_1 = 0.15$, $\sigma_1 = 0.2$ and $W_{t}$ denoting the Wiener process.
 	
 	\martinc{Einheitenbehaftet, also in $\unit[]{m/s^2}$ oder
 		ist der action space skaliert gem\"a\3 der 2. Komponente des State
@@ -457,8 +457,8 @@
 				Reward discount factor & 0.95 & 0.95 \\ 
 				Experience buffer length & 100000 & 100000 \\ 
 				Mini batch size & 32 & 32 \\ 			
-				Ornstein-Uhlenbeck  $\Theta$ & 0.15& 0.15 \\ 
-				Ornstein-Uhlenbeck  $\sigma$ & 0.2 & 0.2 \\ 
+				Ornstein-Uhlenbeck  $\Theta_1$ & 0.15& 0.15 \\ 
+				Ornstein-Uhlenbeck  $\sigma_1$ & 0.2 & 0.2 \\				
 				Number of hidden layers & 1 & 2\\
 				Neurons per hidden layer & 16 & 32\\
 				Soft target update  $\tau$ & 0.001 & 0.001\\
@@ -563,7 +563,7 @@
 	\label{eq:r1_CFP}
 	r_{t,1} = 
 	\begin{cases}
-	-\tanh\left(\frac{b_{kin}-b\sub{comf}}{-a\sub{min}}\right),& \text{if } b_{kin}>b\sub{comf}\\
+	-\tanh\left(\frac{b\sub{kin}-b\sub{comf}}{-a\sub{min}}\right),& \text{if } b\sub{kin}>b\sub{comf}\\
 	0,              & \text{otherwise}
 	\end{cases}
 	\end{equation}
@@ -571,13 +571,13 @@
 	with
 	\begin{equation}
 	\label{bkin}
-	b_{kin} = 
+	b\sub{kin} = 
 	\begin{cases}
 	\frac{(v_t-v_{t,l})^2}{g_t},& \text{if } v_t>v_{t,l}\\
 	0,              & \text{otherwise},
 	\end{cases}
 	\end{equation}
-	the kinematic deceleration $b_{kin}$ representing the minimum deceleration necessary to avoid a collision.
+	the kinematic deceleration $b\sub{kin}$ representing the minimum deceleration necessary to avoid a collision.
 	The argument of the tanh function with  the
 	maximum possible deceleration ($\approx \unit[9]{m/s^2}$ on dry roads) gives a
 	non-dimensional measure for the seriousness of the critical situation
@@ -600,7 +600,7 @@
 	r_{t,2}  = 
 	\begin{cases}
 	\frac{\varphi\left\{(g_t-g\sub{opt})/g\sub{var}\right\}}{\varphi(0)}, & \text{if } g_t < g^*\\
-	\frac{\varphi\left\{(g_t-g\sub{opt})/g\sub{var}\right\}}{\varphi(0)}\left(1-\frac{g_t-g^*}{g\sub{lim} - g^*}\right)  & \text{otherwise}
+	\frac{\varphi\left\{(g_t-g\sub{opt})/g\sub{var}\right\}}{\varphi(0)}\left(1-\frac{g_t-g^*}{g\sub{lim} - g^*}\right)  & \text{otherwise},
 	\end{cases}
 	\end{equation}
 	with 
@@ -670,22 +670,22 @@
 	the speed of the leading vehicle $v_{t,l}$ and is defined as 
 	
 	\begin{equation} \label{eq:AR1}
-	\mathrm{d} v_{t,l}=\theta\left(\mu-v_{t,l}\right) \mathrm{d} t+\sigma \mathrm{d} W_{t},
+    \mathrm{d} v_{t,l}=\theta_2\left(\mu_2-v_{t,l}\right) \mathrm{d} t+\sigma_2 \mathrm{d} W_{t},
 	\end{equation}
-	with $\theta = \unit[0.132]{s^{-1}}$, $\mu = \unit[7.5]{m/s}$ and $\sigma = \unit[3.847]{m/s^{1.5}}$. $W_{t}$ denotes the Wiener process. The parameter have been designed to model the behavior of a real leader vehicle.
+	with $\theta_2 = \unit[0.132]{s^{-1}}$, $\mu_2 = \unit[7.5]{m/s}$ and $\sigma_2 = \unit[3.847]{m/s^{1.5}}$. $W_{t}$ denotes the Wiener process. The parameter have been designed to model the behavior of a real leader vehicle.
 	For the numerical simulation, the Ornstein-Uhlenbeck process has been discretized using the Euler-Maruyama method. The resulting discretized process is defined as
 	\begin{equation} 
-	v_{l}(n+1)=v_{l}(n)+\theta\left(\mu-v_{l}(n)\right) \Delta t+\sigma \Delta W_{n},
+	v_{l}(n+1)=v_{l}(n)+\theta_2\left(\mu_2-v_{l}(n)\right) \Delta t+\sigma_2 \Delta W_{n},
 	\end{equation}
 	with 
 	\begin{equation}
-	\Delta W_{n} \sim N(0, \Delta t)
+	\Delta W_{n} \sim N(0, \Delta t).
 	\end{equation}
 	
 	
 	Figure \ref{fig:AR1process} shows an example trajectory of the leading
 	vehicle. After the Ornstein-Uhlenbeck process is calculated for one
-	episode, all speed values are clipped to the range $\unit[[0, 16.6]]{m/s}$. This generates
+	episode, all speed values are clipped to the range $[0,\unit[16.6]{m/s}]$.. This generates
 	training situations, where the leader vehicle stands still for some
 	time, e. g. at $t= [\unit[48]{s}, \unit[50]{s}]$ in Figure
 	\ref{fig:AR1process}. Furthermore, the leader's trajectory
