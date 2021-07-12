@@ -1,0 +1,2 @@
+elsearticle-harv.bst passt am besten zu anderen TRB-Papers.
+Die TRB-Webseite empfiehlt elsearticle-num.bst, doch das ist wohl ein Fehler: Ist in Konflikt mit dem bevorzugten Author-Year System und gibt auch einen Option-Clash beim Compilieren
