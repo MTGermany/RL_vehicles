@@ -1017,6 +1017,17 @@
 	comfortable. Further scenarios showed that traffic oscillations could
 	effectively be dampened with a sequence of trained followers, even if
 	the leader shows large outliers in acceleration.
+
+        \martin{A reason for this favourable behavior is that, unlike
+        classical car-following models, RL-based models
+        even learn responses that are not explicitely contained in their
+        specification. For example, the only reward component depending on
+        the relative speed is the safety component~\eqref{eq:r1_CFP}
+        which only kicks in for large approaching rates. Still, the
+        actual model also responds to small values of the relative
+        speed since such a behaviour may prevent reaching a
+        safety-critical situation within the prediction horizon.}
+        %(which is proportional to $1/(1-\gamma)$)
 	
 	Besides driving comfort, string stability, and safety,
 	the efficiency of the resulting traffic flow is important,
