@@ -25,10 +25,10 @@
 
 % local macros
 
-%\providecommand{\martin}[1]{\red{#1}} %literal, Preprint
-%\providecommand{\martinc}[1]{\green{[#1]}} %comment, Preprint
-\providecommand{\martin}[1]{#1}                  %fuer Veroeffentlichung
-\providecommand{\martinc}[1]{}                  %fuer Veroeffentlichung
+\providecommand{\martin}[1]{\red{#1}} %literal, Preprint
+\providecommand{\martinc}[1]{\green{[#1]}} %comment, Preprint
+%\providecommand{\martin}[1]{#1}                  %fuer Veroeffentlichung
+%\providecommand{\martinc}[1]{}                  %fuer Veroeffentlichung
 
 \providecommand{\sup}[1]{^{\mathrm{#1}}}  % upright superscript
 \providecommand{\sub}[1]{_{\mathrm{#1}}}  % upright subscript $b\sub{comf}$
@@ -103,7 +103,7 @@
 		
 		
 		\begin{abstract}
-			\martinc{After the final research has settled, I can write it}
+		
 		\end{abstract}
 		
 		\begin{keyword}
@@ -119,39 +119,16 @@
 	Autonomous driving technologies offer promising solutions to
 	improve road safety, where human errors account for 94\% of the total
 	accidents \citep{vehicleCrashSurvey2015}.  
-	\martinc{Das ``author'' Attribut in Bibtex darf man nicht
-		fuer anderes missbrauchen, da je nach Zitierstil nur zwei Autoren
-		drankommen und bibtex diverse andere Manipulationen vornimmt; .bib
-		File korrigiert.}
-	\martinc{citep=cite with parentheses}
 	Moreover, congestion, energy
-	consumption, and emissions \martinc{Die Englaender haben bei
-		Aufzaehlungen von $\ge 3$ items auch vor dem ``and'' ein Komma} are intended to be reduced. 
+	consumption, and emissions  are intended to be reduced. 
 	However, autonomous driving is a challenging task
 	since traffic flow can be dynamic and unpredictable.
 	On the way to fully autonomous driving, Advanced Driver Assistance Systems
 	(ADAS) have been developed to solve tasks like car following, emergency
-	braking, lane keeping, or lane changing. \martinc{``like'' startet
-		bereits eine unvollst\"andige Aufz\"ahlung, so no need for ``etc.''}
-	\martinc{Bindestriche in zusammengesetzten Worten gibt es i.A. nur bei 
-		$\ge 3$ Teilen, und zwar in alle L\"ucken au\3er der letzten, also
-		\emph{lane changing} aber \emph{lane-changing model}}
+	braking, lane keeping, or lane changing. 
 	Since Deep Learning methods that use deep neural networks have been demonstrated to surpass humans
 	in certain domains, they are also adopted in the area of autonomous
 	driving.
-	\martinc{Generelles ueber which vs. that: 
-		1. \emph{which mit Komma:}
-		``non-defining clauses'': der darauf folgende Relativsatz gibt interessante Details,
-		schraenkt das Subjekt/Objekt im Hauptsatz aber nicht ein (I use my bike, which has 18
-		gears, rather often)
-		2. \emph{which ohne Komma oder besser ``that'' oder ein Gerund (``ing-Form''):} ``defining clauses''. Der darauf folgende Relativsatz enthaelt einschraenkende,
-		wesentliche Informationen: ``The bike that/which has a
-		broken chain/having a broken chain is in the garage'' (impliziert,
-		dass ich mindestens ein zweites Rad habe). Im Folgenden ist eine ``nice-to
-		mention''-Definition, also ist which mit Komma OK, oft folgen bei dir dann
-		aber defining clauses, die ich durch ``that'', ``who'' (bei Menschen)
-		oder einem Gerund ersetzt habe. Pedantische Korrewktoren nennen das
-		auch ``which hunting'' (witch=Hexe)}
 	Especially Deep Reinforcement Learning (DRL), which combines the power
 	using deep neural networks with Reinforcement Learning, has shown its potential in a wide variety of autonomous driving tasks. 
 	In \cite{OnRampMerge2018} and \cite{OnRampMerge2020}, DRL is used to
@@ -162,7 +139,7 @@
 	under car-following scenarios, where suitable accelerations must be
 	computed to achieve safe and comfortable driving. Approaches
 	for solving this task are classical car-following models, such as the
-	IDM \citep{Opus} or stochastic car-following
+	Intelligent Driver Model (IDM) \citep{Opus} or stochastic car-following
 	models such as that of \cite{Treiber2018stochIDM_TRB}. Furthermore, data-driven approaches used Deep Learning methods to train a car-following model based on experimental car-follower data, such as in \cite{Chong2011SimulationOD} or \cite{ZHOU2017245}. The downside of this approach is that the model tries to emulate human driver behavior, which can still be suboptimal.
 	
 	To overcome this issue, DRL methods train non-human car-following models that can optimize metrics such as safety, efficiency, and comfort. 
@@ -172,8 +149,7 @@
 	\cite{HumanLikeAutonomouCF}. Similar approaches suggest a standardized
 	driving cycle serving as a leading vehicle trajectory, such
 	as \cite{ComparisonRLvsMPC} or \cite{CFelectricVehicle}
-	who\martinc{relative clauses mit Menschen: ``who'' statt
-		``which'' oder ``that''} use the New European Driving Cycle.
+	who use the New European Driving Cycle.
 	A disadvantage coming along with these approaches is that the
 	performance decreases for scenarios that are not in the scope of the training data, indicating inadequate machine learning generalization \citep{ComparisonRLvsMPC}. 
 	
@@ -192,34 +168,31 @@
 	\begin{itemize}
 		\item free driving,
 		car-following, as well as the transition between both in a
-		the way that approaching the leading vehicle is always smooth and comfortable
+		the way that approaching the leading vehicle is always smooth and comfortable;
 		\item wide range of possible
 		accelerations leading to a collision-free behavior
-		also in safety-critical situations such as a full-braking maneuver of the leader
+		also in safety-critical situations such as a full-braking maneuver of the leader;
 		\item being trained on leading trajectories,
 		based on an Ornstein–Uhlenbeck process \citep{OU}
 		with parameters reflecting the kinematics of real
 		drivers. This leads to high generalization capabilities and
 		model usage in a wider variety of traffic
 		scenarios. Moreover, the supply of learning data is
-		unlimited.
-		\item different driver characteristics to be modeled by adjusting the parameters of the reward function.
-		\item string stability even in extreme situations	
+		unlimited;
+		\item different driver characteristics to be modeled by adjusting the parameters of the reward function;
+		\item string stability even in extreme situations.
 	\end{itemize}
 	
 	Another feature of this work is a thorough validation of the above-mentioned properties in scenarios based on both synthetic and real trajectory data, bringing the model to its limits. 
 	In all cases, the model proved to be accident-free and string stable.
 	In a further experiment, the proposed model is compared to the IDM calibrated on the same data. The results indicate a better performance of the proposed model.
-	\martinc{Nach vorgestelltem Nebensatz oder Phrase (In Section ...,) folgt vor dem
-		Hauptsatz (``we introduce...'') immer ein Komma}
+		
 	This work is structured as follows. In Section \ref{sec:RLBackground},
 	we introduce some basic RL background as well as our modularized RL
 	approach, followed by a detailed description of our two sub-modules:
 	the Free-Driving Policy in Section \ref{sec:FreeDrivingPolicy} and the
 	Car-Following Policy in Section
-	\ref{sec:CarFollowingPolicy}. \martinc{In Englisch wird nach
-		Doppelpunkt klein weitergeschrieben, wenn kein vollst\"andiger Satz
-		folgt wie hier} In Section \ref{sec:validation}, we evaluate our RL
+	\ref{sec:CarFollowingPolicy}. In Section \ref{sec:validation}, we evaluate our RL
 	strategy with respect to safety, \emph{stability}, and comfort aspects
 	before we conclude in Section \ref{sec:conclusion}.
 	
@@ -253,19 +226,7 @@
 	to output an action $a$ based on a given state $s$ and a critic network
 	$Q\left(s, a \mid \theta^{Q}\right) $ with the network weights  $\theta^{Q}$ to
 	predict if the action is good or bad, based on a given state $s$ and
-	action $a$. \martinc{Ich w\"urde Subskripte f\"ur die Parameter(vektoren?)
-		$\theta_{\mu}$ und $\theta_Q$ nehmen. Oder sind die Superskripte
-		Konvention hier?}
-	\martinc{Ferner ist mir nicht klar, wie sich die
-		Einleitung (Parameter des Aktions-Algorithmus bzw  Policy $\pi$ so w\"ahlen, dass der reward $R_t$
-		maximiert wird) von der
-		Actor-Critic Darstellung unterscheiden. F\"ur mich ist der Actor
-		$\mu|\theta$ einfach der Algorithmus $\pi|\theta$ und die Critic die
-		Rewardfunktion $R_t$, die als kumulierter Reward eigentlich keine im Lernprozess
-		ver\"anderbaren Parameter hat, also alter Wein in neuen
-		Schl\"auchen: Der Unterschied zu bzw. die Pr\"azisierung der
-		Einleitung sollte klar werden, Au\3erdem, dass $\theta$ wohl den
-		Vektor der Synapsenst\"arken/Linkst\"arken des jeweiligen NN angibt.)} 
+	action $a$. 
 	To achieve a better training stability, DDPG uses target networks  $\mu^{\prime}$ and $Q^{\prime}$ for the actor and critic networks.
 	These target networks have the same architecture as the main networks, only differing in the network parameters. While training, these networks are updated by
 	letting them slowly track the main networks
@@ -293,13 +254,7 @@
 				Sample a random minibatch of $N$ transitions $\left(s_{i}, a_{i}, r_{i}, s_{i+1}\right)$ from $R$\\
 				Set $y_{i}=r_{i}+\gamma Q^{\prime}\left\{s_{i+1}, \mu^{\prime}\left(s_{i+1} \mid \theta^{\mu^{\prime}}\right) \mid \theta^{Q^{\prime}}\right\}$\\
 				Update critic by minimizing the loss:
-				\martinc{Ich dachte, der/die Critic ist der feste
-					Qualit\"atsgutachter und der Actor wird an
-					die Critic angepasst. Wird hier wirklich
-					umgekehrt die
-					Critic angepasst? (``Ich habe
-					danebengeschossen. Lasst uns die Zielscheibe
-					dorthin versetzen, wohin ich geschossen habe'')}  $L=\frac{1}{N} \sum_{i}\left\{y_{i}-Q\left(s_{i}, a_{i} \mid \theta^{Q}\right)\right\}^{2}$\\
+				 $L=\frac{1}{N} \sum_{i}\left\{y_{i}-Q\left(s_{i}, a_{i} \mid \theta^{Q}\right)\right\}^{2}$\\
 				Update the actor policy using the sampled policy gradient:
 				$$
 				\nabla_{\theta^{\mu}} J \approx \frac{1}{N} \sum_{i} \left. \nabla_{a} Q\left(s, a \mid \theta^{Q}\right)\right|_{s=s_{i}, a=\mu\left(s_{i}\right)} \left.\nabla_{\theta^{\mu}} \mu\left(s \mid \theta^{\mu}\right)\right|_{s_{i}}
@@ -360,12 +315,11 @@
 	situations.
 	
 	The state space defines the observations that the vehicle can receive from the environment. To compute an optimal
-	acceleration, the following vehicle observes its own acceleration $\dot{v}$,
-	and its own speed $v$. Linear translation and scaling are used to
+	acceleration, the following vehicle observes its own acceleration $\dot{v}_t$,
+	and its own speed $v_t$ at time $t$. Linear translation and scaling are used to
 	reduce the dimensions and to bring all observations approximately into
 	the same range of $[0,1]$. The observation vector at time step $t$ is defined
-	as 
-	
+	as 	
 	\begin{equation}
 	\label{eq:stateFree}
 	s_t = \begin{pmatrix} \frac{v_t}{v\sub{des}} \\ \frac{\dot{v}_t-a\sub{\rm min}}{a\sub{\rm max} - a\sub{\rm min}}\end{pmatrix},
@@ -376,15 +330,9 @@
 	The reward function contribution a time step $t$ is decomposed into two factors. The first part aims to
 	not exceed a desired speed $v\sub{des}$, but also to accelerate if the
 	desired speed is not reached yet.  
-	\martinc{Man sollte auch den Fall $v>v\sub{des}$ ber\"ucksichtigen,
-		der z.B. durch Einfahren in ein Streckensegment mit niedrigerem
-		Tempolimit (Ortseinfahrt) realisiert wird, aber nicht so
-		drastisch/unstetig wie hier, z.B. zweiten Fall durch
-		$(v\sub{des}-v)/v\sub{des}$ statt =0 ersetzen}
-	
 	\begin{equation}
 	\label{eq:r1Free}
-	r_{t,1}  = 
+	r_{t, \rm speed}  = 
 	\begin{cases}
 	\frac{v_t}{v\sub{des}},
 	& \text{if } v_t \leq v\sub{des}\\
@@ -394,25 +342,24 @@
 	\end{equation}
 	
 	The second part of the reward function aims to reduce the jerk in
-	order to achieve comfortable driving, \martinc{No need for dotted
-		quantities here; I propose using $j\sub{comf}$} \martinc{Really
-		$\dv{a}{t}$ or the second state variable defined in~\eqref{eq:stateFree}?}
+	order to achieve comfortable driving, 
 	\begin{equation}
 	\label{eq:r2Free}
-	r_{t,2} = -\left(\frac{1}{j\sub{comf}} \ \dv{\dot{v}_t}{t}\right)^2,
+	r_{t, \rm jerk} = -\left(\frac{1}{j\sub{comf}} \ \dv{\dot{v}_t}{t}\right)^2,
 	\end{equation}
 	where $j\sub{comf}$ denotes a comfortable jerk of $\unit[2]{m/s^3}$.
 	Since building up a comfortable value of acceleration or deceleration
-	from zero in one second is at the limit of comfortable jerks, $r_{t,2}$
+	from zero in one second is at the limit of comfortable jerks, $r_{t, \rm jerk} $
 	values above unity tend to feel uncomfortable.
-	
-	
+		
 	The contribution of the final reward function at simulation time step $t$ is the weighted
 	sum of these factors according to
+	%
 	\begin{equation}
 	\label{rt1}
-	r_{t} =r_{t,1} + w\sub{jerk} r_{t,2},
+	r_{t, \rm free-driving} =r_{t, \rm speed} + w\sub{jerk} r_{t, \rm jerk} ,
 	\end{equation}
+	%
 	where all the factors are evaluated at time step $t$. 
 	
 	
@@ -420,14 +367,13 @@
 	\label{training_environment1}
 	In order to train the RL agent for the task of keeping a desired
 	speed, the training environment is defined as follows. For the description of the vehicle dynamics, a point-mass kinematic model is used. The Euler and ballistic methods are used to update the speed and position for time step $t + 1$. This approach is recommended in \cite{numericalUpdateMethodsTreiber} as an efficient
-	and robust scheme for integrating car-following models.
-	
+	and robust scheme for integrating car-following models.	
+	%	
 	\begin{align}
 	v_{t+1} &= v_{t} + \dot{v}_{t} d, \\
 	x_{t+1} &= x_{t} + \frac{v_{t} + v_{t+1}}{2} \Delta t,
 	\end{align}
-	
-	
+	%
 	with $\Delta t$ corresponding to the simulation step size that is globally
 	set to \unit[100]{ms}. To train the RL agent, a training episode has to be defined. One training episode contains 500 time steps, and the vehicle's initial speed is set uniformly at random in the range $[0,v\sub{des}]$.
 	
@@ -439,14 +385,9 @@
 	\begin{equation}
     \mathrm{d} x_{t}=-\theta_1 x_{t} \mathrm{d} t+\sigma_1 \mathrm{d} W_{t},
 	\end{equation}
-    with $\Theta_1 = 0.15$, $\sigma_1 = 0.2$ and $W_{t}$ denoting the Wiener process.
-	
-	\martinc{Einheitenbehaftet, also in $\unit[]{m/s^2}$ oder
-		ist der action space skaliert gem\"a\3 der 2. Komponente des State
-		Vektors?} The soft update rate of the target networks $\tau$ is set to
-	0.001.\martinc{Och, noch eine Tiefpass-Zeitvariable der Gr\"o\3e
-		0.001. Welche von den beiden ist $\tau$?}
-	All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
+    with $\theta_1 = \unit[0.15]{s^{-1}}$, $\sigma_1 = \unit[0.2]{s^{-0.5}}$ and $W_{t}$ denoting the Wiener process.	
+ 	The soft update rate of the target networks $\tau$ is set to
+	0.001. All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
 	%
 	\begin{table}
 		\caption{DDPG parameter values} 
@@ -468,9 +409,7 @@
 			\end{tabular}
 		\end{center}
 	\end{table}
-	%
-	\martinc{Evtl. diese Abb vorziehen. Manche Journals wollen Bilder in
-		der Reihenfolge der ersten Erwaehnung im Haupttext}
+	%	
 	Figure \ref{fig:TrainingReward} shows an example of the training
 	process, where the asymmetric moving average reward of the last 30 training episodes is plotted over training episodes. For the Free-Driving Policy, a maximum average reward has been reached after approximately 3200 training episodes (marked in red).
 	%
@@ -480,15 +419,13 @@
 		\caption{Asymmetric moving average reward of the last 30 training episodes for Free-Driving Policy and Car-Following Policy} 
 		\label{fig:TrainingReward}
 	\end{figure}
-	
+ 	%	
 	
 	\section{Car-Following Policy}
 	\label{sec:CarFollowingPolicy}
 	\subsection{Action and state space}
 	\label{stateSpaceFollow}
-	To match the action space of the Free-Driving Policy, the acceleration is analogously defined as a continuous variable in the range between $a\sub{\rm min} = \unit[-9]{m/s^2}$ and 
-	$a\sub{\rm max} =\unit[2]{m/s^2}$.
-	
+	To match the action space of the Free-Driving Policy, the acceleration is analogously defined as a continuous variable in the range between $a\sub{\rm min} = \unit[-9]{m/s^2}$ and $a\sub{\rm max} =\unit[2]{m/s^2}$.	
 	
 	The state space defines the observations that the following
 	vehicle can receive from the environment. To compute an optimal
@@ -515,14 +452,6 @@
 	
 	\subsection{Reward Function}
 	\label{rewardFunctionFollow}
-	\martinc{Die reward function ist nicht als Funktion des skalierten
-		Statevektors S $s_t$, sondern mit Hilfe der unskalierten Statevariablen
-		formuliert (obwohl die meisten Terme der Rewardfunktion ihre eigene
-		Skalierung enthalten, nicht aber $r_{t,1}$). Stimmt das? Falls nicht, h\"atte man das Problem, dass
-		in Extremf\"allen (Tempo 130 oder 150 auf stehendes Hindernis)
-		$g\sub{max}=\unit[200]{m}$ nicht ausreicht. Ignoriert die reward
-		function die skalierten States (warum braucht man die dann aber?),
-		gibt es hingegen kein Problem.}
 	The goal of the Car-Follower-Policy is to reduce the crash risk while
 	maintaining comfortable driving in non-safety-critical situations. The
 	reward function includes a set of parameters that can be
@@ -562,7 +491,7 @@
 	
 	\begin{equation}
 	\label{eq:r1_CFP}
-	r_{t,1} = 
+	r_{t, \rm safe} = 
 	\begin{cases}
 	-\tanh\left(\frac{b\sub{kin}-b\sub{comf}}{-a\sub{min}}\right),& \text{if } b\sub{kin}>b\sub{comf}\\
 	0,              & \text{otherwise}
@@ -579,18 +508,17 @@
 	\end{cases}
 	\end{equation}
 	the kinematic deceleration $b\sub{kin}$ representing the minimum deceleration necessary to avoid a collision.
-	The argument of the tanh function with  the
+	The argument of the tanh() function with  the
 	maximum possible deceleration ($\approx \unit[9]{m/s^2}$ on dry roads) gives a
 	non-dimensional measure for the seriousness of the critical situation
 	with values 
 	near or above 1 indicating an imminent crash.  The tanh function functions as a limitation for the reward value to the range $[-1,0]$. This has shown to make the learning process more stable. Notice that the case distinction in ~\eqref{eq:r1_CFP}  ensures that
 	this term is not activated in non-critical situations. The purpose of
-	the factor $r_{t,1}$ is twofold: It motivates the follower vehicle to
+	the factor $r_{t, \rm safe}$ is twofold: It motivates the follower vehicle to
 	brake in safety-critical or near-crash situations.  Furthermore it
 	motivates the follower vehicle also to brake early in non-critical
 	situations, where $ v_t>v_{t,l}$, in order to achieve a comfortable
-	approaching of the leader vehicle.\martinc{Nicht wirklich, weil diese
-		Funktion nur in zumindest milde kritischen Situationen $b\sub{kin}>b\sub{comf}$ anspringt.}
+	approaching of the leader vehicle.
 	
 	The second part of the reward function aims to not fall below a reasonable
 	distance to the leading vehicle.
@@ -598,7 +526,7 @@
 	
 	\begin{equation}
 	\label{eq:r2_CFP}
-	r_{t,2}  = 
+	r_{t, \rm gap}  = 
 	\begin{cases}
 	\frac{\varphi\left\{(g_t-g\sub{opt})/g\sub{var}\right\}}{\varphi(0)}, & \text{if } g_t < g^*\\
 	\frac{\varphi\left\{(g_t-g\sub{opt})/g\sub{var}\right\}}{\varphi(0)}\left(1-\frac{g_t-g^*}{g\sub{lim} - g^*}\right)  & \text{otherwise},
@@ -611,7 +539,7 @@
 	g\sub{lim} &= v_tT\sub{lim} + 2g\sub{min},
 	\end{align}
 	%
-	and $\varphi(x)$ describing the density function of the standard normal distribution. The value of $g^*$ is chosen in a way that the reward function $r_{t,2}$ is differentiable.
+	and $\varphi(x)$ describing the density function of the standard normal distribution. The value of $g^*$ is chosen in a way that the reward function $r_{t,\rm gap}$ is differentiable.
 	%
 	\begin{figure}
 		\centering
@@ -622,7 +550,7 @@
 	\end{figure}
 	%
 	Figure \ref{fig:RewardFunc1} illustrates the reward function for
-	$r_{t,2}$, containing the parameter $g\sub{opt}$, $g^*$ and $g_{\rm
+	$r_{t,\rm gap}$, containing the parameter $g\sub{opt}$, $g^*$ and $g_{\rm
 		lim}$. The reward function is designed in a way that for high speeds $v$
 	of the following vehicle, the time gap between following and leading
 	vehicle tends to $T$, while for low speeds, the distance
@@ -637,9 +565,7 @@
 	a linear function. Furthermore, a high value of $T\sub{lim}$ has been
 	chosen, resulting in a low gradient of the linear function. This
 	prevents the follower vehicle from trying to reach the desired time gap $T$
-	as fast as possible with maximum speed \martinc{maximal
-		speed: sehr hohe Geschwindigkeit; maximum speed: maximale
-		Geschwindigkeit, also $v\sub{des}$. Ich glaube, Letzteres ist hier gemeint.}but rather motivates the follower vehicle to decelerate early and approach the leading vehicle comfortably.
+	as fast as possible with maximum speed but rather motivates the follower vehicle to decelerate early and approach the leading vehicle comfortably.
 	
 	
 	
@@ -647,15 +573,14 @@
 	order to achieve comfortable driving and has been designed analogously to the Free-Driving Policy, 
 	\begin{equation}
 	\label{eq:r3_CFP}
-	r_{t,3} = -\left(\frac{1}{j\sub{comf}} \ \dv{\dot{v}_t}{t}\right)^2.
+	r_{t, \rm jerk} = -\left(\frac{1}{j\sub{comf}} \ \dv{\dot{v}_t}{t}\right)^2.
 	\end{equation}
 	%
 	The contribution of the final reward function~\eqref{Rt}  at simulation time step $t$ is the weighted
 	sum of these factors according to
 	\begin{equation}
 	\label{rt2}
-	%r_t = 0.6r_{t,1} + 1.1r_{t,2} + 0.001 r_{t,3} + r_{t,4},
-	r_t = r_{t,1} + w\sub{gap}r_{t,2}+w\sub{jerk}r_{t,3},
+	r_{t, \rm car-following} = r_{t, \rm safe} + w\sub{gap}r_{t,\rm gap}+w\sub{jerk}r_{t, \rm jerk} ,
 	\end{equation}
 	where all the factors are evaluated at time step $t$. The weights (cf.
 	Table~\ref{tab:agentParameters}) have been found experimentally and
@@ -666,17 +591,17 @@
 	
 	\subsection{Training environment}
 	\label{training_environment2}
-	The training environment is modeled by a leader and a follower vehicle. Both vehicles implement the point-mass kinematic model described in Section~\ref{training_environment1}. While the RL agent controls the follower vehicle, the leading trajectory is based on an Ornstein–Uhlenbeck process \citep{OU}, whose parameters
+	The training environment is modeled by a leader and a follower vehicle. Both vehicles implement the point-mass kinematic model described in Section~\ref{training_environment1}. While the RL agent controls the follower vehicle, the leading trajectory is based on an Ornstein–Uhlenbeck process, whose parameters
 	reflect the kinematics of real leaders. The Ornstein–Uhlenbeck process describes
 	the speed of the leading vehicle $v_{t,l}$ and is defined as 
 	
 	\begin{equation} \label{eq:AR1}
     \mathrm{d} v_{t,l}=\theta_2\left(\mu_2-v_{t,l}\right) \mathrm{d} t+\sigma_2 \mathrm{d} W_{t},
 	\end{equation}
-	with $\theta_2 = \unit[0.132]{s^{-1}}$, $\mu_2 = \unit[7.5]{m/s}$ and $\sigma_2 = \unit[3.847]{m/s^{1.5}}$. $W_{t}$ denotes the Wiener process. The parameter have been designed to model the behavior of a real leader vehicle.
-	For the numerical simulation, the Ornstein-Uhlenbeck process has been discretized using the Euler-Maruyama method. The resulting discretized process is defined as
+	with $\theta_2 = \unit[0.132]{s^{-1}}$, $\mu_2 = \unit[7.5]{m/s}$, $\sigma_2 = \unit[3.847]{m/s^{1.5}}$ and $W_{t}$ denoting the Wiener process. The parameter have been designed to model the behavior of a real leader vehicle.
+	For the numerical simulation, the Ornstein-Uhlenbeck process has been discretized using the Euler-Maruyama method \cite{CIRprocess}. The resulting discretized process is defined as
 	\begin{equation} 
-	v_{l}(n+1)=v_{l}(n)+\theta_2\left(\mu_2-v_{l}(n)\right) \Delta t+\sigma_2 \Delta W_{n},
+	v_{l}(n+1)=v_{l}(n)+\theta_2\left\{\mu_2-v_{l}(n)\right\} \Delta t+\sigma_2 \Delta W_{n},
 	\end{equation}
 	with 
 	\begin{equation}
@@ -686,7 +611,7 @@
 	
 	Figure \ref{fig:AR1process} shows an example trajectory of the leading
 	vehicle. After the Ornstein-Uhlenbeck process is calculated for one
-	episode, all speed values are clipped to the range $[0,\unit[16.6]{m/s}]$.. This generates
+	episode, all speed values are clipped to the range $[0,\unit[16.6]{m/s}]$. This generates
 	training situations, where the leader vehicle stands still for some
 	time, e. g. at $t= [\unit[48]{s}, \unit[50]{s}]$ in Figure
 	\ref{fig:AR1process}. Furthermore, the leader's trajectory
@@ -845,13 +770,7 @@
 	that a lower value for $T$ results in closer driving to the
 	leader. The last plot in Figure \ref{fig:differentT} which illustrates the actual time gap $ (g_t-g\sub{min})/v_t$ shows, that for speeds greater than zero the desired time gap $T$ is approximately maintained.
 	This behavior can be considered as a more ``aggressive''
-	driving style. \martinc{It would be instructive to have a time series
-		plot of the actual time gap $g/v$ or $(g-g_0)/v$ (restricted to
-		values $<2T$). For the IDM, these
-		are somewhat higher in steady state: Analytical expression 
-		$T_e(v):=(g_e(v)-g_0)/v=T/\sqrt{1-(v/v_0)^4}$, for the IDM+ $T_e(v)=T$
-		for $v<v_0$}
-	Since this also means that there are fewer options in
+	driving style. Since this also means that there are fewer options in
 	increasing driving comfort without affecting safety, the follower's
 	accelerations and decelerations are higher than that of the more
 	conservative RL agent~3 although the relative
@@ -991,9 +910,7 @@
 	\section{Conclusion/Discussion}
 	\label{sec:conclusion}
 	This study presented a novel car-following model based on
-	Deep Reinforcement Learning. \martinc{Die Conclusion wird
-		bisweilen separat gelesen, so besser (wie immer im Abstract) keine
-		Abk\"urzungen verwenden, au\3er die allergebr\"auchlichsten} The
+	Deep Reinforcement Learning. The
 	proposed model considers free driving, car-following, as well as the
 	transition between both in a way that approaching the leading vehicle
 	is smooth and comfortable. We used an approach called Modularized
@@ -1005,8 +922,7 @@
 	to a leader vehicle and keep the traffic situation safe. 
 	
 	For each policy, we defined separate reward functions reflecting traffic safety and comfort aspects. 
-	Different driver characteristics can be modeled by adjusting the parameter of the reward function.
-	
+	Different driver characteristics can be modeled by adjusting the parameter of the reward function.	
 	The proposed model is trained on leading trajectories based on an
 	Ornstein-Uhlenbeck process. This leads to high generalization capabilities and model usage in a wider variety of traffic scenarios. Furthermore, the
 	supply of learning data is unlimited.
@@ -1018,18 +934,17 @@
 	comfortable. Further scenarios showed that traffic oscillations could
 	effectively be dampened with a sequence of trained followers, even if
 	the leader shows large outliers in acceleration.
-
-        \martin{A reason for this favourable behavior is that, unlike
-        classical car-following models, RL-based models
-        even learn responses that are not explicitely contained in their
-        specification. For example, the only reward component depending on
-        the relative speed is the safety component~\eqref{eq:r1_CFP}
-        which only kicks in for large approaching rates. Still, the
-        actual model also responds to small values of the relative
-        speed since such a behaviour may prevent reaching a
-        safety-critical situation within the prediction horizon.}
-        %(which is proportional to $1/(1-\gamma)$)
-	
+    A reason for this favourable behavior is that, unlike
+    classical car-following models, RL-based models
+    even learn responses that are not explicitely contained in their
+    specification. For example, the only reward component depending on
+    the relative speed is the safety component~\eqref{eq:r1_CFP}
+    which only kicks in for large approaching rates. Still, the
+    actual model also responds to small values of the relative
+    speed since such a behaviour may prevent reaching a
+    safety-critical situation within the prediction horizon.
+    %(which is proportional to $1/(1-\gamma)$)
+        	
 	Besides driving comfort, string stability, and safety,
 	the efficiency of the resulting traffic flow is important,
 	particularly, the fundamental diagram, the maximum flow through a
@@ -1043,10 +958,10 @@
 	their strengths in such more complex state dynamics. All this  will
 	be investigated in a forthcoming paper.
 	
-	\martin{
+	
 		\subsection*{Acknowledgements}
 		We thank Vincenzo Punzo for making available to us the experimental
-		car-following data used in this paper. This work was funded by ...}
+		car-following data used in this paper. This work was funded by ...
 	\martinc{Ostap: DFG oder andere funds nennen?}
 	
 	
