@@ -307,10 +307,10 @@
 	The defined modularized RL approach requires that the action space of
 	both sub-policies are identical. In our use case, the action space is
 	continuous and one-dimentional and given by the range of feasible accelerations
-	$\dot{v}_t \in [a\sub{min}, a\sub{max}]$. The range limits
-	$a\sub{min}= \unit[-9]{m/s^2}$ and  $a\sub{max} =\unit[2]{m/s^2}$
-	reflect comfortable driving ($\dot{v}_t \le a\sub{max}$) while
-	allowing for the physical limit $-a\sub{min}$ of the braking
+	$\dot{v}_t \in [\dot{v}\sub{min}, \dot{v}\sub{max}]$. The range limits
+	$\dot{v}\sub{min}= \unit[-9]{m/s^2}$ and  $\dot{v}\sub{max} =\unit[2]{m/s^2}$
+	reflect comfortable driving ($\dot{v}_t \le \dot{v}\sub{max}$) while
+	allowing for the physical limit $-\dot{v}\sub{min}$ of the braking
 	deceleration in safety-critical
 	situations.
 	
@@ -322,7 +322,7 @@
 	as 	
 	\begin{equation}
 	\label{eq:stateFree}
-	s_t = \begin{pmatrix} \frac{v_t}{v\sub{des}} \\ \frac{\dot{v}_t-a\sub{\rm min}}{a\sub{\rm max} - a\sub{\rm min}}\end{pmatrix},
+	s_t = \begin{pmatrix} \frac{v_t}{v\sub{des}} \\ \frac{\dot{v}_t-\dot{v}\sub{min}}{\dot{v}\sub{max} - \dot{v}\sub{min}}\end{pmatrix},
 	\end{equation}
 	where $v_{des}$ defines the desired speed.
 	\subsection{Reward Function}
@@ -357,7 +357,7 @@
 	%
 	\begin{equation}
 	\label{rt1}
-	r_{t, \rm free-driving} =r_{t, \rm speed} + w\sub{jerk} r_{t, \rm jerk} ,
+	r_{t, \rm free} =r_{t, \rm speed} + w\sub{jerk} r_{t, \rm jerk} ,
 	\end{equation}
 	%
 	where all the factors are evaluated at time step $t$. 
@@ -425,7 +425,7 @@
 	\label{sec:CarFollowingPolicy}
 	\subsection{Action and state space}
 	\label{stateSpaceFollow}
-	To match the action space of the Free-Driving Policy, the acceleration is analogously defined as a continuous variable in the range between $a\sub{\rm min} = \unit[-9]{m/s^2}$ and $a\sub{\rm max} =\unit[2]{m/s^2}$.	
+	To match the action space of the Free-Driving Policy, the acceleration is analogously defined as a continuous variable in the range between $\dot{v}\sub{min} = \unit[-9]{m/s^2}$ and $\dot{v}\sub{max} =\unit[2]{m/s^2}$.	
 	
 	The state space defines the observations that the following
 	vehicle can receive from the environment. To compute an optimal
@@ -441,7 +441,7 @@
 	s_t = 
 	\begin{pmatrix} 
 	\frac{v_t}{v\sub{des}} \\ 
-	\frac{\dot{v}_t-a\sub{\rm min}}{a\sub{\rm max} - a\sub{\rm min}}\\
+	\frac{\dot{v}_t-\dot{v}\sub{min}}{\dot{v}\sub{max} - \dot{v}\sub{min}}\\
 	\frac{v_{t,l}-v_t}{v\sub{des}}\\
 	\frac{g_t}{g\sub{\rm max}}
 	
@@ -463,8 +463,8 @@
 		\begin{center}
 			\begin{tabular}{ p{0.12\textwidth}| p{0.65\textwidth}| p{0.1\textwidth}}
 				Parameter & Description & Value \\ \hline
-				$a\sub{\rm min}$ & Minimum acceleration & $\unit[-9]{m/s^2}$ \\  
-				$a_{\rm max}$ & Maximum acceleration & $\unit[2]{m/s^2}$ \\  
+				$\dot{v}\sub{min}$ & Minimum acceleration & $\unit[-9]{m/s^2}$ \\  
+				$\dot{v}\sub{max}$ & Maximum acceleration & $\unit[2]{m/s^2}$ \\  
 				$b_{\rm comf}$ & Comfortable deceleration & $\unit[2]{m/s^2}$ \\  
 				$j_{\rm comf}$ & Comfortable jerk & $\unit[2]{m/s^3}$ \\  
 				$v_{\rm des}$ & Desired speed & $\unit[15]{ m/s}$ \\  		
@@ -493,7 +493,7 @@
 	\label{eq:r1_CFP}
 	r_{t, \rm safe} = 
 	\begin{cases}
-	-\tanh\left(\frac{b\sub{kin}-b\sub{comf}}{-a\sub{min}}\right),& \text{if } b\sub{kin}>b\sub{comf}\\
+	-\tanh\left(\frac{b\sub{kin}-b\sub{comf}}{-\dot{v}\sub{min}}\right),& \text{if } b\sub{kin}>b\sub{comf}\\
 	0,              & \text{otherwise}
 	\end{cases}
 	\end{equation}
@@ -580,7 +580,7 @@
 	sum of these factors according to
 	\begin{equation}
 	\label{rt2}
-	r_{t, \rm car-following} = r_{t, \rm safe} + w\sub{gap}r_{t,\rm gap}+w\sub{jerk}r_{t, \rm jerk} ,
+	r_{t, \rm follow} = r_{t, \rm safe} + w\sub{gap}r_{t,\rm gap}+w\sub{jerk}r_{t, \rm jerk} ,
 	\end{equation}
 	where all the factors are evaluated at time step $t$. The weights (cf.
 	Table~\ref{tab:agentParameters}) have been found experimentally and
@@ -660,7 +660,7 @@
 	artificial external profile for the leading vehicle speed. The initial
 	gap between 
 	follower and leader is 200 meters referring to a free driving
-	scenario. The follower accelerates with $a\sub{max} = \unit[2]{m/s^2}$ until
+	scenario. The follower accelerates with $\dot{v}\sub{max} = \unit[2]{m/s^2}$ until
 	the desired speed $v\sub{des} = \unit[15]{m/s} $ is reached and approaches
 	the standing leading vehicle. When the gap between both drops below 
 	\unit[70]{m},
@@ -796,16 +796,16 @@
 	by 
 	\begin{equation}
 	\label{eq:IDM}
-	\dv{v}{t}=a\sub{max}\left[1-\left(\frac{v_t}{v\sub{des}}\right)^{4}-\left\{\frac{s^{*}\left(v_t, v_{t,l}\right)}{g_t}\right\}^{2}\right],
+	\dv{v}{t}=\dot{v}\sub{max}\left[1-\left(\frac{v_t}{v\sub{des}}\right)^{4}-\left\{\frac{s^{*}\left(v_t, v_{t,l}\right)}{g_t}\right\}^{2}\right],
 	\end{equation}
 	with
 	\begin{equation}
 	\label{eq:IDMsstar}
-	s^{*}\left(v_t, v_{t,l}\right)=g\sub{min}+\max \left\{0,v_tT+\frac{v_t(v_t-v_{t,l})}{2 \sqrt{a\sub{max} b\sub{comf}}}\right\}.
+	s^{*}\left(v_t, v_{t,l}\right)=g\sub{min}+\max \left\{0,v_tT+\frac{v_t(v_t-v_{t,l})}{2 \sqrt{\dot{v}\sub{max} b\sub{comf}}}\right\}.
 	\end{equation}
 	Notice that the IDM parameters desired
 	speed $v\sub{des}$, minimum gap $g\sub{min}$, time gap $T$, maximum
-	acceleration $a\sub{max}$, and
+	acceleration $\dot{v}\sub{max}$, and
 	comfortable deceleration $b\sub{comf}$ are a subset of that of the RL reward
 	function. 
 	
@@ -826,7 +826,7 @@
 				Parameter & Value   \\ \hline
 				$T$ & $\unit[0.83]{s}$\\
 				$g\sub{min}$ & $\unit[4.90]{m}$\\
-				$a\sub{max}$ & $\unit[4.32]{m/s^2}$\\
+				$\dot{v}\sub{max}$ & $\unit[4.32]{m/s^2}$\\
 				$b\sub{comf}$ & $\unit[2.34]{ m/s^2}$\\
 				$v\sub{des}$ & $\unit[33.73]{m/s}$			
 			\end{tabular}
