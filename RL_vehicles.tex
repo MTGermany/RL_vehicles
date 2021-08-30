@@ -102,9 +102,12 @@
 		
 		
 		
-		\begin{abstract}
-		
+		\begin{abstract}		
+		We propose and simulate a novel car following model based on deep reinforcement learning. Instead of reproducing  existing follower trajectories, our model is trained to maximize externally given reward functions for the free and car-following regimes. The parameters of the reward functions such as desired speed, time gap, or accelerations ressemble that of traditional models such as the Intelligent driver model (IDM) and allow for explicitly implementing different driving styles. Moreover, they partially lift the black- box nature of conventional neural network models. The model is trained on leading speed profiles governed by a truncated  Ornstein-Uhlenbeck process reflecting a realistic leader’s kinematics.
+	
+		This allows for arbitrary driving situations and an infinite supply of training data. For various parameterizations of the reward functions, and for a wide variety of artificial and real leader data, the model turned out to be unconditionally string stable and crash free. Moreover, a platoon of three simulated followers following a real trajectory showed better driving comfort and safety metrics than the followers of the real four-platoon experiment. A cross comparison with the IDM  calibrated to the goodness of fit of the relative gaps showed not only a higher reward compared to the traditional model but also a better goodness of fit.
 		\end{abstract}
+	
 		
 		\begin{keyword}
 			reinforcement learning \sep car-following model \sep stochastic
@@ -119,8 +122,7 @@
 	Autonomous driving technologies offer promising solutions to
 	improve road safety, where human errors account for 94\% of the total
 	accidents \citep{vehicleCrashSurvey2015}.  
-	Moreover, congestion, energy
-	consumption, and emissions  are intended to be reduced. 
+	Moreover, they have the potential to reduce energy consumption and emissions. 
 	However, autonomous driving is a challenging task
 	since traffic flow can be dynamic and unpredictable.
 	On the way to fully autonomous driving, Advanced Driver Assistance Systems
@@ -161,18 +163,15 @@
 	common: First, the acceleration range is limited in a way that
 	full-braking maneuvers are not considered. This results in models that are just designed for non-safety-critical scenarios. Second, these models just consider car-following scenarios, while free driving or the transition between both is not reflected in the reward function. Third, the trained models have just been validated on data that is similar to the training data set so that the generalization capabilities cannot be proven. 
 	
-	This motivated us to design a model that overcomes all these issues.
-	To our knowledge, no RL based car-following model has been proposed that has the following features combined:
+	This motivated us to design a model that overcomes all of these issues.  Specifically,  we propose a RL-based model with following features:
 	
 	
 	\begin{itemize}
-		\item free driving,
-		car-following, as well as the transition between both in a
-		the way that approaching the leading vehicle is always smooth and comfortable;
+		\item applicable for free-driving and car-following situations with safe, smooth, and  comfortable transitions between these states;
 		\item wide range of possible
 		accelerations leading to a collision-free behavior
 		also in safety-critical situations such as a full-braking maneuver of the leader;
-		\item being trained on leading trajectories,
+		\item being trained on leading trajectories
 		based on an Ornstein–Uhlenbeck process \citep{OU}
 		with parameters reflecting the kinematics of real
 		drivers. This leads to high generalization capabilities and
@@ -182,6 +181,7 @@
 		\item different driver characteristics to be modeled by adjusting the parameters of the reward function;
 		\item string stability even in extreme situations.
 	\end{itemize}
+	To our knowledge, no car-following model has been proposed that has these features.
 	
 	Another feature of this work is a thorough validation of the above-mentioned properties in scenarios based on both synthetic and real trajectory data, bringing the model to its limits. 
 	In all cases, the model proved to be accident-free and string stable.
@@ -290,7 +290,7 @@
 	\begin{figure}
 		\centering
 		\includegraphics[width=12cm]{images/MRL_small}
-		\caption{Modularized RL architecture with actor networks of both policies.} 
+		\caption{Modularized RL architecture with actor critic networks of both policies.} 
 		\label{fig:MRL}
 	\end{figure}
 	
@@ -380,7 +380,11 @@
 	\subsection{Model training}
 	Both neural networks, critic and actor, are feed-forward neural
 	networks with one layer of hidden neurons, containing 16 neurons (see
-	Figure \ref{fig:MRL}). ReLU activation functions (\cite{relu}) are used, except for the output layer of the actor network that uses a tanh activation function. The bounded output in the range $[-1,1]$ is then mapped in the acceleration range. The learning rate for updating the weights of the critic and actor network is set to 0.001. For the exploration of the action space, an exploration noise model has to be defined. We adopted a
+	Figure \ref{fig:MRL}). ReLU activation functions (\cite{relu}) are used, except for the output layer of the actor network that uses a tanh activation function. The bounded output $a_t$ in the range $[-1,1]$ is then mapped to the acceleration range by
+	\begin{equation}
+		\dot{v}_t = \min \left( \abs{\dot{v}\sub{min}} a_t, \dot{v}\sub{max}\right)
+	\end{equation}
+	The learning rate for updating the weights of the critic and actor network is set to 0.001. For the exploration of the action space, an exploration noise model has to be defined. We adopted a
 	zero-reverting Ornstein-Uhlenbeck process as suggested in \cite{DDPG}
 	\begin{equation}
     \mathrm{d} x_{t}=-\theta_1 x_{t} \mathrm{d} t+\sigma_1 \mathrm{d} W_{t},
@@ -515,9 +519,7 @@
 	near or above 1 indicating an imminent crash.  The tanh function functions as a limitation for the reward value to the range $[-1,0]$. This has shown to make the learning process more stable. Notice that the case distinction in ~\eqref{eq:r1_CFP}  ensures that
 	this term is not activated in non-critical situations. The purpose of
 	the factor $r_{t, \rm safe}$ is twofold: It motivates the follower vehicle to
-	brake in safety-critical or near-crash situations.  Furthermore it
-	motivates the follower vehicle also to brake early in non-critical
-	situations, where $ v_t>v_{t,l}$, in order to achieve a comfortable
+	brake in safety-critical or near-crash situations.  Furthermore, it motivates the follower vehicle also to break early in noncritical situations if the expected needed deceleration is above the comfortable, in order to achieve a comfortable
 	approaching of the leader vehicle.
 	
 	The second part of the reward function aims to not fall below a reasonable
@@ -599,7 +601,7 @@
     \mathrm{d} v_{t,l}=\theta_2\left(\mu_2-v_{t,l}\right) \mathrm{d} t+\sigma_2 \mathrm{d} W_{t},
 	\end{equation}
 	with $\theta_2 = \unit[0.132]{s^{-1}}$, $\mu_2 = \unit[7.5]{m/s}$, $\sigma_2 = \unit[3.847]{m/s^{1.5}}$ and $W_{t}$ denoting the Wiener process. The parameter have been designed to model the behavior of a real leader vehicle.
-	For the numerical simulation, the Ornstein-Uhlenbeck process has been discretized using the Euler-Maruyama method \cite{CIRprocess}. The resulting discretized process is defined as
+	For the numerical simulation, the Ornstein-Uhlenbeck process has been discretized using the Euler-Maruyama method \citep{CIRprocess}. The resulting discretized process is defined as
 	\begin{equation} 
 	v_{l}(n+1)=v_{l}(n)+\theta_2\left\{\mu_2-v_{l}(n)\right\} \Delta t+\sigma_2 \Delta W_{n},
 	\end{equation}
@@ -748,6 +750,8 @@
 	stands still, and it can be observed that all following vehicles are
 	keeping the minimum distance $g\sub{min}$ to the leader.  
 	
+	Comparing the first three RL followers with the three followers of the real experiment, we notice that the RL followers drove more comfortably with less acceleration than the real drivers. This confirms our approach to not calibrate existing trajectories  directly and maximizing an external reward function instead
+	
 	
 	\begin{figure}
 		\centering
@@ -762,7 +766,7 @@
 	
 	As mentioned in Section \ref{rewardFunctionFollow}, different driving styles
 	can be achieved by adjusting the parameters of the reward
-	function. Three RL agents has been trained on a reward function, that
+	function. Three RL agents have been trained on a reward function, that
 	differs in the desired time gap $T$ between following and
 	leading vehicle ($T_{1} = 1.0s$, $T_{2} = 1.5s$, 
 	$T_{3} =2.0s$). Figure \ref{fig:differentT} shows the result of these agents,
@@ -947,8 +951,8 @@
         	
 	Besides driving comfort, string stability, and safety,
 	the efficiency of the resulting traffic flow is important,
-	particularly, the fundamental diagram, the maximum flow through a
-	bottleneck that can be 
+	particularly, the maximum flow through a
+	bottleneck (maximum of the respective fundamental diagram) that can be 
 	sustained and the outflow from a region of congested
 	traffic. Furthermore, we have idealized the state dynamics by
 	assuming that a vehicle can instantaneously take on the acceleration
