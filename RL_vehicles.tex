@@ -236,7 +236,7 @@
 	\end{align}
 	where $\tau$ defines the soft target update rate.
 	This approach greatly enhances the stability of learning.
-	Furthermore DDPG uses Experience Replay, that implements a Replay Buffer $R$, where a list of tuples $\left(s_{t}, a_{t}, r_{t}, s_{t+1}\right)$ are stored. Instead of learning from the most recent experience, DDPG learns from sampling a mini-batch from the experience buffer. To implement better exploration by the actor network, DDPG uses noisy perturbations, specifically an autoregressive process with Gaussian innovations. The entire DDPG algorithm is shown in Algorithm~\ref{alg:ddpg}. 
+	Furthermore DDPG uses Experience Replay, that implements a Replay Buffer $R$, where a list of tuples $\left(s_{i}, a_{i}, r_{i}, s_{i+1}\right)$ for $i \le t$ are stored. Instead of learning from the most recent experience, DDPG learns from sampling a mini-batch from the experience buffer. To implement better exploration by the actor network, DDPG uses noisy perturbations, specifically an autoregressive process with Gaussian innovations. The entire DDPG algorithm is shown in Algorithm~\ref{alg:ddpg}. 
 	
 	\begin{algorithm}
 		\label{alg:ddpg}
@@ -546,7 +546,7 @@
 	\begin{figure}
 		\centering
 		\includegraphics[width=12cm]{images/RewardFunc1}
-		\caption{Factor 2 of the reward function maximizing the reward
+		\caption{Factor $r_{t, \rm gap}$ of the reward function maximizing the reward
 			for car following with time gap $T$} 
 		\label{fig:RewardFunc1}
 	\end{figure}
@@ -965,8 +965,7 @@
 	
 		\subsection*{Acknowledgements}
 		We thank Vincenzo Punzo for making available to us the experimental
-		car-following data used in this paper. This work was funded by ...
-	\martinc{Ostap: DFG oder andere funds nennen?}
+		car-following data used in this paper. This work was funded by BAW - Bundesanstalt für Wasserbau (Mikrosimulation des Schiffsverkehrs auf dem Niederrhein)
 	
 	
 	
