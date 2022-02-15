@@ -1,0 +1,84 @@
+Hallo Fabian, hallo Ostap,
+
+anbei meine Five Cents zum Referee report, zunaechst mal auf Deutsch. Ich kann aber nach einer Besprechung und Konsolidierung durchaus den/einen Teil des Response Letter formulieren
+
+ist ja schon mal gut, dass wir nicht gleich abgelehnt werden, was bei neuen Konzepten oft der Fall ist (z.B. bei meinem Spurwechselmodell MOBIL, was nun ueber 900 Zitate hat oder bei meinem Human Driving Modell mit nun 500. Ich weiss als (untergeordneter) Editor auch, wie schwer es ist, da geeignete Reviewer zu finden, deshalb wohl die faire Entscheidung, mit nur einem Review im Prozess weiter zu gehen.
+
+Nun meine Bemerkungen zum Review:
+
+Allgemein:
+
+(A1)  For example, Yuan, et al. (2021) proposed a new macroscopic traffic flow model with physics models and Gaussian process (GP). New theorems are provided to show that the proposed shadow-GP is learnable and the feasibility of employing the physical knowledge regularization.
+
+(Bem.) Dieses Modell verfolgt einen anderen Methodologischen Ansatz: Die Parameter und/oder Quellen eines vorhandenen klassischen Modells und/oder zusaetzliche Noise-Terme werden mit Hilfe von AI-Ansaetzen beliebiger Art, ggf dynamisch festgelegt. Ich habe gerade ein Paper begutachtet, was das IDM derart behandelt
+
+Hier sind es aber die klassischen Makromodelle:  Das LWR-Modell (die Mutter aller Makromodelle, siehe Traffic FLow Dynamics Kap. 8), das Payne-Whitham Modell (das erste und einfachste Makromodell mit dynamischer Geschwindigkeit) und ein eher obskures mathematisch orientiertes Modell. Mit AI geschaetzt werden die Quellen g in den Gln (47-(51) (onramps, offramps), auch wenn sie bekannt sind, sowie allgemeine stochastische Zusaetze. Ueber die eigentlichen Parameter wie c_0 oder \tau_0 wird nichts gesagt sind. Da sie Teil des Differentialoperators \Psi (Gln (47-(51)) sind, der fest bleibt und das physikalische Modell spezifiziert, werden sie wohl als fest angenommen.
+
+Sowohl die Modellart (Makro) als auch das Testprotokoll (Vergleich mit stationaeren Detektordaten) sind voellig anders Art wie bei uns. Halte ich fuer irrelevant, aber kann man ja einfuegen, wenn es den Reviewer besaenftigt.
+
+
+(A2) Ahamed, et al. (2021) proposed a DQN-based approach for urban delivery. New heuristics are provided to guide specific actions. The computational complexities of the heuristics and the DQN training are analytically investigated.
+
+(Bem.) Dieses Paper beschribt ein Logistik-Problem, was ganz und gar nix mit unserem Paper zu tun hat
+
+(A3) Zhou, et al. (2019) presented a robust car-following control strategy under uncertainty for connected and automated vehicles (CAVs). To analyze the stability of the proposed control system, they mathematically proved a sufficient and necessary condition for local stability and sufficient conditions for robust string stability.
+
+(Bem.) Auch dieses Paper hat ueberhaupt nix mit unserem Paper zu tun. Es handelt sich um einen deterministisches analytischen Standardregler fuer ACC/CAV (coordinated/cooperative automated vehicle) mit einigen analytischen Standardbeweisen fuer String Stabilitaet. Weit und breit nicht das kleinste Fitzelchen AI/DNN zu sehen
+
+(A4) There are no mathematical analyses to investigate the feasibility, stability, and computational complexity of the proposed model and algorithm.
+
+(Bem.) Feasibility (Machbarkeit): Ich weiss nicht, was der Reviewer damit meint. Da der gelernte Regler denselben Input hat wie ein ACC-Kontroller hat, sollte die Machbarkeit unmittelbar gegeben sein. Einfach in den ACC-controller des Fahrzeugs flashen und die Fahrweise des Modells geniessen ;-)
+
+Stability: Prinzipiell kann man bei DNN-Modellen nichts analytisch beweisen, da sie ja Black-Boxes sind. Hier kann es nur Indizien geben, was wir mit den Figs 5,6 und 8 gemacht haben
+
+Computational complexity: Wichtiger Punkt: Ich gehe davon aus, dass das ausgelernte Modell einfach eine nichtlineare Funktion wie das IDM ist, keine Schleifen und damit blitzschnell. Sollten wir explizit angeben in Form von  ben\"otigten Speicherbedarf (es soll ja ggf in die Motorsteuerung geflasht werden ;-) und computational speed, z.B. Zahl der in realtime simulierbaren Folgefahrzeuge auf einem Notebook.  (Beim IDM sind es Hunderttausende.)
+
+
+Spezifische Kommentare
+
+(S1) The free-driving policy only considers the acceleration part. However, there is another scenario in free-driving traffic that vehicles need to decelerate when the speed limit drops. The authors should also consider a deceleration part in the free-driving policy.
+
+(Bem.) Das sollte durch ein ortsabhaengiges v0 in der Reward-Funktion gegeben sein, da unsere Gl (5) zu schnelles fFhren bestraft. Allerdings wird nur minimales Ueberschreiten drastisch mit Reward=0 bestraft und die Bestrafung nimmt nicht mit der Geschwindigkeit zu. Ich wuerde die zweite Zeile von (5) durch =v_des/v_t statt =0 ersetzen. Interessant ist, ob unser Modell das niedrigere Tempolimit antizipieren kann, also die Kenntnis, dass an einem festen bekannten Ort die Geschindigkeit reduziert wird, in das Netz irgendwie eingeht. Menschliche Fahrer fangen vor dem Ortsschild schon mit Verzoegern an, erreichen aber erst deutlich nach Ueberfahrt des Ortsschildes das niedrigere Limit. Genau das gleiche sollte auch eine einigermassen symmetrische Reward-Funktion machen.
+
+(S2) In the car-following policy, the authors said "when gt exceeds gmax or there is no leader, g is set to gmax". If there is no leader, it seems the vehicle is in a free-driving scenario. Then, this should not be a car-following policy.
+
+(Bem.) Guter Punkt! Da wir ja freien und gebundenen Verkehr mit komplett separat (sogar unterschiedliche und separat gelernte Netze) modellieren, kann man nicht einfach sagen die Reward-Funktion geht in die freie Reward-Funktion fuer g>g ueber, was sie ja auch nicht macht, vgl (20) mit (7). Konsequenterweise sollte bei g>gmax direkt in den freien Modus gewechselt werden (und dabei darauf geachtet werden, das es keine Bang-Bang-Instabilitaeten (schneller Wechsel zwischen frei und gebunden) gibt. Warum verwenden wir ueberhaupt zwei Netze und modellieren nicht alles mit dem gebundenen Netzwerk?
+
+(S3) The authors used several datasets in this study. One dataset is field data, and the others are simulated data. Why did the authors use these datasets? It seems the field dataset is enough. Why did the authors use simulated datasets? How did the authors use these datasets for training and validation?
+
+(Bem.) Das field dataset findet der Reviewer OK, bei den "simulated data" weiss ich nicht, welche er meint. Wir nutzen zwei andere Leader-Daten, von denen streng genommen keine simuliert sind:
+
+* Realisierung eines AR1-prozesses zum Training. Hier sollten wir   darauf hinweisen, dass die Terabyte an Lerndaten [benoetigte Menge   anpassen] zwangsweise nur kuenstlich erzeugt werden koennen,   waehrend die "echten" Daten zur Validierung genutzt werden.
+
+* Kuenstliche (nicht simulierte) Leader-profile zur Validierung bzw   Stress-test. Da koennen wir auf die allgemeine Reviewer-Bemerkung (A4)   verweisen: Mangels prinzipieller Unmoeglichkeit einer analytischen   Betrachtung (mit deren Hilfe uebrigens auch bei analytischen   Modellen kein Beweis der Unfallfreiheit erbracht werden kann!)   betrachten wir als "Stress-test" den Worst case, z.B. maximale   Bremsung des leaders zum Stillstand. Dieses kuenstl. Profil ist   noetig, da verstaendlicherweise die Felddaten solche Situationen   nicht enthalten.
+
+(S4) The authors compared the proposed model with the IDM. But the IDM is used for human-driven vehicles, not for autonomous vehicles. The authors should compare the proposed model with existing RL-based models.
+
+(Bem.) Das IDM hat keine Reaktionszeiten, keine Wahrnehmungsfehler, und sieht nur das naechste Fahrzeug. Die human-driver generalisation beruecksichtigt das alles. Insofern ist dass IDM (und ein daraus abgeleitetes ACC-Modell) eher ein Modell fuer ACC als fuer menschl. Fahrer.
+
+Dessen ungeachtet koennen wir ja "unser" Modell mit implementierbaren Modellen aus der Referenzliste, z.B. denen von Zhu vergleichen. Rauswerfen wuerde ich das IDM nicht, denn es ist ein grosser methodischer Erkenntnisgewinn, ob, und wenn ja wie viel, DL-Modelle "besser" als klassische Modelle sind. Zumal wir ja die kalibrierten IDM-Parameter auch fuer die Reward-Funktionen nutzen. Ein Vergleich mit den klassischen Modellen Wurde uebrigens im bei (A1) erwaehnten Paper auch gemacht und dort ein riesiger Unterschied um mehr als den Faktor 4 gefunden (bin mir aber ziemlich sicher, dass sie die Makromodelle nicht ordentlich kalibriert haben). Die Tatsache, dass es hier nur einige statt 400 Prozent bei aehnlichen Metriken sind, ist veroeffentlichungswuerdeig.
+
+(S5) The organization is terrible. For example, table 1 and figure 2 show the results of the car-following policy before it is mentioned.
+
+(Bem.) Das Problem liegt darin, dass free-driving und car-following policy in zwei unterschiedlichen Top-Level sections beschrieben werden, was ich auch verwirrend finde. So kommt es, dass der Reviewer sich ueber eine Tabelle am Ende von Sect 3 beklagt, in der das Netzwerk von Sekt 4 vorkommt. Die Tabelle gehort aber genau da hin, wo sie ist, da die Parameter genau im Textumfeld beschrieben werden.
+
+Ich wuerde Sect 3 und 4 zu einer Section "Driving Policies" zusammenfassen. Der einzige Unterschied zwischen en Policies sind ja die Rewardfunktionen und zwei strukturelle Netzwerkparameter (und natuerlich, dass sie separat angelernt werden).
+
+Falls ihr das nicht machen wollt, wuerde ich die Spalte "Car-Following Policy" in der Tabelle weglassen und  in Kap 4 an geeigneter Stelle erwaehnen:
+
+"The architecture and the parameterisation of the DDPG network for car-following is essentially that of the free-driving network with two instead of one hidden layers and 32 instead of 16 neurons per layer"
+
+Mit Fig. 2 kann ich nicht viel anfangen, ausser, dass die Gewinne/Verluste vergleichbar sind, was in Hinblick auf einen Uebergang Car-Following - Free (vgl. S1) wichtig ist. Ausserdem ist in der Skalierung Fig 2(b) von ueber 10 000 episodes die Rede, waehrend die caption von "the last 30 training episodes" spricht. Ich wuerde Fig. 2 weglassen.
+
+
+(S6) In the last paragraph on page 2, the authors mentioned some RL-based AV car-following models. However, one study (Zhou, et al., 2017) is a supervised learning-based model for human-driven vehicle trajectory prediction. It should not be considered here. The authors should carefully review these studies.
+
+(Bem.) Klar: weglassen!
+
+(S7) There is a wrong formulation in equation (8). The reviewer believes that "d" is supposed to be "Δt". Please carefully proofread this paper.
+
+(Bem.) We thank the reviewer for spotting this typo and have carefully proofread the revised paper
+
+(S8) In section 5.5, the authors said, "cross-validation with the IDM". Cross-validation is a specific term. It would be better to use "comparison".
+
+(Bem.) We thank the reviewer for pointing at the incorrect usage of the technical term "cross validation" and have revised the wording as suggested 
