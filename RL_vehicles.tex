@@ -90,24 +90,23 @@
 		
 		%% or include affiliations in footnotes:
 		\author[firstAddress]{Fabian Hart}
-		\author[firstAddress,secondAddress]{Ostap Okhrin}
-		\author[firstAddress,secondAddress]{Martin Treiber\corref{corrAuthor}}
+		\author[firstAddress]{Ostap Okhrin}
+		\author[firstAddress]{Martin Treiber\corref{corrAuthor}}
 		\cortext[corrAuthor]{Corresponding author}
 		\ead{Martin.treiber@tu-dresden.de}
 		\ead[url]{www.mtreiber.de}
 		
 		\address[firstAddress]{TU Dresden}
-		\address[secondAddress]{Possible second address}
 		
 		
 		
 		
 		\begin{abstract}		
-		We propose and validate a novel car following model based on deep reinforcement learning. Our model is trained to maximize externally given reward functions for the free and car-following regimes, instead of reproducing  existing follower trajectories. The parameters of these reward functions such as desired speed, time gap, or accelerations resemble that of traditional models such as the Intelligent Driver Model (IDM) and allow for explicitly implementing different driving styles. Moreover, they partially lift the black-box nature of conventional neural network models. The model is trained on leading speed profiles governed by a truncated  Ornstein-Uhlenbeck process reflecting a realistic leader’s kinematics.
-	
-		This allows for arbitrary driving situations and an infinite supply of training data. For various parameterizations of the reward functions, and for a wide variety of artificial and real leader data, the model turned out to be unconditionally string stable, comfortable and crash-free. String stability has been tested with a platoon of five followers following an artificial and a real leading trajectory. A cross-comparison with the IDM  calibrated to the goodness-of-fit of the relative gaps showed a higher reward compared to the traditional model and a better goodness-of-fit.
+			We propose and validate a novel car following model based on deep reinforcement learning. Our model is trained to maximize externally given reward functions for the free and car-following regimes rather than reproducing existing follower trajectories. The parameters of these reward functions such as desired speed, time gap, or accelerations resemble that of traditional models such as the Intelligent Driver Model (IDM) and allow for explicitly implementing different driving styles. Moreover, they partially lift the black-box nature of conventional neural network models. The model is trained on leading speed profiles governed by a truncated  Ornstein-Uhlenbeck process reflecting a realistic leader's kinematics.
+			
+			This allows for arbitrary driving situations and an infinite supply of training data. For various parameterizations of the reward functions, and for a wide variety of artificial and real leader data, the model turned out to be unconditionally string stable, comfortable, and crash-free. String stability has been tested with a platoon of five followers following an artificial and a real leading trajectory. A cross-comparison with the IDM  calibrated to the goodness-of-fit of the relative gaps showed a higher reward compared to the traditional model and a better goodness-of-fit.
 		\end{abstract}
-	
+		
 		
 		\begin{keyword}
 			reinforcement learning \sep car-following model \sep string stability \sep validation \sep trajectory data 
@@ -162,7 +161,7 @@
 	common: First, the acceleration range is limited in a way that
 	full-braking maneuvers are not considered. This results in models that are just designed for non-safety-critical scenarios. Second, these models just consider car-following scenarios, while free driving or the transition between both is not reflected in the reward function. Third, the trained models have just been validated on data that is similar to the training data set so that the generalization capabilities cannot be proven. 
 	
-	This motivated us to design a model that overcomes all of these issues.  Specifically,  we propose a RL-based model with following features:
+	This motivated us to design a model that overcomes all of these issues.  Specifically,  we propose a RL-based model with the following features:
 	
 	
 	\begin{itemize}
@@ -184,7 +183,7 @@
 	Another feature of this work is a thorough validation of the above-mentioned properties in scenarios based on both synthetic and real trajectory data, bringing the model to its limits. 
 	In all cases, the model proved to be accident-free and string stable.
 	In a further experiment, the proposed model is compared to the IDM calibrated on the same data. The results indicate a better performance of the proposed model.
-		
+	
 	This work is structured as follows. In Section \ref{sec:RLBackground},
 	we introduce some basic RL background as well as our modularized RL
 	approach, followed by a detailed description of our two sub-modules:
@@ -207,8 +206,8 @@
 	mapping policy $\pi$ that maximizes the expected accumulated
 	discounted reward
 	\begin{equation}
-	\label{Rt}
-	R_{t}=\sum_{k=0}^{\infty} \gamma^{k} r_{t+k},
+		\label{Rt}
+		R_{t}=\sum_{k=0}^{\infty} \gamma^{k} r_{t+k},
 	\end{equation}
 	where $\gamma = (0,1]$ denotes the discount factor and 
 	$\gamma^k r_{t+k}$ the expected contribution $k$ time steps ahead. 
@@ -225,12 +224,12 @@
 	$Q\left(s, a \mid \theta^{Q}\right) $ with the network weights  $\theta^{Q}$ to
 	predict if the action is good or bad, based on a given state $s$ and
 	action $a$. 
-	To achieve a better training stability, DDPG uses target networks  $\mu^{\prime}$ and $Q^{\prime}$ for the actor and critic networks.
+	To achieve better training stability, DDPG uses target networks  $\mu^{\prime}$ and $Q^{\prime}$ for the actor and critic networks.
 	These target networks have the same architecture as the main networks, only differing in the network parameters. While training, these networks are updated by
 	letting them slowly track the main networks
 	\begin{align}
-	\theta^{Q^{\prime}} & \leftarrow \tau \theta^{Q}+(1-\tau) \theta^{Q^{\prime}}, \\
-	\theta^{\mu^{\prime}} & \leftarrow \tau \theta^{\mu}+(1-\tau) \theta^{\mu^{\prime}},
+		\theta^{Q^{\prime}} & \leftarrow \tau \theta^{Q}+(1-\tau) \theta^{Q^{\prime}}, \\
+		\theta^{\mu^{\prime}} & \leftarrow \tau \theta^{\mu}+(1-\tau) \theta^{\mu^{\prime}},
 	\end{align}
 	where $\tau$ defines the soft target update rate.
 	This approach greatly enhances the stability of learning.
@@ -252,7 +251,7 @@
 				Sample a random minibatch of $N$ transitions $\left(s_{i}, a_{i}, r_{i}, s_{i+1}\right)$ from $R$\\
 				Set $y_{i}=r_{i}+\gamma Q^{\prime}\left\{s_{i+1}, \mu^{\prime}\left(s_{i+1} \mid \theta^{\mu^{\prime}}\right) \mid \theta^{Q^{\prime}}\right\}$\\
 				Update critic by minimizing the loss:
-				 $L=\frac{1}{N} \sum_{i}\left\{y_{i}-Q\left(s_{i}, a_{i} \mid \theta^{Q}\right)\right\}^{2}$\\
+				$L=\frac{1}{N} \sum_{i}\left\{y_{i}-Q\left(s_{i}, a_{i} \mid \theta^{Q}\right)\right\}^{2}$\\
 				Update the actor policy using the sampled policy gradient:
 				$$
 				\nabla_{\theta^{\mu}} J \approx \frac{1}{N} \sum_{i} \left. \nabla_{a} Q\left(s, a \mid \theta^{Q}\right)\right|_{s=s_{i}, a=\mu\left(s_{i}\right)} \left.\nabla_{\theta^{\mu}} \mu\left(s \mid \theta^{\mu}\right)\right|_{s_{i}}
@@ -260,8 +259,8 @@
 				Update the target networks:
 				$$
 				\begin{aligned}
-				\theta^{Q^{\prime}} & \leftarrow \tau \theta^{Q}+(1-\tau) \theta^{Q^{\prime}} \\
-				\theta^{\mu^{\prime}} & \leftarrow \tau \theta^{\mu}+(1-\tau) \theta^{\mu^{\prime}}
+					\theta^{Q^{\prime}} & \leftarrow \tau \theta^{Q}+(1-\tau) \theta^{Q^{\prime}} \\
+					\theta^{\mu^{\prime}} & \leftarrow \tau \theta^{\mu}+(1-\tau) \theta^{\mu^{\prime}}
 				\end{aligned}
 				$$
 			}
@@ -304,7 +303,7 @@
 	\label{stateSpaceFree}
 	The defined modularized RL approach requires that the action space of
 	both sub-policies are identical. In our use case, the action space is
-	continuous and one-dimentional and given by the range of feasible accelerations
+	continuous and one-dimensional and given by the range of feasible accelerations
 	$\dot{v}_t \in [\dot{v}\sub{min}, \dot{v}\sub{max}]$. The range limits
 	$\dot{v}\sub{min}= \unit[-9]{m/s^2}$ and  $\dot{v}\sub{max} =\unit[2]{m/s^2}$
 	reflect comfortable driving ($\dot{v}_t \le \dot{v}\sub{max}$) while
@@ -319,43 +318,43 @@
 	the same range of $[0,1]$. The observation vector at time step $t$ is defined
 	as 	
 	\begin{equation}
-	\label{eq:stateFree}
-	s_t = \begin{pmatrix} \frac{v_t}{v\sub{des}} \\ \frac{\dot{v}_t-\dot{v}\sub{min}}{\dot{v}\sub{max} - \dot{v}\sub{min}}\end{pmatrix},
+		\label{eq:stateFree}
+		s_t = \begin{pmatrix} \frac{v_t}{v\sub{des}} \\ \frac{\dot{v}_t-\dot{v}\sub{min}}{\dot{v}\sub{max} - \dot{v}\sub{min}}\end{pmatrix},
 	\end{equation}
 	where $v_{des}$ defines the desired speed.
 	\subsection{Reward Function}
 	\label{rewardFunctionFree}
-	The reward function contribution a time step $t$ is decomposed into two factors. The first part aims to
+	The reward function contribution at time step $t$ is decomposed into two factors. The first part aims to
 	not exceed a desired speed $v\sub{des}$, but also to accelerate if the
 	desired speed is not reached yet  
 	\begin{equation}
-	\label{eq:r1Free}
-	r_{t, \rm speed}  = 
-	\begin{cases}
-	\frac{v_t}{v\sub{des}},
-	& \text{if } v_t \leq v\sub{des}\\
-	0,
-	& \text{otherwise}.
-	\end{cases}
+		\label{eq:r1Free}
+		r_{t, \rm speed}  = 
+		\begin{cases}
+			\frac{v_t}{v\sub{des}},
+			& \text{if } v_t \leq v\sub{des}\\
+			0,
+			& \text{otherwise}.
+		\end{cases}
 	\end{equation}
 	
 	The second part of the reward function aims to reduce the jerk in
 	order to achieve comfortable driving 
 	\begin{equation}
-	\label{eq:r2Free}
-	r_{t, \rm jerk} = -\left(\frac{1}{j\sub{comf}} \ \dv{\dot{v}_t}{t}\right)^2,
+		\label{eq:r2Free}
+		r_{t, \rm jerk} = -\left(\frac{1}{j\sub{comf}} \ \dv{\dot{v}_t}{t}\right)^2,
 	\end{equation}
 	where $j\sub{comf}$ denotes a comfortable jerk of $\unit[2]{m/s^3}$.
 	Since building up a comfortable value of acceleration or deceleration
 	from zero in one second is at the limit of comfortable jerks, $r_{t, \rm jerk} $
 	values above unity tend to feel uncomfortable.
-		
+	
 	The contribution of the final reward function at simulation time step $t$ is the weighted
 	sum of these factors according to
 	%
 	\begin{equation}
-	\label{rt1}
-	r_{t, \rm free} =r_{t, \rm speed} + w\sub{jerk} r_{t, \rm jerk} ,
+		\label{rt1}
+		r_{t, \rm free} =r_{t, \rm speed} + w\sub{jerk} r_{t, \rm jerk} ,
 	\end{equation}
 	%
 	where all the factors are evaluated at time step $t$. 
@@ -368,8 +367,8 @@
 	and robust scheme for integrating car-following models	
 	%	
 	\begin{align}
-	v_{t+1} &= v_{t} + \dot{v}_{t} d, \\
-	x_{t+1} &= x_{t} + \frac{v_{t} + v_{t+1}}{2} \Delta t,
+		v_{t+1} &= v_{t} + \dot{v}_{t} d, \\
+		x_{t+1} &= x_{t} + \frac{v_{t} + v_{t+1}}{2} \Delta t,
 	\end{align}
 	%
 	with $\Delta t$ corresponding to the simulation step size that is globally
@@ -385,10 +384,10 @@
 	The learning rate for updating the weights of the critic and actor network is set to 0.001. For the exploration of the action space, an exploration noise model has to be defined. We adopted a
 	zero-reverting Ornstein-Uhlenbeck process as suggested in \cite{DDPG}
 	\begin{equation}
-    \mathrm{d} x_{t}=-\theta_1 x_{t} \mathrm{d} t+\sigma_1 \mathrm{d} W_{t},
+		\mathrm{d} x_{t}=-\theta_1 x_{t} \mathrm{d} t+\sigma_1 \mathrm{d} W_{t},
 	\end{equation}
-    with $\theta_1 = \unit[0.15]{s^{-1}}$, $\sigma_1 = \unit[0.2]{s^{-0.5}}$ and $W_{t}$ denoting the Wiener process.	
- 	The soft update rate of the target networks $\tau$ is set to
+	with $\theta_1 = \unit[0.15]{s^{-1}}$, $\sigma_1 = \unit[0.2]{s^{-0.5}}$ and $W_{t}$ denoting the Wiener process.	
+	The soft update rate of the target networks $\tau$ is set to
 	0.001. All DDPG parameters are presented in Table \ref{tab:DDPGparameters}.
 	%
 	\begin{table}
@@ -421,7 +420,7 @@
 		\caption{Asymmetric moving average reward of the last 30 training episodes for Free-Driving Policy and Car-Following Policy} 
 		\label{fig:TrainingReward}
 	\end{figure}
- 	%	
+	%	
 	
 	\section{Car-Following Policy}
 	\label{sec:CarFollowingPolicy}
@@ -439,15 +438,15 @@
 	into the same range of $[-1,1]$. The observation at time step $t$ is defined as
 	
 	\begin{equation}
-	\label{eq:stateFollow}
-	s_t = 
-	\begin{pmatrix} 
-	\frac{v_t}{v\sub{des}} \\ 
-	\frac{\dot{v}_t-\dot{v}\sub{min}}{\dot{v}\sub{max} - \dot{v}\sub{min}}\\
-	\frac{v_{t,l}-v_t}{v\sub{des}}\\
-	\frac{g_t}{g\sub{\rm max}}
-	
-	\end{pmatrix},
+		\label{eq:stateFollow}
+		s_t = 
+		\begin{pmatrix} 
+			\frac{v_t}{v\sub{des}} \\ 
+			\frac{\dot{v}_t-\dot{v}\sub{min}}{\dot{v}\sub{max} - \dot{v}\sub{min}}\\
+			\frac{v_{t,l}-v_t}{v\sub{des}}\\
+			\frac{g_t}{g\sub{\rm max}}
+			
+		\end{pmatrix},
 	\end{equation}
 	%
 	where $g\sub{max}$ is set to  \unit[200]{m}. When $g_t$ exceeds  $g\sub{max}$ or there is no leader, $g$ is set to  $g\sub{max}$.
@@ -491,22 +490,22 @@
 	
 	
 	\begin{equation}
-	\label{eq:r1_CFP}
-	r_{t, \rm safe} = 
-	\begin{cases}
-	-\tanh\left(\frac{b\sub{kin}-b\sub{comf}}{-\dot{v}\sub{min}}\right),& \text{if } b\sub{kin}>b\sub{comf}\\
-	0,              & \text{otherwise}
-	\end{cases}
+		\label{eq:r1_CFP}
+		r_{t, \rm safe} = 
+		\begin{cases}
+			-\tanh\left(\frac{b\sub{kin}-b\sub{comf}}{-\dot{v}\sub{min}}\right),& \text{if } b\sub{kin}>b\sub{comf}\\
+			0,              & \text{otherwise}
+		\end{cases}
 	\end{equation}
 	
 	with
 	\begin{equation}
-	\label{bkin}
-	b\sub{kin} = 
-	\begin{cases}
-	\frac{(v_t-v_{t,l})^2}{g_t},& \text{if } v_t>v_{t,l}\\
-	0,              & \text{otherwise},
-	\end{cases}
+		\label{bkin}
+		b\sub{kin} = 
+		\begin{cases}
+			\frac{(v_t-v_{t,l})^2}{g_t},& \text{if } v_t>v_{t,l}\\
+			0,              & \text{otherwise},
+		\end{cases}
 	\end{equation}
 	the kinematic deceleration $b\sub{kin}$ representing the minimum deceleration necessary to avoid a collision.
 	The argument of the tanh($\cdot$) function with  the
@@ -524,18 +523,18 @@
 	
 	
 	\begin{equation}
-	\label{eq:r2_CFP}
-	r_{t, \rm gap}  = 
-	\begin{cases}
-	\frac{\varphi\left\{(g_t-g\sub{opt})/g\sub{var}\right\}}{\varphi(0)}, & \text{if } g_t < g^*\\
-	\frac{\varphi\left\{(g_t-g\sub{opt})/g\sub{var}\right\}}{\varphi(0)}\left(1-\frac{g_t-g^*}{g\sub{lim} - g^*}\right)  & \text{otherwise},
-	\end{cases}
+		\label{eq:r2_CFP}
+		r_{t, \rm gap}  = 
+		\begin{cases}
+			\frac{\varphi\left\{(g_t-g\sub{opt})/g\sub{var}\right\}}{\varphi(0)}, & \text{if } g_t < g^*\\
+			\frac{\varphi\left\{(g_t-g\sub{opt})/g\sub{var}\right\}}{\varphi(0)}\left(1-\frac{g_t-g^*}{g\sub{lim} - g^*}\right)  & \text{otherwise},
+		\end{cases}
 	\end{equation}
 	with 
 	\begin{align}
-	g\sub{opt} &= v_tT + g\sub{min},\\
-	g\sub{var} &= 0.5g\sub{opt},\\
-	g\sub{lim} &= v_tT\sub{lim} + 2g\sub{min},
+		g\sub{opt} &= v_tT + g\sub{min},\\
+		g\sub{var} &= 0.5g\sub{opt},\\
+		g\sub{lim} &= v_tT\sub{lim} + 2g\sub{min},
 	\end{align}
 	%
 	and $\varphi(x)$ describing the density function of the standard normal distribution. The value of $g^*$ is chosen in a way that the reward function $r_{t,\rm gap}$ is differentiable.
@@ -571,15 +570,15 @@
 	The third factor of the reward function aims to reduce the jerk in
 	order to achieve comfortable driving and has been designed analogously to the Free-Driving Policy
 	\begin{equation}
-	\label{eq:r3_CFP}
-	r_{t, \rm jerk} = -\left(\frac{1}{j\sub{comf}} \ \dv{\dot{v}_t}{t}\right)^2.
+		\label{eq:r3_CFP}
+		r_{t, \rm jerk} = -\left(\frac{1}{j\sub{comf}} \ \dv{\dot{v}_t}{t}\right)^2.
 	\end{equation}
 	%
 	The contribution of the final reward function~\eqref{Rt}  at simulation time step $t$ is the weighted
 	sum of these factors according to
 	\begin{equation}
-	\label{rt2}
-	r_{t, \rm follow} = r_{t, \rm safe} + w\sub{gap}r_{t,\rm gap}+w\sub{jerk}r_{t, \rm jerk} ,
+		\label{rt2}
+		r_{t, \rm follow} = r_{t, \rm safe} + w\sub{gap}r_{t,\rm gap}+w\sub{jerk}r_{t, \rm jerk} ,
 	\end{equation}
 	where all the factors are evaluated at time step $t$. The weights (cf.
 	Table~\ref{tab:agentParameters}) have been found experimentally and
@@ -594,16 +593,16 @@
 	reflect the kinematics of real leaders. The Ornstein–Uhlenbeck process describes
 	the speed of the leading vehicle $v_{t,l}$ and is defined as 	
 	\begin{equation} \label{eq:AR1}
-    \mathrm{d} v_{t,l}=\theta_2\left(\mu_2-v_{t,l}\right) \mathrm{d} t+\sigma_2 \mathrm{d} W_{t},
+		\mathrm{d} v_{t,l}=\theta_2\left(\mu_2-v_{t,l}\right) \mathrm{d} t+\sigma_2 \mathrm{d} W_{t},
 	\end{equation}
 	with $\theta_2 = \unit[0.132]{s^{-1}}$, $\mu_2 = \unit[7.5]{m/s}$, $\sigma_2 = \unit[3.847]{m/s^{1.5}}$ and $W_{t}$ denoting the Wiener process. The parameter have been designed to model the behavior of a real leader vehicle.
 	For the numerical simulation, the Ornstein-Uhlenbeck process has been discretized using the Euler-Maruyama method \citep{CIRprocess}. The resulting discretized process is defined as
 	\begin{equation} 
-	v_{l}(n+1)=v_{l}(n)+\theta_2\left\{\mu_2-v_{l}(n)\right\} \Delta t+\sigma_2 \Delta W_{n},
+		v_{l}(n+1)=v_{l}(n)+\theta_2\left\{\mu_2-v_{l}(n)\right\} \Delta t+\sigma_2 \Delta W_{n},
 	\end{equation}
 	with 
 	\begin{equation}
-	\Delta W_{n} \sim N(0, \Delta t).
+		\Delta W_{n} \sim N(0, \Delta t).
 	\end{equation}
 	
 	
@@ -769,7 +768,7 @@
 	following the real leader trajectory from Napoli. It can be observed,
 	that a lower value for $T$ results in closer driving to the
 	leader. The last plot in Figure \ref{fig:differentT} which illustrates the actual time gap $ (g_t-g\sub{min})/v_t$ shows, that for speeds greater than zero the desired time gap $T$ is approximately maintained.
-	This behavior can be considered as a more ``aggressive''
+	This behavior can be considered as a more "aggressive"
 	driving style. Since this also means that there are fewer options in
 	increasing driving comfort without affecting safety, the follower's
 	accelerations and decelerations are higher than that of the more
@@ -795,13 +794,13 @@
 	IDM of \cite{Opus} whose acceleration is given
 	by 
 	\begin{equation}
-	\label{eq:IDM}
-	\dv{v}{t}=\dot{v}\sub{max}\left[1-\left(\frac{v_t}{v\sub{des}}\right)^{4}-\left\{\frac{s^{*}\left(v_t, v_{t,l}\right)}{g_t}\right\}^{2}\right],
+		\label{eq:IDM}
+		\dv{v}{t}=\dot{v}\sub{max}\left[1-\left(\frac{v_t}{v\sub{des}}\right)^{4}-\left\{\frac{s^{*}\left(v_t, v_{t,l}\right)}{g_t}\right\}^{2}\right],
 	\end{equation}
 	with
 	\begin{equation}
-	\label{eq:IDMsstar}
-	s^{*}\left(v_t, v_{t,l}\right)=g\sub{min}+\max \left\{0,v_tT+\frac{v_t(v_t-v_{t,l})}{2 \sqrt{\dot{v}\sub{max} b\sub{comf}}}\right\}.
+		\label{eq:IDMsstar}
+		s^{*}\left(v_t, v_{t,l}\right)=g\sub{min}+\max \left\{0,v_tT+\frac{v_t(v_t-v_{t,l})}{2 \sqrt{\dot{v}\sub{max} b\sub{comf}}}\right\}.
 	\end{equation}
 	Notice that the IDM parameters desired
 	speed $v\sub{des}$, minimum gap $g\sub{min}$, time gap $T$, maximum
@@ -847,7 +846,7 @@
 	As expected, the RL agent performs better than the IDM relative to the
 	reward function used for its learning. It is remarkable, however, 
 	that the RL model also outperforms the IDM relative to the
-	the goodness-of-fit function, that has been used only indirectly by
+	the goodness-of-fit function that has been used only indirectly by
 	parameterizing its reward function.
 	
 	\begin{figure}
@@ -889,7 +888,7 @@
 	evaluated by focusing on a single leader-follower experiment, shown in
 	Figure \ref{fig:TTC_CaseStudy}, where the situation with the lowest TTC for the RL agent is marked green. In this situation, the leader brakes to a standstill with a 
 	quite high deceleration of $-\dot{v}_l \approx \unit[6]{m/s^2}$. The reason for the slight
-	difference in TTC between IDM and RL agent lies in the fact, that the
+	difference in TTC between IDM and RL agent lies in the fact that the
 	IDM keeps a slightly higher gap to the leader most of the time,
 	which simply reflects a more defensive driving style. 
 	
@@ -934,17 +933,17 @@
 	comfortable. Further scenarios showed that traffic oscillations could
 	effectively be dampened with a sequence of trained followers, even if
 	the leader shows large outliers in acceleration.
-    A reason for this favourable behavior is that, unlike
-    classical car-following models, RL-based models
-    even learn responses that are not explicitely contained in their
-    specification. For example, the only reward component depending on
-    the relative speed is the safety component~\eqref{eq:r1_CFP}
-    which only kicks in for large approaching rates. Still, the
-    actual model also responds to small values of the relative
-    speed since such a behaviour may prevent reaching a
-    safety-critical situation within the prediction horizon.
-    %(which is proportional to $1/(1-\gamma)$)
-        	
+	A reason for this favorable behavior is that, unlike
+	classical car-following models, RL-based models
+	even learn responses that are not explicitly contained in their
+	specification. For example, the only reward component depending on
+	the relative speed is the safety component~\eqref{eq:r1_CFP}
+	which only kicks in for large approaching rates. Still, the
+	actual model also responds to small values of the relative
+	speed since such behavior may prevent reaching a
+	safety-critical situation within the prediction horizon.
+	%(which is proportional to $1/(1-\gamma)$)
+	
 	Besides driving comfort, string stability, and safety,
 	the efficiency of the resulting traffic flow is important,
 	particularly, the maximum flow through a
@@ -959,9 +958,9 @@
 	be investigated in a forthcoming paper.
 	
 	
-		\subsection*{Acknowledgements}
-		We thank Vincenzo Punzo for making available to us the experimental
-		car-following data used in this paper. This work was partially funded by BAW - Bundesanstalt für Wasserbau (Mikrosimulation des Schiffsverkehrs auf dem Niederrhein)
+	\subsection*{Acknowledgements}
+	We thank Vincenzo Punzo for making available to us the experimental
+	car-following data used in this paper. This work was partially funded by BAW - Bundesanstalt für Wasserbau (Mikrosimulation des Schiffsverkehrs auf dem Niederrhein)
 	
 	
 	
